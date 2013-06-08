@@ -1,0 +1,112 @@
+% -------------------------------------------
+%
+%  Learning Hierarchical Invariant
+%  Spatio-temporal Features for 
+%  Action Recognition with
+%  Independent Subspace Analysis
+%  Quoc V. Le, Will Y. Zou
+%  Serena Y. Yeung, Andrew Y. Ng
+%  [CVPR2011]
+%
+%	     Example Code 
+% -------------------------------------------
+
+This example matlab package:
+- Train a two layer stacked convolutional ISA 
+  network (optional)
+- Run classification on Hollywood2 action 
+  recognition dataset.
+
+Instructions: 
+----------------------------------------------
+- Download this package and unarchive at
+  /*yourfolder*/release/
+
+- Download the Hollywood2 actions dataset from
+http://pascal.inrialpes.fr/hollywood2/ 
+
+- Scale videos from AVIClips to half size 
+  and save in 
+  /*yourfolder*/AVIClips05/
+  keeping filenames
+
+  (python script resize_videos.py is provided, 
+  which assumes installation of ffmpeg)
+
+- Place ClipSets (label information) folder in 
+  /*yourfolder*/ClipSets/
+
+- Alow 2~3Gb of space in /*yourfolder*/
+
+----------------[TRAIN]-----------------------
+- If you wish to skip, a copy of trained
+  bases is given in release/bases/
+
+- Start matlab cd to /*yourfolder*/release/
+
+- Type 
+
+  master_train('/*yourfolder*/AVIClips05/', '/*yourfolder*/release/')
+
+  this might take a few hours to train, depending
+  on hardware
+
+----------------[TEST]------------------------
+- To test classification on Hollywood2
+  modify master_test to change /*yourfolder*/
+  at the very top of file. (If you wish to use 
+  gpu for computation see [GPU] below.)
+
+  In matlab cd to /*youfolder*/release/
+  Type
+
+  master_test
+
+  The default setting (for illustration) uses 
+  non-overlap sampling of features. This will 
+  run for a few hours to obtain a classification 
+  result on Hollywood2
+
+  To obtain better (proper) results, tune up 
+  dense sampling parameters, set
+
+  dense_p = 2;
+  
+  (50% overlap dense sampling) (this setting has 
+  a large RAM requirement)
+
+-----------------[GPU]------------------------
+In the experiments we used Jacket GPU implementation
+for MATLAB, if you have Jacket installed, the code
+is enabled for GPU to speed feature extraction.
+
+In master_test.m, addpath to:
+
+/**/jacket/engine 
+
+set:
+
+gpu = 1;
+
+For feature extraction on large amounts of video, 
+we were able to significantly speed up computation 
+using Jacket's GPU implementation (please 
+refer to paper for more details).
+
+------------ OTHER DATASETS -------------
+If you'd like to use this code for other datasets,
+rename your videos and customize the video folders
+ AVIClips05 to contain 
+actioncliptrainXXXXX.avi and actioncliptestXXXX.avi
+Further, customize the folder ClipSets to contain
+a text file for each label, specifying a binary indicator
+for each clip, whether that clip contains the action 
+label. This setting is identical to the Hollywood2
+dataset.
+
+Lastly, customize master files with your desired 
+parameters for specific datasets.
+
+%Questions about code: 
+%Will Zou (wzou *A*T* cs.stanford.edu)
+

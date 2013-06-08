@@ -1,0 +1,64 @@
+		     IMAGE ALIGNMENT ANNOTATIONS
+                 
+      ONE-SHOT-LEARNING CHALEARN GESTURE CHALLENGE
+
+     http://gesture.chalearn.org -- events@chalearn.org
+    
+       Authors: Vassilis Athitsos and Pat Jangyodsuk
+	        University of Texas at Arlington
+
+				May 7, 2012
+
+ -o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-
+
+DISCLAIMER: ALL INFORMATION, SOFTWARE, DOCUMENTATION, AND DATA ARE PROVIDED "AS-IS" BY CHALEARN, A CALIFORNIA NON-FOR-PROFIT. THE AUTHORS DISCLAIM ANY EXPRESSED OR IMPLIED WARRANTIES INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR ANY PARTICULAR PURPOSE, AND THE WARRANTY OF NON-INFRIGEMENT OF ANY THIRD PARTY'S INTELLECTUAL PROPERTY RIGHTS. IN NO EVENT SHALL The AUTHORS OR OTHER CHALLENGE ORGANIZERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF DATA, SOFTWARE, DOCUMENTS, MATERIALS, PUBLICATIONS, OR INFORMATION MADE AVAILABLE FOR THE CHALLENGE. 
+
+ -o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-
+
+This directory contains image alignment annotations for the development sets devel01 to devel20.
+The file image_alignment.mat contains the annotations in Matlab format.
+The annotations are also available in CSV format from image_alignment.csv.
+
+To look at a random subset of files, a Matlab program is available: 
+>> alignment_test('image_alignment', data_dir);
+where data_dir is a directory containing the development batches devel01 to devel20.
+
+ -o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-
+
+Matlab format:
+=============
+There are 2 structures in the image_alignment.mat file, of dimentions the number of frames annotated:
+
+==> alignment_annotation: contains transformation variables with respect to an origin in the upper left corner
+	struct alignment_annotation {
+		translate_x;
+		translate_y;
+		scale_x;
+		scale_y;
+	}
+See LOOK_AT_ME.jpg for an interpretation of the parameters.
+	
+==> alignment_labels: contains frame origin information	struct labels {
+		dataset_name % the batch name
+		videos       % the movie number in the batch (1 to 47)
+		frame        % the frame number in the movie
+	}
+	
+	For example, if alignment_labels(5) = struct( 'dataset_name', 'devel09', 'videos', 11, 'frame', 21)
+	It states that in alignment_annotation(5), the translation coordinated were obtained for devel09/K_11, frame#21
+	
+	So far, there're 260 frames annotated
+
+ -o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-
+
+CSV format:
+==========
+Each line in the matrix corresponds to a frame. The columns correspond to:
+dataset_name -- one of the batches devel01 through devel20
+videos       -- movie number in a batch (1-47)   
+frame        -- frame number in the video
+translate_x  -- x translation
+translate_y  -- y translation
+scale_x      -- x scaling
+scale_y      -- y scaling
+

@@ -1,0 +1,60 @@
+
+            	TEMPORAL SEGMENTATION ANNOTATIONS
+                 
+      ONE-SHOT-LEARNING CHALEARN GESTURE CHALLENGE
+
+     http://gesture.chalearn.org -- events@chalearn.org
+    
+       Authors: Vassilis Athitsos and Pat Jangyodsuk
+	        University of Texas at Arlington
+
+		February 24 , 2012
+
+ -o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-
+
+DISCLAIMER: ALL INFORMATION, SOFTWARE, DOCUMENTATION, AND DATA ARE PROVIDED "AS-IS" BY CHALEARN, A CALIFORNIA NON-FOR-PROFIT. THE AUTHORS DISCLAIM ANY EXPRESSED OR IMPLIED WARRANTIES INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR ANY PARTICULAR PURPOSE, AND THE WARRANTY OF NON-INFRIGEMENT OF ANY THIRD PARTY'S INTELLECTUAL PROPERTY RIGHTS. IN NO EVENT SHALL The AUTHORS OR OTHER CHALLENGE ORGANIZERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF DATA, SOFTWARE, DOCUMENTS, MATERIALS, PUBLICATIONS, OR INFORMATION MADE AVAILABLE FOR THE CHALLENGE. 
+
+ -o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-
+
+This directory contains temporal segmentation for the development sets devel01 to devel20.
+The sub-directory tempo_segment contains the annotations in Matlab format.
+The annotations are also available in CSV format from tempo_segment.csv.
+
+To browse through the files, a Matlab program is available: 
+>> show_segment('tempo_segment', data_dir);
+where data_dir is a directory containing the development batches devel01 to devel20.
+
+ -o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-
+
+Matlab format:
+=============
+Each develxx.mat file contains two variables: saved_annotation and truth_labels
+
+==> saved annotation is cell array of dimensions (47,1). Each entry correspond to one video in a given batch. 
+In each cell, there is an array of size (number of gestures in that video, 2) 
+where the rows correspond to gesture segments, the first column is the start frame and the second one is the end frame.
+	For example. Assuming that saved_annotation{7} is
+			3   12
+			17  25
+			
+	It means that in K_7.avi there are 2 gesture segments. The first one starts at frame#3 and end at frame#12 and the second one start at frame#17 to #25.
+	
+==> truth_labels is the true class labels. It is cell array of dimension (47,1). 
+Each cell corresponds to a video. A vector size of (number of gestures, 1) is stored in each cell. 
+KNOWN ISSUES
+	There are some videos for which the number of gesture segments does not match the number of truth labels.
+	devel02 - K_45. Reason: the video is corrupted.
+	devel20 - K_19. Reason: the number of given class labels is 4. However, there're only 3 gestures in the video.
+
+ -o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-
+
+CSV format:
+==========
+Each line in the matrix corresponds to a gesture segment. The columns correspond to:
+dataset_name -- one of the batches devel01 through devel20
+videos       -- movie number in a batch (1-47)   
+gestures     -- gesture segment numner (1-5)
+labels       -- truth labels
+Start        -- start frame
+End          -- end frame
+	      

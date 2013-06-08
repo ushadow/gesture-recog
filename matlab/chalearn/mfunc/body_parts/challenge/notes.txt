@@ -1,0 +1,62 @@
+- for chinese numbers: 11 classes, handshapes
+skin detection, face detection, or chamfer distance
+
+- diving signals 1,2,3,4: (9, 10, 10, 9) classes.
+motion energy ok, but spotting? perhaps dynamic programming with motion features?
+
+- helicopter: 10 classes, ONLY 9 CLASSES USED, motion
+
+- italian: 11 classes, limited motion
+
+- mudra1: 10 classes, handshapes
+
+- mudra2: 9 classes, handshapes, complex background, no face
+
+- music notes: 8 classes, handshapes
+
+- referee volleyball 1, 2: (9, 8) classes
+movement + hold
+
+- surgeon: 9 classes, handshapes
+
+- taxi: 10 classes, some palm motion, some static handshapes
+
+- tractor: 11 classes, motion
+
+-------------------------------------------------------
+
+notes: in addition to dataset name, functions should take in user and date, perhaps
+
+hand and mirrors are currently ignored
+
+-------------------------------------------------------
+
+
+helicopter: 
+
+normalized dtw on normalized skin or motion images
+
+training: compute scores among all models, so that we figure out thresholds.
+
+test: ?
+
+extract_model, gives a sequence of normalized motion images.
+
+full_scores(motion1, motion2)
+
+partial_scores(motion1, motion2) (for spotting)
+
+dataset: 
+- training filenames/classes
+- test filenames/classes
+
+models:
+- class name, features
+
+make_dataset
+
+extract models
+compute thresholds
+run test
+
+

@@ -1,0 +1,83 @@
+
+
+            	DATA BODY PART ANNOTATIONS
+                 
+      ONE-SHOT-LEARNING CHALEARN GESTURE CHALLENGE
+
+     http://gesture.chalearn.org -- events@chalearn.org
+    
+       Authors: Vassilis Athitsos and Pat Jangyodsuk
+	        University of Texas at Arlington
+
+		February 24 , 2012
+
+ -o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-
+
+DISCLAIMER: ALL INFORMATION, SOFTWARE, DOCUMENTATION, AND DATA ARE PROVIDED "AS-IS" BY CHALEARN, A CALIFORNIA NON-FOR-PROFIT. THE AUTHORS DISCLAIM ANY EXPRESSED OR IMPLIED WARRANTIES INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR ANY PARTICULAR PURPOSE, AND THE WARRANTY OF NON-INFRIGEMENT OF ANY THIRD PARTY'S INTELLECTUAL PROPERTY RIGHTS. IN NO EVENT SHALL The AUTHORS OR OTHER CHALLENGE ORGANIZERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF DATA, SOFTWARE, DOCUMENTS, MATERIALS, PUBLICATIONS, OR INFORMATION MADE AVAILABLE FOR THE CHALLENGE. 
+
+ -o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-
+
+This directory contains a first release of manual annotations.
+A subset of the frames drawn from the batches devel01-20 were manually labeled for body parts.
+
+The annotations are provided is two formats: Matlab and CSV
+
+To read the Matlab format, the program show_annot may be used.
+	Usage: show_annot('body_parts', data_dir);
+data_dir is the directory where batches devel01, ... devel20 are found.
+
+ -o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-
+
+Matlab format:
+=============
+body_parts.mat contains two variables: labels and skeleton_annotation
+	
+==> labels: a struct array storing information about the frames selected for annotation.
+
+labels(frame_id).dataset_name ---- e.g. devel01
+labels(frame_id).videos       ---- movie number xxx of K_xxx.avi
+labels(frame_id).frame        ---- frame number in the movie
+
+For example, if labels(3) is
+	dataset_name:	'devel07'
+	videos:			14
+	frame:			52	
+This means that the third annotated frame comes from K_14.avi in devel07 dataset and the frame number in the movie is 52.
+	
+==> skeleton_annotation: an array size of dimension (number of frames * 7, 7). Rows corresponds to one annotation point and columns are properties as following
+
+	Frame_ID		Body_part_ID		Uncertain		Left		Top		Width		Height
+	
+		Frame_ID is a pointer into the labels struct array (the number of unique values of Frame_ID is the number of lines of labels)
+		
+		Body_part_ID: The body part ID as follows;
+				1 : Right hand
+				2 : Left hand
+				3 : Face
+				4 : Right shoulder
+				5 : Left shoulder
+				6 : Right elbow
+				7 : Left elbow
+		
+		Uncertain: A flag indicates if the annotated point is partially visible. For example, the body part might be covered by other objects or it might go out of frame.
+			1 : Uncertain, 0 : Certain
+			
+		Left, Top, Width, Height are the bounding box properties: [Left, Top] are the x and y coordinates of the top left corner of the box.
+		
+	Example, assuming that one row of skeleton_annotation contains
+	
+	17		5		1		14		20		50		50
+	
+	means that at frame identified as labels(17), the left shoulder (5) is marked as a bounding box where [left right top bottom ] = [14 64 20 70]. Also, the left shoulder is partially visible.
+
+IMPORTANT: You MUST translate the coordinate of the annotated position by [-40, -40]. This is because the annotation software allows users to mark the position beyond the image frame. 
+So, the image origin point in the annotated coordinate system is actually (40, 40) not (0,0). After translation, some annotation coordinates may be negative.
+
+ -o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-
+
+CSV format:
+==========
+body_parts.csv contains a table with columns
+dataset_name videos Frame_ID Body_part_ID Uncertain_flag Left Top Width Height
+with the same meaning as the Matlab format.
+

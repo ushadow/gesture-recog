@@ -1,0 +1,8 @@
+*.RData
+*.Rhistory
+*~
+*.swp
+tags
+*.asv
+data
+matlab/chalearn/Examples
