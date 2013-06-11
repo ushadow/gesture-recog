@@ -1,4 +1,4 @@
-function H = viewhand(data, startNDX, nrow, ncol)
+function H = viewimage(data, startNDX, nrow, ncol)
 % VIEWHAND displays hand images for one sequence.
 % 
 % H = viewhand(data, startNDX, nToDispaly)

@@ -1,4 +1,4 @@
-function standardized = standardizefeature(data, param, varargin)
+function standardized = standardizefeature(X, param, varargin)
 % Args
 % - data: cell array of matrices.
 %
@@ -16,17 +16,17 @@ for i = 1 : 2 : length(varargin)
   end
 end
 
-if isfield(data, 'Tr')
-  train = data.Tr;
+if isfield(X, 'Tr')
+  train = X.Tr;
 else
-  train = data;
+  train = X;
 end
 
 mat = cell2mat(train); % Each column is a feature vector.
 mat = mat(1 : param.nprincomp, :);
 [matTrain, mu, sigma2] = standardize(mat);
 
-if isfield(data, 'Tr')
+if isfield(X, 'Tr')
   standardized.Tr = mat2cellarray(matTrain, train);
 else
   standardized = matTrain;
@@ -35,12 +35,12 @@ end
 dataType = {'Va', 'Te'};
 for i = 1 : length(dataType)
   type = dataType{i};
-  if isfield(data, type)
-    mat = cell2mat(data.(type));
+  if isfield(X, type)
+    mat = cell2mat(X.(type));
     mat = mat(1 : param.nprincomp, :);
     standardized.(type) = standardize(mat, mu, sigma2);
     if ~retMat
-      standardized.(type) = mat2cellarray(standardized.(type), data.(type));
+      standardized.(type) = mat2cellarray(standardized.(type), X.(type));
     end
   end
 end

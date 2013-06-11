@@ -51,21 +51,22 @@ function R = runexperiment(param, foldNDX, batchNDX, data)
   if param.returnFeature
     data.X = [X.Tr X.Va];
     R = data;
-  end
+  else
 
-  % Step 3: Train and test model, get prediction on all three splits
-  if ~isempty(param.train)
-    R.learnedModel = param.train(Y.Tr, X.Tr, param);
-  end
-  
-  if ~isempty(param.inference)
-    R.prediction = param.inference(Y, X, R.learnedModel, param);
-  end
+    % Step 3: Train and test model, get prediction on all three splits
+    if ~isempty(param.train)
+      R.learnedModel = param.train(Y.Tr, X.Tr, param);
+    end
 
-  % Step 5: Evaluate performance of prediction
-  if ~isempty(param.evalFun)
-    R.stat = evalclassification(Y, R.prediction, param.evalName, ...
-                                param.evalFun);
+    if ~isempty(param.inference)
+      R.prediction = param.inference(Y, X, R.learnedModel, param);
+    end
+
+    % Step 5: Evaluate performance of prediction
+    if ~isempty(param.evalFun)
+      R.stat = evalclassification(Y, R.prediction, param.evalName, ...
+                                  param.evalFun);
+    end
   end
 end
 

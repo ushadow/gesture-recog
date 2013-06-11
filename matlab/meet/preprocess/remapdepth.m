@@ -1,7 +1,7 @@
 function X = remapdepth(X, ~)
 %
 % Args:
-% - v: image vector or image matrix
+% - X: image vector or image matrix
 
 if isfield(X, 'Tr')
   train = X.Tr;

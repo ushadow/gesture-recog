@@ -7,21 +7,21 @@ function X = hogfeature(X, param)
 %   - sBin
 %   - oBin
 
-imageWidth = sqrt(param.imageSize);
-startHandFetNDX = param.startHandFetNDX;
+imageWidth = param.imageWidth;
+startImgFeatNDX = param.startImgFeatNDX;
 
 if isfield(X, 'Tr')
-  X.Tr = hoghand1(X.Tr, startHandFetNDX, imageWidth, param);
+  X.Tr = hoghand1(X.Tr, startImgFeatNDX, imageWidth, param);
 else
-  X = hoghand1(X, startHandFetNDX, imageWidth, param);
+  X = hoghand1(X, startImgFeatNDX, imageWidth, param);
 end
 
 if isfield(X, 'Va')
-  X.Va = hoghand1(X.Va, startHandFetNDX, imageWidth, param);
+  X.Va = hoghand1(X.Va, startImgFeatNDX, imageWidth, param);
 end
 
 if isfield(X, 'Te')
-  X.Te = hoghand1(X.Te, startHandFetNDX, imageWidth, param);
+  X.Te = hoghand1(X.Te, startImgFeatNDX, imageWidth, param);
 end
 
 end

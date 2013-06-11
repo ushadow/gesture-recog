@@ -2,6 +2,7 @@ function H = viewhog(hogData, imageWidth, nimage)
 %%
 % ARGS
 % hogData - Matrix of hog data.
+% imageWidth - image width of the hog image.
 
 NCOL = 3;
 

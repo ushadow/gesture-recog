@@ -29,10 +29,10 @@ else
 end
 
 % Number of principal components to use for image.
-startHandFetNDX = param.startHandFetNDX;
-k = param.nprincomp - param.startHandFetNDX + 1;
+startImgFeatNDX = param.startImgFeatNDX;
+k = param.nprincomp - param.startImgFeatNDX + 1;
 
-[A, mean] = normalizefeature(train, startHandFetNDX);
+[A, mean] = normalizefeature(train, startImgFeatNDX);
 
 % Let u be the eigenhand. We want to find AA' * u = lamda * u, but AA' is a 
 % large matrix because the dimension of the feature vector is probabily 
@@ -68,7 +68,7 @@ else
   end
   [pc, sortedEigVal] = getprincomp(eigVec, eigVal, k);
 end
-newFeature = updatedata(train, pc, startHandFetNDX, ...
+newFeature = updatedata(train, pc, startImgFeatNDX, ...
                         'normalized', A);
 
 if isfield(X, 'Tr')
@@ -78,11 +78,11 @@ else
 end
 
 if isfield(X, 'Va')
-  newX.Va = updatedata(X.Va, pc, startHandFetNDX, 'mean', mean);
+  newX.Va = updatedata(X.Va, pc, startImgFeatNDX, 'mean', mean);
 end
 
 if isfield(X, 'Te')
-  newX.Te = updatedata(X.Te, pc, startHandFetNDX, 'mean', mean);
+  newX.Te = updatedata(X.Te, pc, startImgFeatNDX, 'mean', mean);
 end
 
 end

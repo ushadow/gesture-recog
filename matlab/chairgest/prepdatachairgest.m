@@ -12,15 +12,15 @@ function [data, dataParam] = prepdatachairgest(dirname, userId)
 %   - X: a cell array of features.
 %   - split: a 2 x 1 cell array with one fold evalutation.
 userId = sprintf('PID-%010d', userId);
-dirname = [dirname filesep userId];
-session = getsession(dirname);
+piddir = [dirname filesep userId];
+session = getsession(piddir);
 data.userId = userId;
 data.Y = {};
 data.X = {};
 
 paramInitialized = false;
 for i = 1 : 2
-  sessionDir = fullfile(dirname, session{i});
+  sessionDir = fullfile(piddir, session{i});
   logdebug('prepdatachairgest', 'sessionDir', sessionDir);
   batch = getbatchname(sessionDir);
   
