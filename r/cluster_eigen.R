@@ -1,21 +1,21 @@
 library(mclust)
 library(plyr)
 
-# Clusters the data.
+# Clusters the data with different number of features.
 #
-# Args:
-# - data: each row is a data point.
+# ARGS
+# data  - each row is a data point.
 #
 # Return:
 # A list of mclust model.
-Cluster <- function(data, num.features, G = 1 : 20) {
-  lapply(num.features, Cluster1, data = data, G = G)
+Cluster <- function(data, num.features, G = 1 : 20, modelNames = c('VVV')) {
+  lapply(num.features, Cluster1, data = data, G = G, modelNames = modelNames)
 }
 
-Cluster1 <- function(data, num.features, G) {
+Cluster1 <- function(data, num.features, G, modelNames) {
   # G: An integer vector specifying the numbers of mixture components (clusters) for which the BIC 
   # is to be calculated. The default is G=1:9. 
-  mclust <- Mclust(data[, 1 : num.features], G = G)
+  mclust <- Mclust(data[, 1 : num.features], G = G, modelNames = modelNames)
 }
 
 # Plot loglik or BIC with different number of features chosen.
@@ -83,22 +83,24 @@ AveCov <- function(cov) {
   mean(mean)
 }
 
-# Args:
+# ARGS
 # nfet: number of features to consider.
-SaveClusterMean <- function(prefix, nfold, G, nfet) {
-  sapply(1 : nfold, SaveClusterMean1, G = G, nfet = nfet, prefix = prefix)
+SaveClusterMean <- function(prefix, nfold, G, nfet, modelNames) {
+  sapply(1 : nfold, SaveClusterMean1, G = G, nfet = nfet, prefix = prefix, 
+         modelNames = modelNames)
 }
 
-SaveClusterMean1 <- function(fold, G, nfet, prefix) {
+SaveClusterMean1 <- function(fold, G, nfet, prefix, modelNames) {
   input.filename <- paste(prefix, fold, sep = '-')
   input.filename <- paste(input.filename, '.csv', sep = '')
   data <- read.table(input.filename, sep = ',')
   num.row <- nrow(data)
-  data <- data[seq(1, num.row, 3),  1 : nfet]
-  cluster <- Mclust(data, G)
+  data <- data[,  1 : nfet]
+  cluster <- Mclust(data, G, modelNames = modelNames)
+  # Last index of '-'.
   last.index <- regexpr("\\-[^\\-]*$", prefix)
   prefix <- substr(prefix, 0, last.index - 1)
-  output.filename <- paste(prefix, nfet, folde, 'mean', G, 
+  output.filename <- paste(prefix, nfet, fold, 'mean', G, 
                            sep = '-')
   output.filename <- paste(output.filename, '.csv', sep = '')
   print(output.filename)
