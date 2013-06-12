@@ -1,27 +1,24 @@
-function H = viewimage(data, startNDX, nrow, ncol)
-% VIEWHAND displays hand images for one sequence.
+function H = viewimage(data, startNDX, NDX, ncol)
+%% VIEWIMAGE displays hand images for one sequence.
 % 
 % H = viewhand(data, startNDX, nToDispaly)
 %
 % Args
-% data: N X M matrix where N is the number of pixels in the image and M is 
-%       number of frames.
-N = size(data, 1);
+% data - d X n matrix where d is the number of pixels in the image and n is 
+%        number of frames.
 
-if isempty(startNDX)
-  startNDX = 1;
-end
-
-nimage = nrow * ncol;
-data = data(startNDX : N, 1 : nimage);  
-
-imageWidth = sqrt(N - startNDX + 1);
+d = size(data, 1);
+data = data(startNDX : d, NDX);  
+imageWidth = sqrt(d - startNDX + 1);
+nimage = length(NDX);
+nrow = ceil(nimage / ncol);
 
 H = figure();
 
 for j = 1 : nimage
-  hand = reshape(data(:, j), imageWidth, imageWidth)';
-  image = mat2gray(hand);
+  % Transposed image.
+  image = reshape(data(:, j), imageWidth, imageWidth)';
+  image = mat2gray(image);
   subplot(nrow, ncol, j);
   imshow(image);
 end
