@@ -7,8 +7,6 @@ function [newX, sortedEigVal, pc] = pcaimage(X, param)
 % -X: observed data or a struct with Tr, Va and Te data. Each 
 %     data is a cell array and each cell is a feature vector.
 % -param: a struct with the following fields
-%   -nhandFet: number of hand features should be included in the result.
-%               This determineds the number of eigen hand used.
 %   -startHandFetNDX: the start index of the hand image in the feature 
 %                     vector.
 %

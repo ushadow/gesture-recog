@@ -1,5 +1,5 @@
 function standardized = standardizefeature(X, param, varargin)
-% Args
+% ARGS
 % - data: cell array of matrices.
 %
 % Return

@@ -7,8 +7,8 @@ function ahmm = trainahmm(Y, X, param)
 %% Initialize AHMM parameters.
 if param.initFromFile
   % Read mean data.
-  preprocessName = preprocessname(param.preprocess);
-  filename = sprintf('%s-%d-%d-mean-%d.csv', preprocessName, param.nprincomp, ...
+  %preprocessName = preprocessname(param.preprocess);
+  filename = sprintf('%s-%d-%d-mean-%d.csv', 'selectfeature', param.nprincomp, ...
                      param.fold, param.nS);
   fullFilePath = fullfile(param.dir, param.userId, filename);
   logdebug('trainhmm', 'read file', fullFilePath);

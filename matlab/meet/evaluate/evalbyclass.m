@@ -50,8 +50,18 @@ end
 function stat = evaluate(Ytrue, Ystar, cat, datatype)
 totalCount = zeros(1, 4); % [tp fp tn fn]
 for i = 1 : length(Ytrue)
-  for j = 1 : size(Ytrue{i}, 2)
-    count = quantify(Ytrue{i}(1, j), Ystar{i}(1, j), cat);
+  Ytrue1 = Ytrue{i};
+  if iscell(Ytrue1)
+    Ytrue1 = cell2mat(Ytrue1);
+  end
+  
+  Ystar1 = Ystar{i};
+  if iscell(Ystar1)
+    Ystar1 = cell2mat(Ystar1);
+  end
+  
+  for j = 1 : size(Ytrue1, 2)
+    count = quantify(Ytrue1(1, j), Ystar1(1, j), cat);
     totalCount = totalCount + count;
   end
 end

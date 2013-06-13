@@ -1,22 +1,18 @@
-function H = viewhog(hogData, imageWidth, nimage)
+function H = viewhog(hogData, imageWidth, NDX, ncol)
 %%
 % ARGS
 % hogData - Matrix of hog data.
 % imageWidth - image width of the hog image.
 
-NCOL = 3;
-
-NDX = floor(linspace(1, size(hogData, 2), nimage)); 
 hogData = hogData(:, NDX);  
+nimage = length(NDX);
+nrow = ceil(nimage / ncol);
 
 H = figure();
-
-nrow = ceil(nimage / NCOL);
-
 for j = 1 : nimage
   hog = reshape(hogData(:, j), imageWidth, imageWidth, []);
   image = hogDraw(hog, 1);
-  subplot(nrow, NCOL, j);
+  subplot(nrow, ncol, j);
   imshow(image');
 end
 end

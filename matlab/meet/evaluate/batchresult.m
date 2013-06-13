@@ -1,17 +1,20 @@
-function batchRes = batchresult(job, data, hyperParam)
+function batchRes = batchresult(job, data, hyperParam, ntask)
 %% BATCHRESULT computes and prints batch results.
 %
 % batchRes = batchresult(res, dataType, evalName)
-% Args:
-% - jobRes: cell array, batch results returned from parallel job running.
-% - ntask: nbatc x 2 matrix, number of tasks per batch represented as
-%          number of models (rows) and number of folds (cols).
-% - dataType: cell array, data types e.g. {'Tr', 'Va', 'Te}.
-% - evalName: cell array, evaluation names e.g. {'Error', 'Leven'}.
+% ARGS
+% job   - cell array or a parallel job.
+% ntask - nbatc x 2 matrix, number of tasks per batch represented as
+%         number of models (rows) and number of folds (cols). Only used
+%         when job is a cell array.
 
-jobRes = arrayfun(@(x) x.OutputArguments{1}, job.Tasks, ...
-                  'UniformOutput', false);
-ntask = job.JobData.ntask;
+if isa(job, 'parallel.job.CJSIndependentJob')
+  jobRes = arrayfun(@(x) x.OutputArguments{1}, job.Tasks, ...
+                    'UniformOutput', false);
+  ntask = job.JobData.ntask;
+else
+  jobRes = job;
+end
 
 dataType = {'Tr', 'Va'};
 evalName = hyperParam.evalName;

@@ -1,8 +1,8 @@
 function res = runexperimentbatch(batch, hyperParam, jobParam)
 % RUNEXPERIMENTBATCH runs experiment for each batch and reports data.
 %
-% Args:
-% - batch: cell array of data.
+% ARGS
+% batch   - cell array of data.
 nBatch = length(batch);
 
 startTime=datestr(now, 'yyyy_mm_dd_HH_MM');
@@ -56,7 +56,7 @@ else
   % Report results.
   fprintf('\n==========================================\n'); 
 
-  res = batchresult(job, hyperParam);
+  res = batchresult(job, batch, hyperParam);
 
   fprintf('Time(s) used\t');
   fprintf('%5.2f\n', toc(tid)); 

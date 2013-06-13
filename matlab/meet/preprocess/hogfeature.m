@@ -1,6 +1,7 @@
 function X = hogfeature(X, param)
 %
-% Args:
+% ARGS
+% X   - Feature structure or cell array.
 % - param: structure with fields:
 %   - startHandFetNDX
 %   - imageSize
