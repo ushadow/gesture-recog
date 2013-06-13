@@ -30,7 +30,7 @@ PlotFeatureComp <- function(num.features, clusters) {
        ylab = 'loglik / bic', xlab = 'number of features',  pch = pch[1]);
   lines(num.features, bic, ylim = ylim, type = 'o', col = linecols[2],
         pch = pch[2]) 
-  legend('bottomright', legend = c('loglik', 'bic'), col = linecols, lty = 1,
+  legend('bottomleft', legend = c('loglik', 'bic'), col = linecols, lty = 1,
          pch = pch)
 }
 
@@ -40,6 +40,19 @@ PlotBicVsComponent <- function(num.components, cluster) {
        xlab = "number of clusters", ylab = 'BIC')
   title <- sprintf("Model name = %s", modelName) 
   title(title)
+}
+
+PlotBic <- function(bic) {
+  xlab <- as.numeric(rownames(bic))
+  nrow <- nrow(bic)
+  models = c('VVV', 'VEV', 'VEI')
+  ylim <- c(min(bic[, models], na.rm = TRUE), 
+            max(bic[, models], na.rm = TRUE))
+  old.par <- par(xaxt = "n")
+  plot(bic, G = 1 : nrow, modelNames = models,  ylim = ylim, 
+       lengendArgs = list(x = "bottomright", ncol = 5))
+  par(old.par) 
+  axis(side = 1, at = 1 : nrow, labels = xlab)
 }
 
 SaveClassification <- function(clusters, filename) {
@@ -84,8 +97,13 @@ AveCov <- function(cov) {
 }
 
 # ARGS
-# nfet: number of features to consider.
-SaveClusterMean <- function(prefix, nfold, G, nfet, modelNames) {
+# nfet        - number of features to consider.
+# modelNames  - a vector of model names.
+SaveClusterMean <- function(pid, dirname, prefix, G, nfet, nfold = 1,
+                            modelNames = c('VVV')) {
+  pid <- sprintf("PID-%010d", pid)
+  prefix <- file.path(dirname, pid, prefix)
+  print(prefix)
   sapply(1 : nfold, SaveClusterMean1, G = G, nfet = nfet, prefix = prefix, 
          modelNames = modelNames)
 }
@@ -94,7 +112,6 @@ SaveClusterMean1 <- function(fold, G, nfet, prefix, modelNames) {
   input.filename <- paste(prefix, fold, sep = '-')
   input.filename <- paste(input.filename, '.csv', sep = '')
   data <- read.table(input.filename, sep = ',')
-  num.row <- nrow(data)
   data <- data[,  1 : nfet]
   cluster <- Mclust(data, G, modelNames = modelNames)
   # Last index of '-'.
@@ -104,5 +121,6 @@ SaveClusterMean1 <- function(fold, G, nfet, prefix, modelNames) {
                            sep = '-')
   output.filename <- paste(output.filename, '.csv', sep = '')
   print(output.filename)
+  print(cluster$modelName)
   write.csv(cluster$parameters[[3]], output.filename, row.names = FALSE)
 }
