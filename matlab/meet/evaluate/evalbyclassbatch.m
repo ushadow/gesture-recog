@@ -2,7 +2,8 @@ function aveRes = evalbyclassbatch(data, batchRes, className, model)
 %% EVALBYCLASSBATCH evaluate results by class on the total data batch.
 % ARGS
 % data      - batch data.
-% batchRes  - batch result.
+% batchRes  - cell array. Eeah cell array is also a cell array of results
+%             for different model and fold.
 
 dataType = {'Tr', 'Va'};
 value = {'Precision', 'Recall', 'F1'};

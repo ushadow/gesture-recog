@@ -1,15 +1,25 @@
-function h = imdisplay( im, h, ttl )
+function h = imdisplay(im, varargin)
 %h = imdisplay( im, h, ttl )
 % Display grayscale images.
 
 % Isabelle Guyon -- isabelle@clopinet.com -- April 2012
 
-if nargin<3
-    ttl=inputname(1);
-    ttl(ttl=='_')=' ';
+ttl = ' ';
+xLabel = ' ';
+yLabel = ' ';
+
+for i = 1 : 2 : length(varargin)
+  switch varargin{i}
+    case 'ttl'
+      ttl = varargin{i + 1};
+    case 'xlabel'
+      xLabel = varargin{i + 1};
+    case 'ylabel'
+      yLabel = varargin{i + 1};
+  end
 end
-if nargin<2, h=figure; else figure(h); end
-set(h, 'Name', ttl);
+
+h = figure;
 
 [ISKINECT, im]=is_depth(im);
 
@@ -26,3 +36,5 @@ if ISKINECT
 end
 
 title(ttl, 'Fontsize', 16, 'FontWeight', 'bold'); 
+xlabel(xLabel, 'Fontsize', 16);
+ylabel(yLabel, 'Fontsize', 16);

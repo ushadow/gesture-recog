@@ -1,4 +1,4 @@
-function X = denoisebyclose(X, param)
+function X = denoise(X, param)
 % DENOISE removes the black holes due to aliasing.
 %
 % ARGS
@@ -30,10 +30,10 @@ for i = 1 : nseq
   for j = 1 : size(seq, 2)
     image = seq(startImgFeatNDX : end, j);
     imageWidth = sqrt(length(image));
-    image = reshape(image, imageWidth, imageWidth)';
+    image = reshape(image, imageWidth, imageWidth);
     image = imclose(image, se);
-    res = medfilt2(image, [3 3])';
-    seq(startImgFeatNDX : end, j) = res(:);
+    %image = medfilt2(image, [3 3]);
+    seq(startImgFeatNDX : end, j) = image(:);
   end
   data{i} = seq;
 end  

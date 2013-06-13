@@ -1,28 +1,28 @@
 function hyperParam = hyperparam(paramFromData, varargin)
 
 % Default values.
-hyperParam.nS = 36; % number of hidden states S.
+hyperParam.nS = 50; % number of hidden states S.
 hyperParam.L = 5;
-hyperParam.nprincomp = 32; % number of principal components.
+hyperParam.nprincomp = 11; % total number of principal components.
 hyperParam.XcovType = 'diag';
 hyperParam.resetS = false;
 hyperParam.inferMethod = 'fixed-interval-smoothing';
 hyperParam.train = @trainahmm;
 hyperParam.inference = @inferenceahmm;
 hyperParam.preprocess = {@selectfeature};
-hyperParam.maxIter = 10;
+hyperParam.maxIter = 7;
 hyperParam.evalName = {'Error', 'Leven'};
 hyperParam.evalFun = {@errorperframe, @levenscore};
 hyperParam.Gclamp = 1;
-hyperParam.thresh = 0.001;
+hyperParam.thresh = 0.1;
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.Fobserved = 1;
 hyperParam.initFromFile = true;
 hyperParam.returnFeature = false;
-hyperParam.dataFile = 'dsPca';
+hyperParam.dataFile = 'dsSalientStd';
 hyperParam.useGpu = false;
-hyperParam.imageWidth = 100;
+hyperParam.imageWidth = 64;
 
 hyperParam.startImgFeatNDX = paramFromData.startImgFeatNDX;
 hyperParam.dir = paramFromData.dir;

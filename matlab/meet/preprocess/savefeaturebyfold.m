@@ -2,7 +2,9 @@ function savefeaturebyfold(data, fold, param)
 % SAVEFEATURE saves the standardized features.
 %
 % ARGS
-% - data: prepared data.
+% data    - prepared data.
+% param   - a struct with field 'dir' which is the director to save the
+%           feature.
 
 % Different fold has different standardized feature.
 % Only use training data.
