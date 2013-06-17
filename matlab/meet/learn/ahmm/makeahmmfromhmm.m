@@ -10,7 +10,7 @@ hmm = hmm.model;
 param.nG = length(hmm.prior);
 param.Xmean = cat(2, hmm.mu{:});
 [param.nX, param.nS] = size(param.Xmean);
-param.Xcov = repmat(eye(param.nX, param.nX), [1, 1, param.nS]);
+param.Xcov = cat(3, hmm.Sigma{:});
 
 param.nF = 2;
 param.onodes = {'X1'};

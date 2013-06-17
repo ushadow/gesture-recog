@@ -5,8 +5,7 @@ function [prior, transmat, term, mu, Sigma] = inithmmparam(data, nS)
 %         observation in ith sequence.
 % nS    - number of hidden states S.
 
-data = cell2mat(data);
-nX = size(data, 1); % Feature length.
+% Uniform initialization.
 prior = ones(nS, 1) / nS;
 transmat = ones(nS) / nS;
 term = ones(nS, 1) / nS;
@@ -29,7 +28,7 @@ term = ones(nS, 1) / nS;
 %     term(:) = 0.01; 
 % end
 
-[mu, assign] = kmeansFit(data', nS);
+[mu, assign] = initmean(data, nS);
 
 ndxSum = zeros(nS, 1);
 for i = 1 : nS
@@ -38,5 +37,6 @@ end
 [~, I] = sort(ndxSum);
 mu = mu(:, I);
 
+nX = size(mu, 1);
 Sigma = repmat(100 * eye(nX, nX), [1 1 nS]);
 end

@@ -1,9 +1,16 @@
-function cm = evalconfusion(dataBatch, batchRes)
+function cm = evalconfusion(batchData, batchRes, nmodel)
+%
+% ARGS
+% batchData - cell array of all data.
+% batchRes  - cell array of all results.
+
+nbatch = numel(batchData);
+nfold = size(batchData{1}.split, 2);
+batchRes = groupres(batchRes, nbatch, nmodel, nfold); 
 
 cm = zeros(13, 13);
-nbatch = numel(dataBatch);
 for i = 1 : nbatch
-  Y = dataBatch{i}.Y;
+  Y = batchData{i}.Y;
   R = batchRes{i};
   nfold = size(R, 2);
   for j = 1 : nfold
@@ -21,7 +28,7 @@ function cm = evalOneFold(Ytrue, Ystar, cm)
 % - Ytrue: cell arrary of sequences.
 for i = 1 : length(Ytrue)
   for j = 1 : size(Ytrue{i}, 2)
-    cm(Ytrue{i}{1, j}, Ystar{i}{1, j}) = cm(Ytrue{i}{1, j}, Ystar{i}{1, j}) + 1; 
+    cm(Ytrue{i}(1, j), Ystar{i}(1, j)) = cm(Ytrue{i}(1, j), Ystar{i}(1, j)) + 1; 
   end
 end
 end

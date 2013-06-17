@@ -7,8 +7,8 @@ function batchRes = batchresult(job, data, hyperParam, ntask)
 % ntask - nbatc x 2 matrix, number of tasks per batch represented as
 %         number of models (rows) and number of folds (cols). Only used
 %         when job is a cell array.
-
-if isa(job, 'parallel.job.CJSIndependentJob')
+class(job)
+if ~iscell(job)
   jobRes = arrayfun(@(x) x.OutputArguments{1}, job.Tasks, ...
                     'UniformOutput', false);
   ntask = job.JobData.ntask;
@@ -16,33 +16,16 @@ else
   jobRes = job;
 end
 
-dataType = {'Tr', 'Va'};
-evalName = hyperParam.evalName;
-
 nbatch = size(ntask, 1);
-batchRes = containers.Map();
 nmodel = ntask(1, 1);
-
-res = cell(1, nbatch);
-taskNDX = 0;
-for i = 1 : nbatch
-  nrow = ntask(i, 1);
-  ncol = ntask(i, 2);
-  R = cell(nrow, ncol);
-  for r = 1 : nrow
-    for c = 1 : ncol
-      taskNDX = taskNDX + 1;
-      if ~isempty(jobRes(taskNDX))
-        R{r,c} = jobRes{taskNDX};
-      else
-        fprintf('empty result for batch %d', i);
-      end
-    end
-  end
-  res{i} = R;
-end
+nfold = ntask(1, 2);
+res = groupres(jobRes, nbatch, nmodel, nfold);
 
 %% Evaluate results for each model.
+dataType = {'Tr', 'Va'};
+evalName = hyperParam.evalName;
+batchRes = containers.Map();
+
 for m = 1 : nmodel
   disp(res{1}{m, 1}.param);
   fprintf('SetName\t');  

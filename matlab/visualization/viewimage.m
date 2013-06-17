@@ -1,5 +1,5 @@
 function H = viewimage(data, startNDX, NDX, ncol)
-%% VIEWIMAGE displays hand images for one sequence.
+%% VIEWIMAGE displays images for one sequence.
 % 
 % H = viewhand(data, startNDX, nToDispaly)
 %
