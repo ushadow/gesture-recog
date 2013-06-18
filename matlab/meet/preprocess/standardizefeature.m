@@ -1,10 +1,11 @@
-function standardized = standardizefeature(X, param, varargin)
+function standardized = standardizefeature(X, ~, varargin)
 % ARGS
 % - data: cell array of matrices.
 %
-% Return
+% RETURN
 % - standardized: if reMat is true, returns a matrix, otherwise returns a 
 %                 cell array.
+
 retMat = false;
 for i = 1 : 2 : length(varargin)
   switch varargin{i}
@@ -23,7 +24,6 @@ else
 end
 
 mat = cell2mat(train); % Each column is a feature vector.
-mat = mat(1 : param.nprincomp, :);
 [matTrain, mu, sigma2] = standardize(mat);
 
 if isfield(X, 'Tr')
@@ -37,7 +37,6 @@ for i = 1 : length(dataType)
   type = dataType{i};
   if isfield(X, type)
     mat = cell2mat(X.(type));
-    mat = mat(1 : param.nprincomp, :);
     standardized.(type) = standardize(mat, mu, sigma2);
     if ~retMat
       standardized.(type) = mat2cellarray(standardized.(type), X.(type));

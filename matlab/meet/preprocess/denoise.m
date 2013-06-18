@@ -5,8 +5,9 @@ function X = denoise(X, param)
 % data  - the feature data or a structure of feature data.
 % - param: hyperparameters. It should have the field startHandFetNDX.
 %
-% Return:
+% RETURN
 % - R: the result has the same structure as the input data.
+
 se = strel('square', 3);
 if isstruct(X)
   fn = fieldnames(X);

@@ -9,7 +9,7 @@ hyperParam.resetS = false;
 hyperParam.inferMethod = 'fixed-interval-smoothing';
 hyperParam.train = @trainahmm;
 hyperParam.inference = @inferenceahmm;
-hyperParam.preprocess = {@denoise @hogfeature @pcaimage @standardizefeature};
+hyperParam.preprocess = {@selectfeature @standardizefeature};
 hyperParam.maxIter = 7;
 hyperParam.evalName = {'Error', 'Leven'};
 hyperParam.evalFun = {@errorperframe, @levenscore};
@@ -23,6 +23,7 @@ hyperParam.returnFeature = false;
 hyperParam.dataFile = 'dsFull';
 hyperParam.useGpu = false;
 hyperParam.imageWidth = 256;
+hyperParam.selectedFeature = [2 : 7, 11 : 13];
 
 hyperParam.startImgFeatNDX = paramFromData.startImgFeatNDX;
 hyperParam.dir = paramFromData.dir;
