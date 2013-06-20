@@ -12,5 +12,5 @@ end
 end
 
 function X = selectfeature1(X, featureNDX)
-X = cellfun(@(x) x(1 : featureNDX, :), X, 'UniformOutput', false);
+X = cellfun(@(x) x(featureNDX, :), X, 'UniformOutput', false);
 end

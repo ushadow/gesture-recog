@@ -1,6 +1,6 @@
 function standardized = standardizefeature(X, ~, varargin)
 % ARGS
-% - data: cell array of matrices.
+% data  - cell array of matrices.
 %
 % RETURN
 % - standardized: if reMat is true, returns a matrix, otherwise returns a 
