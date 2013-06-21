@@ -51,9 +51,14 @@ if isfield(param, 'preprocess')
 end
 
 if param.returnFeature
-  data.X = [X.Tr X.Va];
+  data.X(split{1}) = X.Tr;
+  data.X(split{2}) = X.Va;
+  if ~isempty(split{3})
+    data.X(split{3}) = X.Te;
+  end
   R = data;
 else
+  
 %% Step 3: Train and test model, get prediction on all three splits
   if ~isempty(param.train)
     R.learnedModel = param.train(Y.Tr, X.Tr, param);

@@ -1,15 +1,18 @@
 function data = makedbninputdata(Y, X, ahmmParam)
-% CREATEINPUTDATA combines the label and feature together.
+%% MAKEDBNINPUTDATA combines the label and feature together.
 %
 % Args:
 % - Y: cell array of label data.
 % - X: cell array of feature data.
+
 data = cell(1, size(Y, 2));
 ss = ahmmParam.ss;
 for i = 1 : length(data)
   [nX, T] = size(X{i});
   data{i} = cell(ss, T);
   if any(ahmmParam.onodes == ahmmParam.G1)
+    size(data{i})
+    size(Y{i})
     data{i}(ahmmParam.G1, :) = num2cell(Y{i}(1, :));
   end
   if any(ahmmParam.onodes == ahmmParam.F1)

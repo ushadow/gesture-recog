@@ -1,7 +1,7 @@
 function hyperParam = hyperparam(paramFromData, varargin)
 
 % Default values.
-hyperParam.nS = 50; % number of hidden states S.
+hyperParam.nS = 45; % number of hidden states S.
 hyperParam.L = 16;
 hyperParam.nprincomp = 11; % total number of principal components.
 hyperParam.XcovType = 'diag';
@@ -10,7 +10,7 @@ hyperParam.inferMethod = 'fixed-interval-smoothing';
 hyperParam.train = @trainahmm;
 hyperParam.inference = @inferenceahmm;
 hyperParam.preprocess = {@selectfeature @standardizefeature};
-hyperParam.maxIter = 7;
+hyperParam.maxIter = 1;
 hyperParam.evalName = {'Error', 'Leven'};
 hyperParam.evalFun = {@errorperframe, @levenscore};
 hyperParam.Gclamp = 1;
@@ -18,9 +18,9 @@ hyperParam.thresh = 0.001;
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.Fobserved = 1;
-hyperParam.initFromFile = false;
+hyperParam.initMeanFromFile = true;
 hyperParam.returnFeature = true;
-hyperParam.dataFile = 'dsImu';
+hyperParam.dataFile = 'standardized';
 hyperParam.useGpu = false;
 hyperParam.imageWidth = 256;
 hyperParam.selectedFeature = [2 : 7, 11 : 13];
@@ -63,7 +63,7 @@ for i = 1 : length(hyperParam.nS)
     param.Fobserved = hyperParam.Fobserved;
     param.sBin = hyperParam.sBin;
     param.oBin = hyperParam.oBin;
-    param.initFromFile = hyperParam.initFromFile; 
+    param.initMeanFromFile = hyperParam.initMeanFromFile; 
     
     ndx = (i - 1) * length(hyperParam.L) + j;
     hyperParam.model{ndx} = param;

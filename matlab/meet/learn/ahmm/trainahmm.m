@@ -5,11 +5,11 @@ function ahmm = trainahmm(Y, X, param)
 % Y, X   - cell array of training data.
 
 %% Initialize AHMM parameters.
-if param.initFromFile
+if param.initMeanFromFile
   % Read mean data.
   %preprocessName = preprocessname(param.preprocess);
-  filename = sprintf('%s-%d-%d-mean-%d.csv', 'selectfeature', param.nprincomp, ...
-                     param.fold, param.nS);
+  filename = sprintf('%s-%d-%d-mean-%d.csv', 'selectfeature', ...
+                     size(X{1}, 1), param.fold, param.nS);
   fullFilePath = fullfile(param.dir, param.userId, filename);
   logdebug('trainhmm', 'read file', fullFilePath);
   imported = importdata(fullFilePath, ',', 1);
