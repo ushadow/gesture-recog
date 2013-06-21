@@ -1,8 +1,10 @@
 function res = runexperimentbatch(batch, hyperParam, jobParam)
-% RUNEXPERIMENTBATCH runs experiment for each batch and reports data.
+%% RUNEXPERIMENTBATCH runs experiment for each batch in paraleel and 
+%  reports data.
 %
-% ARGS
-% batch   - cell array of data.
+%  ARGS
+%  batch   - cell array of data.
+
 nBatch = length(batch);
 
 startTime=datestr(now, 'yyyy_mm_dd_HH_MM');
@@ -15,10 +17,8 @@ disp(hyperParam);
 
 % Run experiments.
 verbose = jobParam.verbose;
-if jobParam.parallel
-  jm = findResource('scheduler', 'type', 'local');
-  job = createJob(jm);
-end
+jm = findResource('scheduler', 'type', 'local');
+job = createJob(jm);
 
 ntask = zeros(nBatch, 2);
 
@@ -28,21 +28,19 @@ for i = 1 : nBatch
                                       job);
 end
 
-if jobParam.parallel,
-  % Set jobData (global variable to all tasks)    
-  if verbose, fprintf('Set job data...'); tid = tic(); end    
-  set(job, 'PathDependencies', strread(jobParam.path, '%s', ...
-      'delimiter', ';'));
-  jobData.ntask = ntask;
-  set(job, 'JobData', jobData);
-  if verbose, t = toc(tid); fprintf('Done setting data (%.2f s)\n', t); end
-  
-  % Submit and wait
-  if verbose, fprintf('Submit and wait...\n'); end    
-  submit(job);  
-  tid = tic();
-  waitForState(job, 'finished');
-end
+% Set jobData (global variable to all tasks)    
+if verbose, fprintf('Set job data...'); tid = tic(); end    
+set(job, 'PathDependencies', strread(jobParam.path, '%s', ...
+    'delimiter', ';'));
+jobData.ntask = ntask;
+set(job, 'JobData', jobData);
+if verbose, t = toc(tid); fprintf('Done setting data (%.2f s)\n', t); end
+
+% Submit and wait
+if verbose, fprintf('Submit and wait...\n'); end    
+submit(job);  
+tid = tic();
+waitForState(job, 'finished');
 
 % Destroy job
 if jobParam.destroy,

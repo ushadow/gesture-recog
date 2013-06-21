@@ -1,4 +1,4 @@
-function [gt, vocabSize] = readkinectgt(filename)
+function [gt, vocabSize] = readgtchairgest(filename)
 % READKINECTGT reads kinect ground truth data.
 %
 % Return
