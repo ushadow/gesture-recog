@@ -42,15 +42,14 @@ PlotBicVsComponent <- function(num.components, cluster) {
   title(title)
 }
 
-PlotBic <- function(bic) {
+PlotBic <- function(bic, models = mclust.options("emModelNames")) {
   xlab <- as.numeric(rownames(bic))
   nrow <- nrow(bic)
-  models = c('VVV', 'VEV', 'VEI')
   ylim <- c(min(bic[, models], na.rm = TRUE), 
             max(bic[, models], na.rm = TRUE))
   old.par <- par(xaxt = "n")
   plot(bic, G = 1 : nrow, modelNames = models,  ylim = ylim, 
-       lengendArgs = list(x = "bottomright", ncol = 5))
+       legendArgs = list(x = "bottomleft", ncol = 5))
   par(old.par) 
   axis(side = 1, at = 1 : nrow, labels = xlab)
 }
@@ -97,27 +96,28 @@ AveCov <- function(cov) {
 }
 
 # ARGS
-# nfet        - number of features to consider.
+# prefix      - prefix of the input file.
+# nfeat       - number of features to consider.
 # modelNames  - a vector of model names.
-SaveClusterMean <- function(pid, dirname, prefix, G, nfet, nfold = 1,
+SaveClusterMean <- function(pid, dirname, prefix, G, nfeat, nfold = 1,
                             modelNames = c('VVV')) {
   pid <- sprintf("PID-%010d", pid)
   prefix <- file.path(dirname, pid, prefix)
   print(prefix)
-  sapply(1 : nfold, SaveClusterMean1, G = G, nfet = nfet, prefix = prefix, 
+  sapply(1 : nfold, SaveClusterMean1, G = G, nfeat = nfeat, prefix = prefix, 
          modelNames = modelNames)
 }
 
-SaveClusterMean1 <- function(fold, G, nfet, prefix, modelNames) {
+SaveClusterMean1 <- function(fold, G, nfeat, prefix, modelNames) {
   input.filename <- paste(prefix, fold, sep = '-')
   input.filename <- paste(input.filename, '.csv', sep = '')
   data <- read.table(input.filename, sep = ',')
-  data <- data[,  1 : nfet]
+  data <- data[,  1 : nfeat]
   cluster <- Mclust(data, G, modelNames = modelNames)
   # Last index of '-'.
   last.index <- regexpr("\\-[^\\-]*$", prefix)
   prefix <- substr(prefix, 0, last.index - 1)
-  output.filename <- paste(prefix, nfet, fold, 'mean', G, 
+  output.filename <- paste(prefix, nfeat, fold, 'mean', G, 
                            sep = '-')
   output.filename <- paste(output.filename, '.csv', sep = '')
   print(output.filename)
