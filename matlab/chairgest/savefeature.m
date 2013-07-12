@@ -20,9 +20,13 @@ Xgesture = X(:, NDX);
 Xrest = X(:, ~NDX);
 nfeature = size(X, 1);
 
-X = [Xgesture(:, 1 : 2 : end), Xrest(:, 1 : 10 : end)];
-
 mkdir(param.dir, data.userId);
-filename = sprintf('selectfeature-%d-%d.csv', nfeature, fold);
-csvwrite(fullfile(param.dir, data.userId, filename), X');
+filename = sprintf('gesture-%d-%d.csv', nfeature, fold);
+csvwrite(fullfile(param.dir, data.userId, filename), ...
+         Xgesture(:, 1 : 2 : end)');
+
+filename = sprintf('rest-%d-%d.csv', nfeature, fold);
+csvwrite(fullfile(param.dir, data.userId, filename), ...
+         Xrest(:, 1 : 30 : end)');
+
 end

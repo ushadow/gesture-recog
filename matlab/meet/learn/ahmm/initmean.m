@@ -21,7 +21,8 @@ options.MaxIter = 500;
 S.mu = C;
 S.Sigma = repmat(eye(d) * 100, [1, 1, k]); 
 S.PComponents = ones(1, k) / k;
-obj = gmdistribution.fit(X, k, 'Start', S, 'Regularize', 0.01, 'Options', options);
+obj = gmdistribution.fit(X, k, 'Start', S, 'Regularize', 0.01, ...
+      'Options', options);
 fprintf('Done clustering %.2fs\n', toc(tid));
 C = obj.mu';
 

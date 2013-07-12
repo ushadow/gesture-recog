@@ -134,21 +134,21 @@ methods (Test)
     end
   end
   
-  function testLearning(self)
+  function testLearning(testCase)
     T = 20;
     max_iter = 10;
-    trueParam = self.deterministicParams;
+    trueParam = testCase.deterministicParams;
     ahmm = createahmm(trueParam);
     ev = sample_dbn(ahmm, 'length', T);
     ss = length(ahmm.intra);
     evidence = cell(1, 1);
     evidence{1} = cell(ss, T);
    
-    new_params = self.priorParams;
+    new_params = testCase.priorParams;
     nodeNames = new_params.names;
     
     onodes = ones(length(new_params.onodes), 1);
-    for i = length(onodes)
+    for i = 1 : length(onodes)
       nodeName = new_params.onodes{i};
       onodes(i) = find(strncmp(nodeName, nodeNames, length(nodeName)));
     end
@@ -165,30 +165,30 @@ methods (Test)
     SNDX = hnodes == ahmmParam.S1;
     mapS = mapEst(SNDX(:), :);
     trueS = [ev{ahmmParam.S1, :}];
-    assertTrue(all(mapS(:) == trueS(:)));
+    testCase.verifyEqual(mapS(:), trueS(:));
     
     learned_Gstartprob = CPD_to_CPT(final_ahmm.CPD{1});
-    assertTrue(all(learned_Gstartprob == trueParam.Gstartprob(:)));
+    testCase.verifyEqual(learned_Gstartprob, trueParam.Gstartprob(:));
     learned_Sstartprob = CPD_to_CPT(final_ahmm.CPD{2});
-    assertTrue(learned_Sstartprob(1, 1) == 1);
+    testCase.verifyEqual(learned_Sstartprob(1, 1), 1);
     learned_Stermprob = CPD_to_CPT(final_ahmm.CPD{3});
-    assertTrue(all(learned_Stermprob(:, 1) == 0));
-    learned_hand = struct(final_ahmm.CPD{4}).hand;
-    assertTrue(all(learned_hand(:) == trueParam.hand(:)));
+    testCase.verifyTrue(all(learned_Stermprob(:, 1) == 0));
+    learned_mean = struct(final_ahmm.CPD{4}).mean;
+    testCase.verifyEqual(learned_mean(:), trueParam.Xmean(:), 'AbsTol', 0.5);
     learned_GCPT = CPD_to_CPT(final_ahmm.CPD{5});
     learned_GCPT = learned_GCPT(:, 1, :);
     expected = eye(new_params.nG, new_params.nG);
-    assertTrue(all(learned_GCPT(:) == expected(:)));
+    testCase.verifyEqual(learned_GCPT(:), expected(:));
     learned_Gtransprob = struct(final_ahmm.CPD{5}).transprob;
     assertTrue(all(learned_Gtransprob(:) == trueParam.Gtransprob(:)));
     learned_Stransprob = CPD_to_CPT(final_ahmm.CPD{6});
-    assertTrue(learned_Stransprob(1, 2, 2) == 1);
-    assertTrue(learned_Stransprob(2, 3, 3) == 1);
-    assertTrue(learned_Stransprob(3, 4, 4) == 1);
-    assertTrue(learned_Stransprob(4, 1, 1) == 1);
+    testCase.verifyEqual(learned_Stransprob(1, 2, 2), 1);
+    testCase.verifyEqual(learned_Stransprob(2, 3, 3), 1);
+    testCase.verifyEqual(learned_Stransprob(3, 4, 4), 1);
+    testCase.verifyEqual(learned_Stransprob(4, 1, 1), 1);
   end
   
-  function params = deterministicParams(self)
+  function params = deterministicParams(self) %#ok<MANU>
     params.nG = 4;
     params.nS = 4;
     params.nF = 2;
@@ -246,23 +246,16 @@ methods (Test)
                                  0 0
                                  0 1];
                              
-    params.hand = zeros(self.hand_size, params.nS);
-    for i = 1 : params.nS
-      params.hand(:, i) = repmat(i, self.hand_size, 1);
-    end
-
-    params.hd_mu = 0;
-    params.hd_sigma = 1;
-
     params.Xmean = reshape(1 : params.nX * params.nS, ...
                            [params.nX params.nS]);
-    params.Xcov = repmat(eye(params.nX) * 0.1, [1, 1, params.nS]);
+    params.Xcov = repmat(eye(params.nX) * 0.001, [1, 1, params.nS]);
+    params.XcovType = 'diag';
     
     params.resetS = false;
     params.Gclamp = false;
   end
   
-  function params = priorParams(self)
+  function params = priorParams(self) %#ok<MANU>
     params.names = {'G1', 'S1', 'F1', 'X1'};
     % Node size
     params.nG = 4;
@@ -284,17 +277,11 @@ methods (Test)
     params.Stransprob = ones(params.nS, params.nG, params.nS) / params.nS;
 
     params.Stermprob = ones(params.nG, params.nS, params.nF) / params.nF;
-                             
-    params.hand = ones(self.hand_size, params.nS);
-    for i = 1 : params.nS
-      params.hand(:, i) = params.hand(:, i) * (1 + i / 10);
-    end
- 
-    params.hd_mu = 0;
-    params.hd_sigma = 1;
 
-    params.Xmean = ones(params.nX, params.nS);
-    params.Xcov = repmat(eye(params.nX) * 0.1, [1, 1, params.nS]);
+    params.Xmean = [1 3 5 7
+                    1 3 5 7];
+    params.Xcov = repmat(eye(params.nX), [1, 1, params.nS]);
+    params.XcovType = 'diag';
     
     params.resetS = false;
     params.Gclamp = false;

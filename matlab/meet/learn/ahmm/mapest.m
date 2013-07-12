@@ -1,5 +1,5 @@
 function mapEst = mapest(engine, hnode, T)
-% Args:
+% ARGS
 % - hnode: hidden node that we want to estimate the state.
 % Return
 % - mapEst: a matrix.

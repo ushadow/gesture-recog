@@ -9,10 +9,10 @@ function [data, dataParam] = prepdatachairgest(dirname, userId, ...
 % sensorType  - string of sensor type.
 %
 % Return:
-% - data: a structure with fields:
-%   - Y: a cell array of ground truth labels.
-%   - X: a cell array of features.
-%   - split: a 2 x 1 cell array with one fold evalutation.
+% data  - a structure with fields:
+%   Y   - a cell array of ground truth labels.
+%   X   - a cell array of features.
+%   split   - a 2 x 1 cell array with one fold evalutation.
 
 if nargin < 3
   sensorType = 'Kinect';
@@ -61,9 +61,9 @@ for i = 1 : 3
     end
   end
 end
+data = subsample(data, subsampleFactor);
 data.Y = addFlabel(data.Y);
 data = setsplit(data, testPerc);
-data = subsample(data, subsampleFactor);
 end
 
 function [batch, prefixLength] = getbatchname(dirname, sensor)

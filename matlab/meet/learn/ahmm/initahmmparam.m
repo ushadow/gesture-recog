@@ -42,6 +42,7 @@ end
 param.Sstartprob = ones(param.nG, param.nS) / param.nS;
 param.Stransprob = ones(param.nS, param.nG, param.nS) / param.nS;
 param.Stermprob = ones(param.nG, param.nS, param.nF) / param.nF;
+param.Stransprob = ones(param.nS, param.nG, param.nS) / param.nS;
 
 param.Xmean = mean;
 param.Xcov = repmat(100 * eye(param.nX, param.nX), [1, 1, param.nS]);

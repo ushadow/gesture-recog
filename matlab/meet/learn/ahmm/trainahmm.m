@@ -2,25 +2,20 @@ function ahmm = trainahmm(Y, X, param)
 %% TRAINAHMM train an AHMM based on training data.
 %
 % ARGS
-% Y, X   - cell array of training data.
+% Y, X   - cell array of training data. Each cell is a d x t matrix where
+%          d is the feature dimension and t is number of time frames in the
+%          sequence.
 
 %% Initialize AHMM parameters.
-if param.initMeanFromFile
+if ~isempty(param.initMeanFilePrefix)
   % Read mean data.
-  %preprocessName = preprocessname(param.preprocess);
-  filename = sprintf('%s-%d-%d-mean-%d.csv', 'selectfeature', ...
-                     size(X{1}, 1), param.fold, param.nS);
-  fullFilePath = fullfile(param.dir, param.userId, filename);
-  logdebug('trainhmm', 'read file', fullFilePath);
-  imported = importdata(fullFilePath, ',', 1);
-  mean = imported.data;
+  mean = initmeanfromfile(param.initMeanFilePrefix, size(X{1}, 1), param);
 else
   mean = initmean(X, param.nS);
 end
 
 [Gstartprob, Gtransprob] = initGprob(param);
-param = initahmmparam(param, mean, Gstartprob, Gtransprob);
-param.onodes = {'G1' 'F1' 'X1'}; 
+param = initahmmparam(param, mean, Gstartprob, Gtransprob); 
 [ahmm, ahmmParam] = createahmm(param);
 
 %% Training.
@@ -35,3 +30,4 @@ ahmm.type = 'ahmm';
 ahmm.model = finalModel;
 ahmm.param = ahmmParam;
 end
+

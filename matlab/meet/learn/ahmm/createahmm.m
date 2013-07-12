@@ -55,7 +55,7 @@ nodeSize = double([param.nG param.nS param.nF param.nX]);
 dnodes = [G1 S1 F1];
 
 onodes = ones(length(param.onodes), 1);
-for i = length(onodes)
+for i = 1 : length(onodes)
   nodeName = param.onodes{i};
   onodes(i) = find(strncmp(nodeName, names, length(nodeName)));
 end
@@ -79,7 +79,7 @@ model = mk_dbn(intra, inter, nodeSize, 'discrete', dnodes, 'observed', ...
 % Set CPD.
 % Slice 1.
 model.CPD{G1} = tabular_CPD(model, G1, 'CPT', param.Gstartprob, ...
-                           'clamped', param.Gclamp);
+                            'clamped', param.Gclamp);
 
 model.CPD{S1} = tabular_CPD(model, S1, param.Sstartprob);
 

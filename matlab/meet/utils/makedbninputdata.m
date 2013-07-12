@@ -11,8 +11,6 @@ for i = 1 : length(data)
   [nX, T] = size(X{i});
   data{i} = cell(ss, T);
   if any(ahmmParam.onodes == ahmmParam.G1)
-    size(data{i})
-    size(Y{i})
     data{i}(ahmmParam.G1, :) = num2cell(Y{i}(1, :));
   end
   if any(ahmmParam.onodes == ahmmParam.F1)
