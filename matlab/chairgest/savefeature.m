@@ -1,14 +1,16 @@
 function savefeature(data, fold, param)
 %% SAVEFEATURE saves the standardized training features separating the
-%  gestures from the rest poses.
+%  gestures from the rest poses. Subsamples the gesture features by 2, and 
+%  subsamples the rest features by 30.
 %
 % ARGS
 % data    - prepared data.
+% fold    - the fold index.
 % param   - a struct with field 'dir' which is the director to save the
 %           feature.
 
 % Different fold has different standardized feature.
-% Only use training data.
+% Only uses training data.
 
 X = data.X(data.split{1, fold});
 Y = data.Y(data.split{1, fold});

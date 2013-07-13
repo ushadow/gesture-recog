@@ -1,4 +1,4 @@
-function Y = addFlabel(Y)
+function Y = addflabel(Y)
 for i = 1 : numel(Y)
   seq = Y{i};
   for j = 1 : size(seq, 2) - 1

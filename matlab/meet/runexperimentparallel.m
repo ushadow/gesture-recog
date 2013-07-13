@@ -1,8 +1,8 @@
 function [nrow, ncol] = runexperimentparallel(data, batchNDX, modelParam, ...
-                                   jobParam, job)
+                        jobParam, job)
 %% RUNEXPERIMENTPARALLEL runs experiment for one batch of data in parallel.
 %
-% Args
+% ARGS
 % - modelParam: a cell array of model parameter.
 
 verbose = jobParam.verbose;

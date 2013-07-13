@@ -9,8 +9,13 @@ if strcmp(sensor, 'Kinect')
   nconFeat = header{3};
   timestamp = [];
 else
-  formatSpec = '%s%f';
-  oneSensor = repmat('%f', 1, 18);
+  %% Xsense data format in the converted file.
+  formatSpec = '%s%f'; % AbsTimeStamp FrameID
+  % For each sensor, the data are:
+  % SensorId LinAccX/Y/Z, AngVelX/Y/Z, MagX/Y/Z, Yaw, Pitch, Roll,
+  % QuatX/Y/Z Baro
+  oneSensor = repmat('%f', 1, 18); 
+  % There are 4 sensors and the order is: neck, upperarm, forearm, hand.
   formatSpec = [formatSpec repmat(oneSensor, 1, 4)];
   fid = fopen(inputFile);
   data = textscan(fid, formatSpec, 'HeaderLines', 1, 'ReturnOnError', 0);

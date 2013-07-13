@@ -17,6 +17,7 @@ rng(0, 'twister');
 
 %% Step 1: Prepare data
 if ~exist('data', 'var')
+  % Reads data from file.
   dataFileFullPath = fullfile(param.dir, param.dataFile);
   matObj = matfile(dataFileFullPath);
   data = matObj.(param.dataFile)(1, batchNDX);

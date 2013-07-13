@@ -62,7 +62,7 @@ for i = 1 : 3
   end
 end
 data = subsample(data, subsampleFactor);
-data.Y = addFlabel(data.Y);
+data.Y = addflabel(data.Y);
 data = setsplit(data, testPerc);
 end
 
