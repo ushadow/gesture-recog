@@ -182,10 +182,10 @@ methods (Test)
     learned_Gtransprob = struct(final_ahmm.CPD{5}).transprob;
     assertTrue(all(learned_Gtransprob(:) == trueParam.Gtransprob(:)));
     learned_Stransprob = CPD_to_CPT(final_ahmm.CPD{6});
-    testCase.verifyEqual(learned_Stransprob(1, 2, 2), 1);
-    testCase.verifyEqual(learned_Stransprob(2, 3, 3), 1);
-    testCase.verifyEqual(learned_Stransprob(3, 4, 4), 1);
-    testCase.verifyEqual(learned_Stransprob(4, 1, 1), 1);
+    testCase.verifyEqual(learned_Stransprob(1, 2, 2), 1, 'AbsTol', 0.01);
+    testCase.verifyEqual(learned_Stransprob(2, 3, 3), 1, 'AbsTol', 0.01);
+    testCase.verifyEqual(learned_Stransprob(3, 4, 4), 1, 'AbsTol', 0.01);
+    testCase.verifyEqual(learned_Stransprob(4, 1, 1), 1, 'AbsTol', 0.01);
   end
   
   function params = deterministicParams(self) %#ok<MANU>

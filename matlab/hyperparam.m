@@ -1,15 +1,16 @@
 function hyperParam = hyperparam(paramFromData, varargin)
 
 % Default values.
-hyperParam.nS = 44; % number of hidden states S.
+hyperParam.nS = 44 + 3; % number of hidden states S.
+hyperParam.nHiddenStatePerGesture = 7;
 hyperParam.L = 16;
 hyperParam.nprincomp = 11; % total number of principal components.
 hyperParam.XcovType = 'diag';
 hyperParam.resetS = false;
 hyperParam.inferMethod = 'fixed-interval-smoothing';
-hyperParam.train = @trainahmm;
-hyperParam.inference = @inferenceahmm;
-hyperParam.preprocess = {@selectfeature, @standardizefeature};
+hyperParam.train = @convertdatatrainldcrf;
+hyperParam.inference = @testldcrfwrap;
+hyperParam.preprocess = {};
 hyperParam.maxIter = 10;
 hyperParam.evalName = {'Error', 'Leven'};
 hyperParam.evalFun = {@errorperframe, @levenscore};
@@ -18,7 +19,7 @@ hyperParam.thresh = 0.001;
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.Fobserved = 1;
-hyperParam.initMeanFilePrefix = {'gesture', 41, 'rest', 3};
+hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 3};
 hyperParam.returnFeature = false;
 hyperParam.dataFile = 'standardized';
 hyperParam.useGpu = false;
@@ -41,6 +42,7 @@ for i = 1 : length(hyperParam.nS)
     param.startImgFeatNDX = hyperParam.startImgFeatNDX;
     param.dir = hyperParam.dir;
 
+    param.nHiddenStatePerGesture = hyperParam.nHiddenStatePerGesture;
     param.selectedFeature = hyperParam.selectedFeature;
     param.imageWidth = hyperParam.imageWidth;
     param.useGpu = hyperParam.useGpu;

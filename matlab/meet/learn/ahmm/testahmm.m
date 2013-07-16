@@ -1,4 +1,4 @@
-function R = inferenceahmm(Y, X, model, param)
+function R = testahmm(Y, X, model, param)
 %% INFERENCEAHMM performs inference on the AHMM model with the data.
 %
 % R = inferenceahmm(ahmm, data, predictNode, param)

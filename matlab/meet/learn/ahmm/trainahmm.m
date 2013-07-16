@@ -5,6 +5,9 @@ function ahmm = trainahmm(Y, X, param)
 % Y, X   - cell array of training data. Each cell is a d x t matrix where
 %          d is the feature dimension and t is number of time frames in the
 %          sequence.
+%
+% RETURN
+% ahmm   - a structure of trained model and parameters. 
 
 %% Initialize AHMM parameters.
 if ~isempty(param.initMeanFilePrefix)

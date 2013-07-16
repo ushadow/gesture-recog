@@ -92,7 +92,7 @@ if isfield(param, 'hand')
 else
   model.CPD{X1} = gaussian_CPD(model, X1, 'mean', param.Xmean, ...
       'cov', param.Xcov, 'cov_type', param.XcovType, ...
-      'cov_prior_weight', 0.1);
+      'clamp_cov', 1);
 end
 
 % Slice 2.
