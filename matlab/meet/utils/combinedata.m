@@ -6,6 +6,7 @@ combined.Y = [Y{:}];
 combined.X = [X{:}];
 combined.frame = [frame{:}];
 combined.file = [file{:}];
+combined.param = data{1}.param;
 combined.split = data{1}.split;
 base = size(data{1}.X, 2);
 for i = 2 : numel(data)

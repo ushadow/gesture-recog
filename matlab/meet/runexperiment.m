@@ -61,6 +61,7 @@ if param.returnFeature
   if ~isempty(split{3})
     data.X(split{3}) = X.Te;
   end
+  data.split = split;
   R = data;
 else
   

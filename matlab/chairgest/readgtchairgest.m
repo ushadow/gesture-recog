@@ -4,13 +4,8 @@ function [gt, vocabSize] = readgtchairgest(filename)
 % Return
 % - gt: n x 3 matrix.
 
-GESTURE_LABELS = {'ShakeHand', 'WaveHello', 'SwipeRight', 'SwipeLeft', ...
-  'CirclePalmRotation', 'CirclePalmDown', 'TakeFromScreen', ...
-  'PushToScreen', 'PalmDownRotation', 'PalmUpRotation', 'PreStroke', ... 
-  'PostStroke', 'Rest'};
-
-vocabSize = length(GESTURE_LABELS);
-gestureDict = containers.Map(GESTURE_LABELS, 1 : vocabSize);
+[allLabel, gestureDict] = gesturelabel();
+vocabSize = length(allLabel);
 
 data = importdata(filename);
 frameIndices = data.data;

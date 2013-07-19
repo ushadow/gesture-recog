@@ -1,5 +1,5 @@
-function [data, dataParam] = prepdatachairgest(dirname, userId, ...
-    sensorType, testPerc, subsampleFactor)
+function data = prepdatachairgest(dirname, userId, sensorType, ...
+                dataType, testPerc, subsampleFactor)
 %% PREPAREDATACHAIRGEST prepares the data from CHAIRGEST dataset from one 
 % user into right structure for preprocessing.
 
@@ -54,19 +54,22 @@ for i = 1 : 3
         dataParam.startImgFeatNDX = nconFeat + 1;
         dataParam.dir = dirname;
         dataParam.subsampleFactor = subsampleFactor;
+        dataParam.sensorType = sensorType;
+        dataParam.dataType = dataType;
         paramInitialized = true;
       end
       [Y, X, frame] = combinelabelfeature(gt, featureData);
       data.Y{end + 1} = Y;
       data.X{end + 1} = X;
       data.frame{end + 1} = frame;
-      data.file{end + 1} = {userId, session{i}, j};
+      data.file{end + 1} = {userId, session{i}, fileNDX};
     end
   end
 end
 data = subsample(data, subsampleFactor);
 data.Y = addflabel(data.Y);
 data = setsplit(data, testPerc);
+data.param = dataParam;
 end
 
 function [batch, prefixLength] = getbatchname(dirname, sensor)
@@ -107,5 +110,6 @@ featureFrameId = feature(:, 1);
 [frame, labelNDX, featureNDX] = intersect(labelFrameId, featureFrameId);
 Y = label(labelNDX, 2 : 3)';
 X = feature(featureNDX, 2 : end)';
-assert(size(Y, 2) == length(frame));
+frame = frame(:)';
+assert(size(Y, 2) == size(frame, 2));
 end

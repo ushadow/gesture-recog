@@ -10,7 +10,7 @@ hyperParam.resetS = false;
 
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
-hyperParam.inferMethod = 'fixed-lag-viterbi';
+hyperParam.inferMethod = 'viterbi';
 hyperParam.train = @trainahmm;
 hyperParam.inference = @testahmm;
 hyperParam.preprocess = {@hogfeature @pcaimage @standardizefeature};
@@ -30,6 +30,8 @@ hyperParam.imageWidth = 100;
 hyperParam.selectedFeature = [2 : 7, 11 : 13] + 18 * 3;
 hyperParam.clampCov = 0;
 hyperParam.covPrior = 2;
+hyperParam.gSampleFactor = 1;
+hyperParam.rSampleFactor = 30;
 
 hyperParam.startImgFeatNDX = paramFromData.startImgFeatNDX;
 hyperParam.dir = paramFromData.dir;
