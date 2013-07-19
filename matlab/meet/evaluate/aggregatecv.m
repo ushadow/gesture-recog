@@ -1,10 +1,12 @@
 function cvstat = aggregatecv(R)
-% AGGREGATECV aggregates cross-validation results.
-% Args:
-% - R: cell array.
+%% AGGREGATECV aggregates cross-validation results.
 %
-% Returns:
-% - stat: cell array.
+% ARGS
+% R   - cell array.
+%
+% RETURN
+% stat  - cell array.
+
 nfold = size(R, 2);
 
 memo = containers.Map();
@@ -27,8 +29,9 @@ end
 
 function memo = computeonefold(r, memo, nfold, index)
 %
-% Args:
-% - r: stats for one fold.
+% ARGS
+% r   - stats for one fold.
+
 if ~isempty(r)
   if isfield(r, 'stat');
     stat = r.stat;

@@ -28,10 +28,10 @@ if isa(im, 'double')
     maxi=max(im(:));
     im=(im-mini)./(maxi-mini);
 end
-imagesc(im); 
+imagesc(im); % data is scaled.
 
 if ISKINECT
-    colormap(gray);
+    colormap(flipud(hot));
     colorbar;
 end
 

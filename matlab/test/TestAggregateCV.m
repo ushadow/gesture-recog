@@ -1,9 +1,5 @@
-classdef TestAggregateCV < TestCase
-methods
-  function self = TestAggregateCV(name)
-    self = self@TestCase(name);
-  end
-  
+classdef TestAggregateCV < matlab.unittest.TestCase
+methods (Test)
   function testNaN(self) %#ok<MANU>
     nfold = 3;
     R = cell(1, nfold);

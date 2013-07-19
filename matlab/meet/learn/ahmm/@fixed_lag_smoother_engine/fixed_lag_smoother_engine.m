@@ -3,7 +3,7 @@ function engine = fixed_lag_smoother_engine(tbn_engine, L)
 % function engine = smoother_engine(tbn_engine)
 %
 % tbn_engine is any 2TBN inference engine which supports the following methods:
-% fwd, fwd1, back, backT, back, marginal_nodes and marginal_family.
+% fwd, fwd1, back, backT, back1, marginal_nodes and marginal_family.
 
 engine.L = 0;
 if ~isempty(L)

@@ -79,13 +79,15 @@ methods (TestClassSetup)
                             
     self.params.resetS = false;
     self.params.Gclamp = false;
+    self.params.clampCov = 1;
+    self.params.covPrior = 0.01;
   end
 end
 
 methods (Test)  
 
-  function testSample(self)
-    ahmm = createahmm(self.params);
+  function testSample(testCase)
+    ahmm = createahmm(testCase.params);
     ns = ahmm.node_sizes_slice;
     assertTrue(all(ns == [4 4 2 2]));
     
@@ -96,10 +98,10 @@ methods (Test)
     for i = 1 : T
       s = evidence{S1, i};
       hand = evidence{X1, i}{2};
-      assertTrue(all(size(hand) == [self.hand_size, 1]));
-      assertTrue(all(size(evidence{X1, i}{1}) == [ns(X1), 1]));
-      assertTrue(all(hand(:) == s));
-      assertTrue(s == evidence{G1, i});
+      testCase.verifyEqual(size(hand), [testCase.hand_size, 1]);
+      testCase.verifyEqual(size(evidence{X1, i}{1}), [ns(X1), 1]);
+      testCase.verifyTrue(all(hand(:) == s));
+      testCase.verifyEqual(s, evidence{G1, i});
       checkahmmresult(evidence, G1, F1);
     end
   end
@@ -253,6 +255,8 @@ methods (Test)
     
     params.resetS = false;
     params.Gclamp = false;
+    params.clampCov = 1;
+    params.covPrior = 0.01;
   end
   
   function params = priorParams(self) %#ok<MANU>
@@ -285,6 +289,8 @@ methods (Test)
     
     params.resetS = false;
     params.Gclamp = false;
+    params.clampCov = 1;
+    params.covPrior = 0.01;
   end
 end
 

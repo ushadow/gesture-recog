@@ -1,5 +1,5 @@
 function hmm = trainhmm(Y, X, param)
-% TRAINHMM creates AHMM based on the parameters trained from HMM.
+% TRAINHMM trains an HMM model for every gesture class.
 %
 % ARGS
 % Y, X  - training labels and features.
@@ -14,7 +14,6 @@ model.Sigma = cell(param.vocabularySize, 1);
 model.term = cell(param.vocabularySize, 1);
 
 for i = 1 : param.vocabularySize
-   
   [prior0, transmat0, term0, mu0, Sigma0] = inithmmparam(XByClass{i}, param.nS);
   [~, model.prior{i}, model.transmat{i}, model.mu{i}, model.Sigma{i}, ...
       ~, model.term{i}] = mhmm_em(XByClass{i}, prior0, transmat0, mu0, ...

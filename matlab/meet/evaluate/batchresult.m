@@ -4,7 +4,7 @@ function batchRes = batchresult(job, data, hyperParam, ntask)
 % batchRes = batchresult(res, dataType, evalName)
 % ARGS
 % job   - cell array or a parallel job.
-% ntask - nbatc x 2 matrix, number of tasks per batch represented as
+% ntask - nbatch x 2 matrix, number of tasks per batch represented as
 %         number of models (rows) and number of folds (cols). Only used
 %         when job is a cell array.
 class(job)

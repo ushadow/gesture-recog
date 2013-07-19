@@ -1,9 +1,11 @@
 function combined = combinedata(data)
-[Y, X, timestamp] = cellfun(@getfields, data, 'UniformOutput', false);
-combined.userId = data{1}.userId;
+% data - cell array of user data.
+
+[Y, X, frame, file] = cellfun(@getfields, data, 'UniformOutput', false);
 combined.Y = [Y{:}];
 combined.X = [X{:}];
-combined.timestamp = [timestamp{:}];
+combined.frame = [frame{:}];
+combined.file = [file{:}];
 combined.split = data{1}.split;
 base = size(data{1}.X, 2);
 for i = 2 : numel(data)
@@ -14,8 +16,9 @@ for i = 2 : numel(data)
 end
 end
 
-function [Y, X, timestamp] = getfields(data)
+function [Y, X, frame, file] = getfields(data)
 Y = data.Y;
 X = data.X;
-timestamp = data.timestamp;
+frame = data.frame;
+file = data.file;
 end

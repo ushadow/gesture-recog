@@ -24,7 +24,11 @@ if ~exist('data', 'var')
   data = data{1};
 end
 
-param.userId = data.userId;
+if isfield(data, 'userId')
+  param.userId = data.userId;
+else
+  param.userId = [];
+end
 param.fold = foldNDX;
 R.param = param;
 
@@ -62,11 +66,17 @@ else
   
 %% Step 3: Train and test model, get prediction on all three splits
   if ~isempty(param.train)
+    tid = tic;
     R.learnedModel = param.train(Y.Tr, X.Tr, param);
+    R.trainingTime = toc(tid);
+  else
+    R.learnedModel = param.learnedModel{foldNDX};
   end
 
   if ~isempty(param.inference)
+    tid = tic;
     R.prediction = param.inference(Y, X, R.learnedModel, param);
+    R.testingTime = toc(tid);
   end
 
   % Step 5: Evaluate performance of prediction

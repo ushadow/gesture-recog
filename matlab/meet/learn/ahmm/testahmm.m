@@ -36,7 +36,7 @@ switch method
     engine = smoother_engine(jtree_2TBN_inf_engine(ahmm));
   case 'filtering'
     engine = filter_engine(jtree_2TBN_inf_engine(ahmm));
-  case 'fixed-lag-smoothing'
+  case {'fixed-lag-smoothing', 'fixed-lag-viterbi'}
     engine = fixed_lag_smoother_engine(jtree_2TBN_inf_engine(ahmm), ...
                                        param.L);
   otherwise
@@ -67,7 +67,10 @@ for i = 1 : nseq
     case 'viterbi'
       % Find the most probable explanation (Viterbi).
       mpe = find_mpe(engine, evidence);
-      R{i} = mpe(predictNode, :);
+      R{i} = cell2mat(mpe(predictNode, :));
+    case 'fixed-lag-viterbi'
+      mpe = find_mpe(engine, evidence);
+      R{i} = cell2mat(mpe(predictNode, :));
     otherwise
       error(['Inference method not implemented: ' method]);
   end

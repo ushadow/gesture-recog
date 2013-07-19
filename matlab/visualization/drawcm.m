@@ -5,7 +5,6 @@ function drawcm(mat, tick)
 % tick: name of each class, e.g. 'class_1' 'class_2'...
 % num_class: number of class
 %
-% Author£º Page( Ø§×Ó)
 % Blog: www.shamoxia.com;
 % QQ:379115886;
 % Email: peegeelee@gmail.com
@@ -14,7 +13,7 @@ function drawcm(mat, tick)
 figure;
 nclass = length(tick);
 imagesc(1 : nclass, 1 : nclass, mat); %# in color
-colormap(flipud(hot)); %# for gray; black for large value.
+colormap(flipud(hot));
 
 textStrings = num2str(mat(:),'%0.0f');
 textStrings = strtrim(cellstr(textStrings));

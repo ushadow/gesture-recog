@@ -1,18 +1,18 @@
 function [data, dataParam] = prepdatachairgest(dirname, userId, ...
     sensorType, testPerc, subsampleFactor)
-% PREPAREDATACHAIRGEST prepares the data from CHAIRGEST dataset into right 
-% structure for preprocessing.
+%% PREPAREDATACHAIRGEST prepares the data from CHAIRGEST dataset from one 
+% user into right structure for preprocessing.
 
 % ARGS
 % dirname     - directory of the main database name, i.e. 'chairgest'.
 % userId      - integer of user id.
-% sensorType  - string of sensor type.
+% sensorType  - string of sensor type, i.e., 'Kinect' or 'Xsens'.
 %
-% Return:
+% RETRURN
 % data  - a structure with fields:
-%   Y   - a cell array of ground truth labels.
-%   X   - a cell array of features.
-%   split   - a 2 x 1 cell array with one fold evalutation.
+% Y     - a cell array of ground truth labels.
+% X     - a cell array of features.
+% split - a 2 x 1 cell array with one fold evalutation.
 
 if nargin < 3
   sensorType = 'Kinect';
@@ -30,7 +30,8 @@ session = getsession(piddir);
 data.userId = userId;
 data.Y = {};
 data.X = {};
-data.timestamp = {};
+data.frame = {};
+data.file = {};
 
 paramInitialized = false;
 for i = 1 : 3
@@ -45,19 +46,21 @@ for i = 1 : 3
       logdebug('prepdatachairgest', 'batch', fileName);
       gtFile = [sessionDir filesep gtFilePrefix fileNDX '.txt'];
       [gt, vocabSize] = readgtchairgest(gtFile);
-      [featureData, nconFeat, timestamp] = readfeature(...
+      [featureData, nconFeat] = readfeature(...
           fullfile(sessionDir, fileName), sensorType);
 
       if ~paramInitialized
         dataParam.vocabularySize = vocabSize;
         dataParam.startImgFeatNDX = nconFeat + 1;
         dataParam.dir = dirname;
+        dataParam.subsampleFactor = subsampleFactor;
         paramInitialized = true;
       end
-      [Y, X, timestamp] = combinelabelfeature(gt, featureData, timestamp);
+      [Y, X, frame] = combinelabelfeature(gt, featureData);
       data.Y{end + 1} = Y;
       data.X{end + 1} = X;
-      data.timestamp{end + 1} = timestamp;
+      data.frame{end + 1} = frame;
+      data.file{end + 1} = {userId, session{i}, j};
     end
   end
 end
@@ -91,7 +94,7 @@ function isSessionName = issessionname(filename)
   isSessionName = length(filename) > 2;
 end
 
-function [Y, X, timestamp] = combinelabelfeature(label, feature, timestamp)
+function [Y, X, frame] = combinelabelfeature(label, feature)
 %% Combines label and feature with common frame id.
 %
 % ARGS
@@ -100,9 +103,9 @@ function [Y, X, timestamp] = combinelabelfeature(label, feature, timestamp)
 
 labelFrameId = label(:, 1);
 featureFrameId = feature(:, 1);
-[~, labelNDX, featureNDX] = intersect(labelFrameId, featureFrameId);
+% Finds common frames.
+[frame, labelNDX, featureNDX] = intersect(labelFrameId, featureFrameId);
 Y = label(labelNDX, 2 : 3)';
 X = feature(featureNDX, 2 : end)';
-timestamp = timestamp(featureNDX)';
-assert(size(Y, 2) == size(timestamp, 2));
+assert(size(Y, 2) == length(frame));
 end

@@ -29,6 +29,9 @@ for i = 1 : length(data)
       aveRes(key{j}) = [aveRes(key{j}) batchResMap(key{j})];
     end
   end
+  if ~isfield(data1, 'userId')
+    data1.userId = '';
+  end
   fprintf('%s\t', data1.userId);
   for d = 1 : length(dataType)
     for v = 1 : length(value)

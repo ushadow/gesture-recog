@@ -29,8 +29,8 @@ end
 
 function X = hoghand1(X, startHandFetNDX, imageWidth, param)
 %
-% Args:
-% - data: cell array of sequences.
+% ARGS
+% data  - cell array of sequences.
 
 sBin = param.sBin;
 oBin = param.oBin;

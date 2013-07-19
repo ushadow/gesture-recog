@@ -1,34 +1,40 @@
 function hyperParam = hyperparam(paramFromData, varargin)
 
 % Default values.
-hyperParam.nS = 44 + 3; % number of hidden states S.
+hyperParam.nS = 36; % number of hidden states S.
 hyperParam.nHiddenStatePerGesture = 7;
 hyperParam.L = 16;
-hyperParam.nprincomp = 11; % total number of principal components.
+hyperParam.nprincomp = 7; % number of principal components from image.
 hyperParam.XcovType = 'diag';
 hyperParam.resetS = false;
-hyperParam.inferMethod = 'fixed-interval-smoothing';
-hyperParam.train = @convertdatatrainldcrf;
-hyperParam.inference = @testldcrfwrap;
-hyperParam.preprocess = {};
-hyperParam.maxIter = 10;
+
+% inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
+%              'viterbi', 'filtering'             
+hyperParam.inferMethod = 'fixed-lag-viterbi';
+hyperParam.train = @trainahmm;
+hyperParam.inference = @testahmm;
+hyperParam.preprocess = {@hogfeature @pcaimage @standardizefeature};
+hyperParam.maxIter = 7;
 hyperParam.evalName = {'Error', 'Leven'};
 hyperParam.evalFun = {@errorperframe, @levenscore};
 hyperParam.Gclamp = 1;
-hyperParam.thresh = 0.001;
+hyperParam.thresh = 0.1;
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.Fobserved = 1;
-hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 3};
+hyperParam.initMeanFilePrefix = {'all', 36};
 hyperParam.returnFeature = false;
-hyperParam.dataFile = 'standardized';
+hyperParam.dataFile = 'dsCombined';
 hyperParam.useGpu = false;
-hyperParam.imageWidth = 256;
+hyperParam.imageWidth = 100;
 hyperParam.selectedFeature = [2 : 7, 11 : 13] + 18 * 3;
+hyperParam.clampCov = 0;
+hyperParam.covPrior = 2;
 
 hyperParam.startImgFeatNDX = paramFromData.startImgFeatNDX;
 hyperParam.dir = paramFromData.dir;
 hyperParam.vocabularySize = paramFromData.vocabularySize;
+hyperParam.learnedModel = [];
 
 for i = 1 : 2 : length(varargin)
   hyperParam.(varargin{i}) = varargin{i + 1};
@@ -41,7 +47,10 @@ for i = 1 : length(hyperParam.nS)
     param.vocabularySize = hyperParam.vocabularySize;
     param.startImgFeatNDX = hyperParam.startImgFeatNDX;
     param.dir = hyperParam.dir;
-
+    
+    param.covPrior = hyperParam.covPrior;
+    param.clampCov = hyperParam.clampCov;
+    param.learnedModel = hyperParam.learnedModel;
     param.nHiddenStatePerGesture = hyperParam.nHiddenStatePerGesture;
     param.selectedFeature = hyperParam.selectedFeature;
     param.imageWidth = hyperParam.imageWidth;

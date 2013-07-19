@@ -24,8 +24,9 @@ ntask = zeros(nBatch, 2);
 
 for i = 1 : nBatch
   data = batch{i};
-  ntask(i, :) = runexperimentparallel(data, i, hyperParam.model, jobParam, ...
-                                      job);
+  [nrow, ncol] = runexperimentparallel(data, i, hyperParam.model, ...
+                 jobParam, job);
+  ntask(i, :) = [nrow ncol];
 end
 
 % Set jobData (global variable to all tasks)    

@@ -28,7 +28,7 @@ end
 
 % Number of principal components to use for image.
 startImgFeatNDX = param.startImgFeatNDX;
-k = param.nprincomp - param.startImgFeatNDX + 1;
+k = param.nprincomp;
 
 [A, mean] = normalizefeature(train, startImgFeatNDX);
 
@@ -107,12 +107,12 @@ meanFeatureRep = repmat(meanFeature, 1, nframe);
 normalized = rawFeature - meanFeatureRep;
 end
 
-function data = updatedata(data, eigHand, startHandFetNDX, varargin)
+function data = updatedata(data, eigImg, startImgFeatNDX, varargin)
 narg = length(varargin);
 for i = 1 : 2 : narg
   switch varargin{i}
     case 'mean' 
-      rawImgFeature = rawimgfeature(data, startHandFetNDX);
+      rawImgFeature = rawimgfeature(data, startImgFeatNDX);
       nframe = size(rawImgFeature, 2);
       meanFeature = varargin{i + 1};
       meanFeatureRep = repmat(meanFeature, 1, nframe);
@@ -121,13 +121,13 @@ for i = 1 : 2 : narg
     otherwise, error(['invalid argument name ' varargin{i}]);
   end
 end
-handFeature = eigHand' * normImgFeature; % neigHand x nframe
+imgFeature = eigImg' * normImgFeature; % neigHand x nframe
 nseq = length(data);
 startNDX = 1;
 for i = 1 : nseq
   old = data{i};
   endNDX = startNDX + size(old, 2) - 1;
-  data{i} = [old(1 : startHandFetNDX - 1, :); handFeature(:, startNDX : endNDX)];
+  data{i} = [old(1 : startImgFeatNDX - 1, :); imgFeature(:, startNDX : endNDX)];
   startNDX = endNDX + 1;
 end
 end
