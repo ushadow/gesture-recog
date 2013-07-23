@@ -1,4 +1,4 @@
-function R = testahmm(Y, X, model, param)
+function [R, prob] = testahmm(Y, X, model, param)
 %% INFERENCEAHMM performs inference on the AHMM model with the data.
 %
 % R = inferenceahmm(ahmm, data, predictNode, param)
@@ -20,7 +20,7 @@ else
   ahmmParam = model.param;
 end
 
-predictNode = [ahmmParam.G1 ahmmParam.F1];
+predictNode = [ahmmParam.G1 ahmmParam.F1 ahmmParam.S1];
 trainData = makedbninputdata(Y.Tr, X.Tr, ahmmParam);
 R.Tr = inference(ahmm, trainData, predictNode, param);
 
@@ -43,14 +43,15 @@ switch method
     error(['Inference method not implemented: ' method]);
 end
 
-nseq = length(data);
-R = cell(1, nseq);
-for i = 1 : nseq
+nseqs = length(data);
+R = cell(1, nseqs);
+prob = cell(1, nseqs);
+for i = 1 : nseqs
   evidence = data{i};
   switch method
     case {'fixed-interval-smoothing', 'fixed-lag-smoothing'}
       engine = enter_evidence(engine, evidence);
-      R{i} = mapest(engine, predictNode, length(evidence));
+      [R{i}, prob{i}] = mapest(engine, predictNode, length(evidence));
     case 'filtering'
       T = size(evidence, 2);
       nhnode = length(predictNode);

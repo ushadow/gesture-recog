@@ -1,14 +1,18 @@
-function mapEst = mapest(engine, hnode, T)
+function [mlEst, prob] = mapest(engine, hnode, T)
 % ARGS
-% - hnode: hidden node that we want to estimate the state.
-% Return
+% hnode   - hidden nodes that we want to estimate the state.
+%
+% RETURNS
 % - mapEst: a matrix.
-nhnode = length(hnode);
-mapEst = zeros(nhnode, T);
+
+nhnodes = length(hnode);
+mlEst = zeros(nhnodes, T);
+prob = cell(nhnodes, T);
 for t = 1 : T
-  for i = 1 : nhnode
+  for i = 1 : nhnodes
     m = marginal_nodes(engine, hnode(i), t);
     [~, ndx] = max(m.T);
-    mapEst(i, t) = ndx;
+    mlEst(i, t) = ndx;
+    prob{i, T} = m.T;
   end
 end

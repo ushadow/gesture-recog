@@ -1,9 +1,9 @@
 function param = initahmmparam(param, mean, Gstartprob, Gtransprob)
-% INITAHMMPARAM initializes AHMM parameters.
+%% INITAHMMPARAM initializes AHMM parameters.
 %
-% Arg
-% - param: struct with the following fields
-%   -- fold: the current fold.
+% ARGS
+% param   - struct of hyperparameters with the following fields:
+%   nS  - number of S states.
 
 param.nG = param.vocabularySize;
 param.nX = size(mean, 1);

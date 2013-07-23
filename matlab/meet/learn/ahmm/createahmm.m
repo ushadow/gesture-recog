@@ -1,7 +1,7 @@
 function [model, ahmmParam] = createahmm(param)
 % CREATEMODEL creates a graphical AHMM model.
 % 
-% ahmm = createmodel(nS)
+% [model, ahmmParam] = createahmm(param)
 % params: a structure of parameters for the model, including parameters for
 %         different CPDs.
 %   nG, nS, nX: number of states for G, S and X.
@@ -72,6 +72,7 @@ ahmmParam.S1 = S1;
 ahmmParam.F1 = F1;
 ahmmParam.X1 = X1;
 ahmmParam.onodes = onodes;
+ahmmParam.ns = nodeSize;
 
 model = mk_dbn(intra, inter, nodeSize, 'discrete', dnodes, 'observed', ...
                     onodes, 'eclass1', eclass1, 'eclass2', eclass2);

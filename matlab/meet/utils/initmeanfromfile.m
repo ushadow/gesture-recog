@@ -10,5 +10,6 @@ for i = 1 : 2 : length(prefix)
   fullFilePath = fullfile(param.dir, param.userId, filename);
   logdebug('initmeanfromfile', 'fullFilePath', fullFilePath);
   imported = importdata(fullFilePath, ',', 1);
+  % Vertically concatenate means.
   mean = [mean imported.data]; %#ok<AGROW>
 end

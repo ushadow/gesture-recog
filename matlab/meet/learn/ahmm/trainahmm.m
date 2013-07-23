@@ -27,6 +27,7 @@ engine = smoother_engine(jtree_2TBN_inf_engine(ahmm));
 finalModel = learn_params_dbn_em(engine, trainData, ...
                 'max_iter', param.maxIter, 'thresh', param.thresh);
 
+% Changes hidden bits.
 ahmmParam.onodes = [ahmmParam.X1];               
 finalModel = sethiddenbit(finalModel, ahmmParam.onodes);
 learnedModel.type = 'ahmm';

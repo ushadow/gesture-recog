@@ -1,7 +1,7 @@
 function hyperParam = hyperparam(paramFromData, varargin)
 
 % Default values.
-hyperParam.nS = 47; % number of hidden states S.
+hyperParam.nS = 45; % number of hidden states S.
 hyperParam.nHiddenStatePerGesture = 7;
 hyperParam.L = 16;
 hyperParam.nprincomp = 7; % number of principal components from image.
@@ -10,7 +10,7 @@ hyperParam.resetS = false;
 
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
-hyperParam.inferMethod = 'viterbi';
+hyperParam.inferMethod = 'fixed-interval-smoothing';
 hyperParam.train = @trainahmm;
 hyperParam.inference = @testahmm;
 hyperParam.preprocess = {};
@@ -22,9 +22,9 @@ hyperParam.thresh = 0.1;
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.Fobserved = 1;
-hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 3};
+hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 1};
 hyperParam.returnFeature = false;
-hyperParam.dataFile = 'dsStd';
+hyperParam.dataFile = 'dsImuStd';
 hyperParam.useGpu = false;
 hyperParam.imageWidth = 100;
 hyperParam.selectedFeature = [2 : 7, 11 : 13] + 18 * 3;

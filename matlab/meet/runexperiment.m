@@ -9,7 +9,7 @@ function R = runexperiment(param, foldNDX, batchNDX, data)
 %     - Y: cell array, label data.
 %     - X: cell array, feature data.
 %
-% RETURN
+% RETURNS
 % R   - if param.returnFeature is true, returns the processed feature;
 %       else returns struct of result.
 
@@ -76,7 +76,7 @@ else
 
   if ~isempty(param.inference)
     tid = tic;
-    R.prediction = param.inference(Y, X, R.learnedModel, param);
+    [R.prediction, R.prob] = param.inference(Y, X, R.learnedModel, param);
     R.testingTime = toc(tid);
   end
 
