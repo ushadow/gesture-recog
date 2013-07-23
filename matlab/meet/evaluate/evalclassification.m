@@ -1,6 +1,6 @@
 function stat = evalclassification(Y, R, evalName, evalFun, verbose)
-% Args:
-% - R: cell array or struct.
+% ARGS
+% R   - cell array or struct.
 % - evalName: cell array of evaluation names.
 % - evalFun: cell array of evaluation functions.
 
@@ -29,12 +29,10 @@ stat = containers.Map();
 datatype = fields(Y);
 for i = 1 : length(datatype)
   datatype1 = datatype{i};
-  if isfield(Y, datatype1)
-    if verbose, logdebug('evalclassification', 'datatype', datatype1); end
-    [key, value] = evaluate(Y.(datatype1), R.(datatype1), evalName, ...
-                            evalFun, datatype1, verbose);
-    for j = 1 : length(key), stat(key{j}) = value{j}; end
-  end
+  if verbose, logdebug('evalclassification', 'datatype', datatype1); end
+  [key, value] = evaluate(Y.(datatype1), R.(datatype1), evalName, ...
+                          evalFun, datatype1, verbose);
+  for j = 1 : length(key), stat(key{j}) = value{j}; end
 end
 end
 

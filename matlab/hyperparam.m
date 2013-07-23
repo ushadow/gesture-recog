@@ -1,7 +1,7 @@
 function hyperParam = hyperparam(paramFromData, varargin)
 
 % Default values.
-hyperParam.nS = 36; % number of hidden states S.
+hyperParam.nS = 47; % number of hidden states S.
 hyperParam.nHiddenStatePerGesture = 7;
 hyperParam.L = 16;
 hyperParam.nprincomp = 7; % number of principal components from image.
@@ -13,7 +13,7 @@ hyperParam.resetS = false;
 hyperParam.inferMethod = 'viterbi';
 hyperParam.train = @trainahmm;
 hyperParam.inference = @testahmm;
-hyperParam.preprocess = {@hogfeature @pcaimage @standardizefeature};
+hyperParam.preprocess = {};
 hyperParam.maxIter = 7;
 hyperParam.evalName = {'Error', 'Leven'};
 hyperParam.evalFun = {@errorperframe, @levenscore};
@@ -22,9 +22,9 @@ hyperParam.thresh = 0.1;
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.Fobserved = 1;
-hyperParam.initMeanFilePrefix = {'all', 36};
+hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 3};
 hyperParam.returnFeature = false;
-hyperParam.dataFile = 'dsCombined';
+hyperParam.dataFile = 'dsStd';
 hyperParam.useGpu = false;
 hyperParam.imageWidth = 100;
 hyperParam.selectedFeature = [2 : 7, 11 : 13] + 18 * 3;

@@ -103,6 +103,11 @@ function [Y, X, frame] = combinelabelfeature(label, feature)
 % ARGS
 % label   - matrix of all labels for a batch.
 % feature - matrix of all features for a batch. Each row is an observation.
+% 
+% RETURNS
+% Y   - cell array of labels. Each cell is a 2 x nframe matrix.
+% X   - cell array of feature vectors. Each cell is a d x nframe matrix. 
+% frame   - cell arrays of frame numbers. Each cell is a 1 x nframe matrix.
 
 labelFrameId = label(:, 1);
 featureFrameId = feature(:, 1);

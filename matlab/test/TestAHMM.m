@@ -106,16 +106,16 @@ methods (Test)
     end
   end
   
-  function testInference(self)
-    det_params = self.deterministicParams;
+  function testInference(testCase)
+    det_params = testCase.deterministicParams;
     ahmm = createahmm(det_params);
     engine = smoother_engine(jtree_2TBN_inf_engine(ahmm));
 
     T = 4;
     ss = length(ahmm.intra);
-    assertTrue(ss == 4);
+    testCase.verifyEqual(ss, 4);
     onodes = ahmm.observed;
-    assertTrue(onodes == 4);
+    testCase.verifyEqual(onodes, 4);
 
     maxIter = 10;
     for i = 1 : maxIter
@@ -130,7 +130,34 @@ methods (Test)
       %logdebug('TestAHMM', 'map_est', map_est);
       for t = 1 : T
         for n = hnodes(:)'
-          assertTrue(map_est(n, t) == ev{n, t});
+          testCase.verifyEqual(map_est(n, t), ev{n, t});
+        end
+      end
+    end
+  end
+  
+  function testViterbi(testCase)
+    detParams = testCase.deterministicParams;
+    ahmm = createahmm(detParams);
+    engine = smoother_engine(jtree_2TBN_inf_engine(ahmm));
+
+    T = 4;
+    ss = length(ahmm.intra);
+    onodes = ahmm.observed;
+
+    maxIter = 10;
+    for i = 1 : maxIter
+      ev = sample_dbn(ahmm, 'length', T);
+      %logdebug('TestAHMM', 'ev', ev);
+      evidence = cell(ss, T);
+      evidence(onodes, :) = ev(onodes, :);
+
+      mpe = find_mpe(engine, evidence);
+      hnodes = mysetdiff(1 : ss, onodes);
+      mpe = mpe(hnodes, :);
+      for t = 1 : T
+        for n = hnodes(:)'
+          testCase.verifyEqual(mpe{n, t}, ev{n, t});
         end
       end
     end

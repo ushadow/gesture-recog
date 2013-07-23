@@ -1,4 +1,9 @@
 function outputchairgest(data, result, algo, name, gestureLabel)
+% ARGS
+% data - struct with field: param.
+% result - struct with field: param.
+% gestureLabel - cell array of gesture label strings.
+
 outputDir = result.param.dir;
 dataType = data.param.dataType;
 filename = [algo '_' dataType '.txt'];
@@ -24,7 +29,7 @@ while i <= length(seq)
   if seq(i) < 11
     start = i;
     gesture = seq(i);
-    while seq(i) == gesture
+    while i <= length(seq) && seq(i) == gesture
       i = i + 1;
     end
     fprintf(fid, '%s\t%s\t%s\t%s\t%d\t%d\n', file{1}, file{2}, ...

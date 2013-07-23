@@ -1,6 +1,6 @@
 classdef TestAggregateCV < matlab.unittest.TestCase
 methods (Test)
-  function testNaN(self) %#ok<MANU>
+  function testNaN(self)
     nfold = 3;
     R = cell(1, nfold);
     stat = containers.Map();
@@ -20,11 +20,11 @@ methods (Test)
     
     cvstat = aggregatecv(R);
     
-    assertTrue(isKey(cvstat, 'validate-precisionMean'));
+    self.verifyTrue(isKey(cvstat, 'validate-precisionMean'));
     result = cvstat('validate-precisionMean');
-    assertTrue(result == 0.6);
+    self.verifyEqual(result, 0.6);
     result = cvstat('validate-precisionStd');
-    assertTrue(abs(result - std([1 0.2])) < 1e-9);
+    self.verifyTrue(abs(result - std([1 0.2])) < 1e-9);
   end
   
   function testTwoDatatypes(self) %#ok<MANU>

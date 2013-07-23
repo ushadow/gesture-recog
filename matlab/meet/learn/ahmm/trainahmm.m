@@ -1,4 +1,4 @@
-function ahmm = trainahmm(Y, X, param)
+function learnedModel = trainahmm(Y, X, param)
 %% TRAINAHMM train an AHMM based on training data.
 %
 % ARGS
@@ -29,8 +29,8 @@ finalModel = learn_params_dbn_em(engine, trainData, ...
 
 ahmmParam.onodes = [ahmmParam.X1];               
 finalModel = sethiddenbit(finalModel, ahmmParam.onodes);
-ahmm.type = 'ahmm';
-ahmm.model = finalModel;
-ahmm.param = ahmmParam;
+learnedModel.type = 'ahmm';
+learnedModel.model = finalModel;
+learnedModel.param = ahmmParam;
 end
 

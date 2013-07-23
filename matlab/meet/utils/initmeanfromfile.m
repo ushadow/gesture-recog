@@ -1,5 +1,5 @@
 function mean = initmeanfromfile(prefix, nfeat, param)
-%% INITMEANFROMFILE initialize mean from files.
+%% INITMEANFROMFILE initializes means from files.
 %
 % ARGS
 % prefix  - a cell array of file prefix.

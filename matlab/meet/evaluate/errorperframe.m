@@ -2,9 +2,9 @@ function error = errorperframe(Ytrue, Ystar, ~)
 % ERRORPERFRAME total number of gesture label errors for all the frame for 
 %               each variable.
 % 
-% Args:
-% - Ytrue: true labels in a sequence.
-% - Ystar: predicted labels in a sequence.
+% ARGS
+% Ytrue   - true labels in a sequence.
+% Ystar   - predicted labels in a sequence.
 % 
 % Returns:
 % - error: number of errors.
