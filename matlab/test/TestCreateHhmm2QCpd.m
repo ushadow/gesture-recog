@@ -1,13 +1,17 @@
-classdef TestCreatHhmm2QCpd < matlab.unittest.TestCase
+classdef TestCreateHhmm2QCpd < matlab.unittest.TestCase
 
 methods (Test)
   function testCreate(self)
-
+    bnet = TestCreateHhmm2QCpd.createBnet;
+    node = 5;
+    cpdStruct = struct(bnet.CPD{node});
+    cpd = createhhmm2qcpd(bnet, node, cpdStruct);
+    self.verifyEqual(cpd, bnet.CPD{node});
   end
 end
 
 methods (Static)
-  function bnet = deterministicParams
+  function bnet = createBnet
     params.nG = 4;
     params.nS = 4;
     params.nF = 2;
