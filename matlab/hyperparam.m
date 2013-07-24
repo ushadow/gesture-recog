@@ -7,6 +7,7 @@ hyperParam.L = 16;
 hyperParam.nprincomp = 7; % number of principal components from image.
 hyperParam.XcovType = 'diag';
 hyperParam.resetS = false;
+hyperParam.M = 3;
 
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
@@ -54,6 +55,7 @@ for i = 1 : length(hyperParam.nS)
     param.clampCov = hyperParam.clampCov;
     param.learnedModel = hyperParam.learnedModel;
     param.nHiddenStatePerGesture = hyperParam.nHiddenStatePerGesture;
+    param.M = hyperParam.M;
     param.selectedFeature = hyperParam.selectedFeature;
     param.imageWidth = hyperParam.imageWidth;
     param.useGpu = hyperParam.useGpu;

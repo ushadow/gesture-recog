@@ -69,6 +69,11 @@ else
   if ~isempty(param.train)
     tid = tic;
     R.learnedModel = param.train(Y.Tr, X.Tr, param);
+    if isfield(param, 'jobId')
+      savevariable(fullfile(param.dir, ...
+          sprintf('learnedModel-%d.mat', param.jobId)), 'learnedModel', ...
+          R.learnedModel);
+    end
     R.trainingTime = toc(tid);
   else
     R.learnedModel = param.learnedModel{foldNDX};

@@ -18,6 +18,7 @@ if verbose, fprintf('Generate tasks'); tid = tic(); end
 
 for model = 1 : nrow % for each model (row)
   params = modelParam{model};
+  params.jobId = job.ID;
   for fold = 1 : ncol % for each fold (col)
     if verbose, fprintf('.'); end 
     createTask(job, @runexperiment, nargout, {params, fold, batchNDX});

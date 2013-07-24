@@ -2,7 +2,7 @@ function [R, prob] = testahmm(Y, X, model, param)
 %% INFERENCEAHMM performs inference on the AHMM model with the data.
 %
 % R = inferenceahmm(ahmm, data, predictNode, param)
-% Args:
+% ARGS
 % - ahmm: the AHMM model.
 % - data: cell array of sequences.
 % - predictNodes: a vector of nodes to be predicted.
@@ -10,8 +10,8 @@ function [R, prob] = testahmm(Y, X, model, param)
 %          method, 'L' for lag time when the infernece method is 
 %          'fixed-lag-smoothing'.
 %
-% Returns:
-% - R: inference results for each frame.
+% RETURNS
+% R - inference results for each frame.
 
 if strcmp(model.type, 'hmm')
   [ahmm, ahmmParam] = makeahmmfromhmm(model, param);
@@ -22,13 +22,13 @@ end
 
 predictNode = [ahmmParam.G1 ahmmParam.F1 ahmmParam.S1];
 trainData = makedbninputdata(Y.Tr, X.Tr, ahmmParam);
-R.Tr = inference(ahmm, trainData, predictNode, param);
+[R.Tr, prob.Tr] = inference(ahmm, trainData, predictNode, param);
 
 validateData = makedbninputdata(Y.Va, X.Va, ahmmParam);
-R.Va = inference(ahmm, validateData, predictNode, param);
+[R.Va, prob.Va] = inference(ahmm, validateData, predictNode, param);
 end
 
-function R = inference(ahmm, data, predictNode, param)
+function [R, prob] = inference(ahmm, data, predictNode, param)
 method = param.inferMethod;
 
 switch method
