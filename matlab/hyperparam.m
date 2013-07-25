@@ -2,18 +2,18 @@ function hyperParam = hyperparam(paramFromData, varargin)
 
 % Default values.
 hyperParam.nS = 45; % number of hidden states S.
-hyperParam.nHiddenStatePerGesture = 7 + 2;
+hyperParam.nHiddenStatePerGesture = 7;
 hyperParam.L = 16;
 hyperParam.nprincomp = 7; % number of principal components from image.
 hyperParam.XcovType = 'diag';
-hyperParam.resetS = false;
-hyperParam.M = 3;
+hyperParam.resetS = true;
+hyperParam.nM = 3;
 
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
 hyperParam.inferMethod = 'fixed-interval-smoothing';
 hyperParam.train = @trainhmm;
-hyperParam.inference = @testhmm;
+hyperParam.inference = @testahmm;
 hyperParam.preprocess = {};
 hyperParam.maxIter = 10;
 hyperParam.evalName = {'Error', 'Leven'};
@@ -33,6 +33,7 @@ hyperParam.clampCov = 0;
 hyperParam.covPrior = 2;
 hyperParam.gSampleFactor = 1;
 hyperParam.rSampleFactor = 30;
+hyperParam.combineprepost = false;
 
 hyperParam.startImgFeatNDX = paramFromData.startImgFeatNDX;
 hyperParam.dir = paramFromData.dir;
@@ -51,11 +52,12 @@ for i = 1 : length(hyperParam.nS)
     param.startImgFeatNDX = hyperParam.startImgFeatNDX;
     param.dir = hyperParam.dir;
     
+    param.combineprepost = hyperParam.combineprepost;
     param.covPrior = hyperParam.covPrior;
     param.clampCov = hyperParam.clampCov;
     param.learnedModel = hyperParam.learnedModel;
     param.nHiddenStatePerGesture = hyperParam.nHiddenStatePerGesture;
-    param.M = hyperParam.M;
+    param.nM = hyperParam.nM;
     param.selectedFeature = hyperParam.selectedFeature;
     param.imageWidth = hyperParam.imageWidth;
     param.useGpu = hyperParam.useGpu;

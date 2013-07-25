@@ -107,8 +107,8 @@ methods (Test)
   end
   
   function testInference(testCase)
-    det_params = testCase.deterministicParams;
-    ahmm = createahmm(det_params);
+    detParams = testCase.deterministicParams;
+    ahmm = createahmm(detParams);
     engine = smoother_engine(jtree_2TBN_inf_engine(ahmm));
 
     T = 4;

@@ -1,4 +1,4 @@
-function [R, prob] = testahmm(Y, X, model, param)
+function [R, prob, path] = testahmm(Y, X, model, param)
 %% INFERENCEAHMM performs inference on the AHMM model with the data.
 %
 % R = inferenceahmm(ahmm, data, predictNode, param)
@@ -13,8 +13,14 @@ function [R, prob] = testahmm(Y, X, model, param)
 % RETURNS
 % R - inference results for each frame.
 
+path = [];
+
 if strcmp(model.type, 'hmm')
-  [ahmm, ahmmParam] = makeahmmfromhmm(model, param);
+  if param.nM == 1
+    [ahmm, ahmmParam] = makeahmmfromhmm(model, param);
+  else 
+    [ahmm, ahmmParam] = makeahmmmixgaussfromhmm(model, param);
+  end
 else
   ahmm = model.model;
   ahmmParam = model.param;
@@ -31,14 +37,15 @@ end
 function [R, prob] = inference(ahmm, data, predictNode, param)
 method = param.inferMethod;
 
+jtree = jtree_2TBN_inf_engine(ahmm);
+
 switch method
   case {'fixed-interval-smoothing', 'viterbi'}
-    engine = smoother_engine(jtree_2TBN_inf_engine(ahmm));
+    engine = smoother_engine(jtree);
   case 'filtering'
-    engine = filter_engine(jtree_2TBN_inf_engine(ahmm));
+    engine = filter_engine(jtree);
   case {'fixed-lag-smoothing', 'fixed-lag-viterbi'}
-    engine = fixed_lag_smoother_engine(jtree_2TBN_inf_engine(ahmm), ...
-                                       param.L);
+    engine = fixed_lag_smoother_engine(jtree, param.L);
   otherwise
     error(['Inference method not implemented: ' method]);
 end
