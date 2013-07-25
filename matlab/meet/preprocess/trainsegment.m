@@ -1,10 +1,6 @@
-function model = segmenttrain(data, restNDX)
+function model = trainsegment(Y, X, restNDX)
 % ARGS
-% data  - data structure.
-
-% Get training split.
-Y = data.Y(data.split{1});
-X = data.X(data.split{1});
+% Y, X  - training data.
 
 nseqs = size(Y, 2);
 rest = cell(1, nseqs);

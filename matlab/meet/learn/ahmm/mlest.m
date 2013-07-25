@@ -1,9 +1,9 @@
-function [mlEst, prob] = mapest(engine, hnode, T)
+function [mlEst, prob] = mlest(engine, hnode, T)
 % ARGS
 % hnode   - hidden nodes that we want to estimate the state.
 %
 % RETURNS
-% - mapEst: a matrix.
+% mlEst   - a matrix of maximum likelihood extimates.
 
 nhnodes = length(hnode);
 mlEst = zeros(nhnodes, T);

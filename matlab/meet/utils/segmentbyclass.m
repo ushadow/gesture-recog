@@ -4,6 +4,7 @@ function dataByClass = segmentbyclass(Y, X, nclass)
 % Y   - cell array of labels. Each cell is a sequence for one recording.
 % X   - cell array of observations.
 
+Y = combineprepost(Y);
 nseq = size(Y, 2);
 dataByClass = cell(1, nclass);
 for i = 1 : nseq

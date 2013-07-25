@@ -23,4 +23,4 @@ Gstartprob(1, 11) = 1;
 Gtransprob(1 : 10, 12) = 1;
 Gtransprob(11, 1 : 10) = 1 / 10;
 Gtransprob(12, 13) = 1;
-Gtransprob(13, 11) = 1;
+Gtransprob(13, 1 : 11) = 1 / 11;

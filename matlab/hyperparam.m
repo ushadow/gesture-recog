@@ -2,7 +2,7 @@ function hyperParam = hyperparam(paramFromData, varargin)
 
 % Default values.
 hyperParam.nS = 45; % number of hidden states S.
-hyperParam.nHiddenStatePerGesture = 7;
+hyperParam.nHiddenStatePerGesture = 7 + 2;
 hyperParam.L = 16;
 hyperParam.nprincomp = 7; % number of principal components from image.
 hyperParam.XcovType = 'diag';
@@ -12,14 +12,14 @@ hyperParam.M = 3;
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
 hyperParam.inferMethod = 'fixed-interval-smoothing';
-hyperParam.train = @trainahmm;
-hyperParam.inference = @testahmm;
+hyperParam.train = @trainhmm;
+hyperParam.inference = @testhmm;
 hyperParam.preprocess = {};
-hyperParam.maxIter = 7;
+hyperParam.maxIter = 10;
 hyperParam.evalName = {'Error', 'Leven'};
 hyperParam.evalFun = {@errorperframe, @levenscore};
 hyperParam.Gclamp = 1;
-hyperParam.thresh = 0.1;
+hyperParam.thresh = 0.001;
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.Fobserved = 1;
@@ -37,7 +37,7 @@ hyperParam.rSampleFactor = 30;
 hyperParam.startImgFeatNDX = paramFromData.startImgFeatNDX;
 hyperParam.dir = paramFromData.dir;
 hyperParam.vocabularySize = paramFromData.vocabularySize;
-hyperParam.learnedModel = [];
+hyperParam.learnedModel = []; % cell array, one model for each fold.
 
 for i = 1 : 2 : length(varargin)
   hyperParam.(varargin{i}) = varargin{i + 1};

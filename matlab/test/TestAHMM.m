@@ -190,7 +190,7 @@ methods (Test)
         'max_iter', max_iter);
     
     hnodes = mysetdiff(1 : ss, onodes);
-    mapEst = mapest(engine, hnodes, T);
+    mapEst = mlest(engine, hnodes, T);
     SNDX = hnodes == ahmmParam.S1;
     mapS = mapEst(SNDX(:), :);
     trueS = [ev{ahmmParam.S1, :}];

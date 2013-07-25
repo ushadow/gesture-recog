@@ -14,4 +14,6 @@ term = ones(nS, 1) / nS;
 mixmat = ones(nS, M) / M;
 
 [mu, Sigma] = mixgauss_init(nS * M,  cell2mat(data), cov_type);
+d = size(mu, 1);
+mu = reshape(mu, [d nS M]);
 end

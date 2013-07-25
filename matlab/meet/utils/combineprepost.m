@@ -1,5 +1,8 @@
-function data = combineprepost(data)
-Y = data.Y;
+function Y = combineprepost(Y)
+%
+% ARGS
+% Y - cell array of label sequences.
+
 nseq = size(Y, 2);
 
 for i = 1 : nseq
@@ -16,21 +19,17 @@ for i = 1 : nseq
       case 12
         seq(1, startNDX : endNDX) = seq(1, startNDX - 1);
         seq(2, startNDX - 1) = 1;
-      case 13
-        seq(1, startNDX : endNDX) = 11;
     end
     startNDX = endNDX + 1;
   end
   checkseq(seq);
   Y{i} = seq;
 end
-data.Y = Y;
 end
 
 function checkseq(seq)
 
 n = size(seq, 2);
-assert(all(seq(1, :) <= 11));
 for i = 1 : n - 1
   if seq(1, i) == seq(1, i + 1)
     assert(seq(2, i) == 1);

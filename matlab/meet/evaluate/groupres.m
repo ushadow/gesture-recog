@@ -1,4 +1,5 @@
 function groupedRes = groupres(res, nbatch, nmodel, nfold)
+%% GROUPRES groups results into to nmodel rows and nfold colums
 
 groupedRes = cell(1, nbatch);
 taskNDX = 0;

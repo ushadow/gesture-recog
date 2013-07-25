@@ -1,6 +1,8 @@
 function [ahmm, ahmmParam] = makeahmmfromhmm(hmm, param)
 %% MAKEAHMMFROMHMM creates an AHMM from HMM.
 %
+% ARGS
+% param   - hyperparameters.
 
 if nargin < 2
   error('There must be 2 arguments.');

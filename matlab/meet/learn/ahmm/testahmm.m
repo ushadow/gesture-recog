@@ -51,7 +51,7 @@ for i = 1 : nseqs
   switch method
     case {'fixed-interval-smoothing', 'fixed-lag-smoothing'}
       engine = enter_evidence(engine, evidence);
-      [R{i}, prob{i}] = mapest(engine, predictNode, length(evidence));
+      [R{i}, prob{i}] = mlest(engine, predictNode, length(evidence));
     case 'filtering'
       T = size(evidence, 2);
       nhnode = length(predictNode);

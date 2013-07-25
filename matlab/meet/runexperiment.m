@@ -66,7 +66,7 @@ if param.returnFeature
 else
   
 %% Step 3: Train and test model, get prediction on all three splits
-  if ~isempty(param.train)
+  if isempty(param.learnedModel) && ~isempty(param.train)
     tid = tic;
     R.learnedModel = param.train(Y.Tr, X.Tr, param);
     if isfield(param, 'jobId')
@@ -81,7 +81,8 @@ else
 
   if ~isempty(param.inference)
     tid = tic;
-    [R.prediction, R.prob] = param.inference(Y, X, R.learnedModel, param);
+    [R.prediction, R.prob, R.path] = param.inference(Y, X, ...
+        R.learnedModel, param);
     R.testingTime = toc(tid);
   end
 
