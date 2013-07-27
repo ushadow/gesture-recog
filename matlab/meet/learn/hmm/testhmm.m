@@ -1,4 +1,5 @@
 function [pred, prob, path] = testhmm(~, X, hmm, param)
+%% TESTHMM tests HMM model
 
 nclass =  param.vocabularySize;
 hmm = hmm.model;
@@ -26,21 +27,27 @@ for i = 1 : nseqs;
   for r = 1 : nruns
     startNDX = runs(r, 1);
     endNDX = runs(r, 2);
-    ll = ones(1, nclass - 1) * -inf;
+    ll = ones(1, nclass - 3) * -inf;
     obslik = cell(1, nclass - 1);
     for c = 1 : length(ll)
       if ~isempty(hmm.prior{c})
+        [prior, transmat, mu, Sigma, mixmat, term] = combinehmmparam(...
+            hmm.prior([11 c 12]), hmm.transmat([11 c 12]), hmm.mu([11 c 12]), ...
+            hmm.Sigma([11 c 12]), hmm.mixmat([11 c 12]), hmm.term([11 c 12]));
         [ll(c), ~, obslik{c}] = mhmm_logprob(ev(:, startNDX : endNDX), ...
-            hmm.prior{c}, hmm.transmat{c}, hmm.mu{c}, hmm.Sigma{c}, ...
-            hmm.mixmat{c});
+            prior, transmat, mu, Sigma, mixmat, term);
       end
     end
     [~, mlPred] = max(ll);
     pred1(startNDX : endNDX) = mlPred;
     [realStart, realEnd, path1(startNDX : endNDX)] = ...
         realstartend2(obslik{mlPred}, hmm, mlPred);
-    pred1(startNDX : startNDX + realStart - 2) = 11;
-    pred1(startNDX + realEnd : endNDX) = 12;
+    if realStart == -1
+      pred1(startNDX : endNDX) = 13;
+    else
+      pred1(startNDX : startNDX + realStart - 2) = 11;
+      pred1(startNDX + realEnd : endNDX) = 12;
+    end
     prob1{r} = ll;
   end
   pred{i} = pred1;
@@ -68,16 +75,30 @@ function [realStart, realEnd, path] = realstartend(obslik, hmm, c)
 end
 
 function [realStart, realEnd, path] = realstartend2(obslik, hmm, c)
-  path = viterbi_path(hmm.prior{c}, hmm.transmat{c}, obslik);
-  realStart = 1;
-  realEnd = 0;
-  startNDX = find(path ~= path(1));
-  if ~isempty(startNDX)
-    realStart = startNDX(1);
+  [prior, transmat, ~, ~, ~, term] = combinehmmparam(...
+            hmm.prior([11 c 12]), hmm.transmat([11 c 12]), hmm.mu([11 c 12]), ...
+            hmm.Sigma([11 c 12]), hmm.mixmat([11 c 12]), hmm.term([11 c 12]));
+  path = viterbi_path(prior, transmat, obslik, term);
+  
+  if computetransitions(path) <= 3
+    realStart = -1;
+    realEnd = -1;
+    return;
   end
   
-  endNDX = find(path ~= path(end));
-  if ~isempty(endNDX)
-    realEnd= endNDX(end);
+  realStart = 1;
+  realEnd = 0;
+  gestureNDX = find(path > 3 & path <= 10);
+  if ~isempty(gestureNDX)
+    realStart = gestureNDX(1);
+    realEnd = gestureNDX(end);
+  end
+end
+
+function n = computetransitions(path)
+  runs = contiguous(path);
+  n = 0;
+  for i = 1 : size(runs, 1)
+    n = n + size(runs{i, 2}, 1);
   end
 end

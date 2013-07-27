@@ -1,4 +1,5 @@
 function Y = combineprepost(Y)
+%% COMBINEPREPOST combines pre- and post-strokes with the gesture.
 %
 % ARGS
 % Y - cell array of label sequences.
@@ -7,6 +8,7 @@ nseq = size(Y, 2);
 
 for i = 1 : nseq
   seq = Y{i};
+  % Finds index of the end frames.
   ndx = find(seq(2, :) == 2);
   startNDX = 1;
   for j = 1 : length(ndx)

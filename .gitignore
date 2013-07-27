@@ -6,3 +6,4 @@ tags
 *.asv
 data
 matlab/chalearn/Examples
+*.dot

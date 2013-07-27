@@ -1,4 +1,4 @@
-function ahmmParam = createahmmmixgauss(param)
+function [model, ahmmParam] = createahmmmixgauss(param)
 % CREATEMODEL creates a graphical AHMM model.
 % 
 % [model, ahmmParam] = createahmm(param)

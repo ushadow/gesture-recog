@@ -11,8 +11,12 @@ colormap(bipolar(ngestures));
 image(im);
 
 nrow = size(im, 1);
+xtick = get(gca, 'XTick');
+set(gca, 'XTickLabel', data.frame{seqNDX}(xtick));
+
 set(gca, 'YTick', 1 : nrow);
 set(gca, 'YTickLabel', {'GT', 'Pred'});
+
 h = colorbar;
 set(h, 'YTick', 1 : ngestures);
 set(h, 'YTickLabel', gesturelabel);
