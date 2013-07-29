@@ -6,19 +6,23 @@ hyperParam.dir = paramFromData.dir;
 hyperParam.vocabularySize = paramFromData.vocabularySize;
 hyperParam.learnedModel = []; % cell array, one model for each fold.
 
+% HMM parameters
+hyperParam.nSMap = containers.Map(1 : 3, [3 7 3]);
+hyperParam.nM = 3;
+hyperParam.combineprepost = false;
+
+% HMM and AHMM parameters
+hyperParam.XcovType = 'diag';
+
 hyperParam.nS = 45; % number of hidden states S.
-hyperParam.nSMap = containers.Map(1 : hyperParam.vocabularySize, ...
-    [ones(1, 10) * 7, 3, 3, 1]);
 hyperParam.L = 16;
 hyperParam.nprincomp = 7; % number of principal components from image.
-hyperParam.XcovType = 'diag';
 hyperParam.resetS = true;
-hyperParam.nM = 3;
 
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
 hyperParam.inferMethod = 'fixed-interval-smoothing';
-hyperParam.train = @trainhmm;
+hyperParam.train = @trainhmmprepost;
 hyperParam.inference = @testhmm;
 hyperParam.preprocess = {};
 hyperParam.maxIter = 10;
@@ -39,7 +43,6 @@ hyperParam.clampCov = 0;
 hyperParam.covPrior = 2;
 hyperParam.gSampleFactor = 1;
 hyperParam.rSampleFactor = 30;
-hyperParam.combineprepost = false;
 
 for i = 1 : 2 : length(varargin)
   hyperParam.(varargin{i}) = varargin{i + 1};

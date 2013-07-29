@@ -26,33 +26,21 @@ for i = 1 : param.vocabularySize - 1
   end
 end
 
+ngestures = param.vocabularySize - 3;
+for i = 1 : ngestures
+  ndx = [ngestures + 1 i ngestures + 2];
+  [model.prior{i}, model.transmat{i}, model.mu{i}, model.Sigma{i}, ... 
+      model.mixmat{i}, modle.term{i}] = combinehmmparam(...
+      model.prior(ndx), model.transmat(ndx), model.mu(ndx), ...
+      model.Sigma(ndx), model.mixmat(ndx), model.term(ndx));
+end
+
 i = param.vocabularySize;
 [model.prior{i}, model.transmat{i}, model.mu{i}, model.Sigma{i}, ...
-      model.mixmat{i}, model.term{i}] = trainrest(XByClass{i}, param.nM);
+      model.mixmat{i}, model.term{i}] = trainrestmodel(XByClass{i}, param.nM);
     
 model.segment = trainsegment(Y, X, param.vocabularySize);
     
 hmm.type = 'hmm';
 hmm.model = model;
-end
-
-function [prior, transmat, mu, Sigma, mixmat, term] = trainrest(X, nM)
-% ARGS
-% nM  - number of mixtures.
-
-X = cell2mat(X);
-nX = size(X, 1);
-nS = 1;
-
-prior = 1;
-transmat = 1;
-mu = zeros(nX, nS, nM);
-mu(:, 1, 1) = mean(X, 2);
-
-Sigma = repmat(eye(nX), [1, 1, nS, nM]);
-Sigma(:, :, 1, 1) = diag(std(X, 0, 2));
-
-mixmat = zeros(nS, nM);
-mixmat(1) = 1;
-term = 0.5;
 end

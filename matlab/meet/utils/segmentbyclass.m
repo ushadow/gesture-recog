@@ -1,4 +1,5 @@
 function dataByClass = segmentbyclass(Y, X, nclass, combineprepost)
+%% SEGMENTBYCLASS segments the sequences according to class labes.
 %
 % ARGS
 % Y   - cell array of labels. Each cell is a sequence for one recording.
@@ -8,9 +9,9 @@ if combineprepost
   Y = combineprepost(Y);
 end
 
-nseq = size(Y, 2);
+nseqs = size(Y, 2);
 dataByClass = cell(1, nclass);
-for i = 1 : nseq
+for i = 1 : nseqs
   seqY = Y{i};
   seqX = X{i};
   ndx = find(seqY(2, :) == 2);

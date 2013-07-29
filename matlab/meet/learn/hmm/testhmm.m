@@ -12,7 +12,15 @@ seg = testsegment(X.Va, hmm.segment);
 end
 
 function [pred, prob, path] = inference(X, seg, hmm, nclass)
+%%
+% ARGS
+% nclass  - total number of classes including pre-stroke, post-stroke and 
+%           rest.
+
 nseqs = length(X);
+ngestures = nclass - 3;
+rest = nclass;
+
 pred = cell(1, nseqs);
 prob = cell(1, nseqs);
 path = cell(1, nseqs);
@@ -27,23 +35,21 @@ for i = 1 : nseqs;
   for r = 1 : nruns
     startNDX = runs(r, 1);
     endNDX = runs(r, 2);
-    ll = ones(1, nclass - 3) * -inf;
-    obslik = cell(1, nclass - 1);
+    ll = ones(1, ngestures) * -inf;
+    obslik = cell(1, ngestures);
     for c = 1 : length(ll)
-      if ~isempty(hmm.prior{c})
-        [prior, transmat, mu, Sigma, mixmat, term] = combinehmmparam(...
-            hmm.prior([11 c 12]), hmm.transmat([11 c 12]), hmm.mu([11 c 12]), ...
-            hmm.Sigma([11 c 12]), hmm.mixmat([11 c 12]), hmm.term([11 c 12]));
+      if ~isempty(hmm.prior{c})       
         [ll(c), ~, obslik{c}] = mhmm_logprob(ev(:, startNDX : endNDX), ...
-            prior, transmat, mu, Sigma, mixmat, term);
+            hmm.prior{c}, hmm.transmat{c}, hmm.mu{c}, hmm.Sigma{c}, ...
+            hmm.mixmat{c}, hmm.term{c});
       end
     end
     [~, mlPred] = max(ll);
     pred1(startNDX : endNDX) = mlPred;
     [realStart, realEnd, path1(startNDX : endNDX)] = ...
-        realstartend2(obslik{mlPred}, hmm, mlPred);
+        realstartend(obslik{mlPred}, hmm, mlPred);
     if realStart == -1
-      pred1(startNDX : endNDX) = 13;
+      pred1(startNDX : endNDX) = rest;
     else
       pred1(startNDX : startNDX + realStart - 2) = 11;
       pred1(startNDX + realEnd : endNDX) = 12;
@@ -56,38 +62,23 @@ for i = 1 : nseqs;
 end
 end
 
-function [realStart, realEnd, path] = realstartend(obslik, hmm, c)
-  path = viterbi_path(hmm.prior{c}, hmm.transmat{c}, obslik);
-  [~, startState] = max(hmm.prior{c});
-  [~, endState] = max(hmm.term{c});
-  realStart = 1;
-  realEnd = length(path);
-  
-  startNDX = find(path ~= startState);
-  if ~isempty(startNDX)
-    realStart = startNDX(1);
-  end
-  
-  endNDX = find(path ~= endState);
-  if ~isempty(endNDX)
-    realEnd= endNDX(end);
-  end
-end
+function [realStart, realEnd, path] = realstartend(obslik, hmm, gesture)
+%%
+% ARGS
+% obslik  - a vector of observation likelihood for gesture c.
+% hmm     - a struct of HMM parameters for all gestures.
+%
+% RETURNS
+% realStart   - index of actual gesture start frame relative to the
+%               beginning of a segment.
 
-function [realStart, realEnd, path] = realstartend2(obslik, hmm, c)
-  [prior, transmat, ~, ~, ~, term] = combinehmmparam(...
-            hmm.prior([11 c 12]), hmm.transmat([11 c 12]), hmm.mu([11 c 12]), ...
-            hmm.Sigma([11 c 12]), hmm.mixmat([11 c 12]), hmm.term([11 c 12]));
-  path = viterbi_path(prior, transmat, obslik, term);
+  path = viterbi_path(hmm.prior{gesture}, hmm.transmat{gesture}, ...
+                      obslik, hmm.term{gesture});
   
-  if computetransitions(path) <= 3
-    realStart = -1;
-    realEnd = -1;
-    return;
-  end
+  realStart = -1;
+  realEnd = -1;
+  if computetransitions(path) <= 3, return; end
   
-  realStart = 1;
-  realEnd = 0;
   gestureNDX = find(path > 3 & path <= 10);
   if ~isempty(gestureNDX)
     realStart = gestureNDX(1);
