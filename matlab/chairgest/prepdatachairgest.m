@@ -2,7 +2,7 @@ function data = prepdatachairgest(dirname, userId, sensorType, ...
                 dataType, testPerc, subsampleFactor)
 %% PREPAREDATACHAIRGEST prepares the data from CHAIRGEST dataset from one 
 % user into right structure for preprocessing.
-
+%
 % ARGS
 % dirname     - directory of the main database name, i.e. 'chairgest'.
 % userId      - integer of user id.

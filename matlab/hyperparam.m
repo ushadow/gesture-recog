@@ -6,6 +6,11 @@ hyperParam.dir = paramFromData.dir;
 hyperParam.vocabularySize = paramFromData.vocabularySize;
 hyperParam.learnedModel = []; % cell array, one model for each fold.
 
+% Training parameters
+hyperParam.train = @trainhmmprepost;
+hyperParam.maxIter = 20;
+hyperParam.thresh = 0.001;
+
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 7 3]);
 hyperParam.nM = 3;
@@ -19,17 +24,20 @@ hyperParam.L = 16;
 hyperParam.nprincomp = 7; % number of principal components from image.
 hyperParam.resetS = true;
 
+hyperParam.preprocess = {};
+
+
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
 hyperParam.inferMethod = 'fixed-interval-smoothing';
-hyperParam.train = @trainhmmprepost;
+
 hyperParam.inference = @testhmm;
-hyperParam.preprocess = {};
-hyperParam.maxIter = 10;
+
+
 hyperParam.evalName = {'Error', 'Leven'};
 hyperParam.evalFun = {@errorperframe, @levenscore};
 hyperParam.Gclamp = 1;
-hyperParam.thresh = 0.001;
+
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.Fobserved = 1;

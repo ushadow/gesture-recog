@@ -4,6 +4,17 @@ function [pred, prob, path] = testhmm(~, X, hmm, param)
 nclass =  param.vocabularySize;
 hmm = hmm.model;
 
+restNDX = nclass;
+for i = 1 : nclass - 3
+  [gPrior, gTransmat, gMu, gSigma, gMixmat, gTerm] = combinehmmparam( ...
+      hmm.prior{i}, hmm.transmat{i}, hmm.mu{i}, hmm.Sigma{i}, ...
+      hmm.mixmat{i}, hmm.term{i});
+  [hmm.prior{i}, hmm.transmat{i}, hmm.mu{i}, hmm.Sigma{i}, ...
+      hmm.mixmat{i}, hmm.term{i}] = combinerestmodel(gPrior, gTransmat, ...
+      gMu, gSigma, gMixmat, gTerm, hmm.transmat{restNDX}, hmm.mu{restNDX}, ...
+      hmm.Sigma{restNDX}, hmm.mixmat{restNDX}, hmm.term{restNDX});
+end
+
 seg = testsegment(X.Tr, hmm.segment); 
 [pred.Tr, prob.Tr, path.Tr] = inference(X.Tr, seg, hmm, nclass);
 

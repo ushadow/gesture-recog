@@ -34,12 +34,12 @@ for i = 1 : ngestures
       mixmat{s}, 'adj_prior', 1, 'max_iter', param.maxIter, 'cov_type', ...
       param.XcovType, 'adj_Sigma', 1, 'term', term{s});
   end
-  [gPrior, gTransmat, gMu, gSigma, gMixmat, gTerm] = combinehmmparam( ...
-      prior, transmat, mu, Sigma, mixmat, term);
-  [model.prior{i}, model.transmat{i}, model.mu{i}, model.Sigma{i}, ...
-      model.mixmat{i}, model.term{i}] = combinerestmodel(gPrior, gTransmat, ...
-      gMu, gSigma, gMixmat, gTerm, model.transmat{restNDX}, model.mu{restNDX}, ...
-      model.Sigma{restNDX}, model.mixmat{restNDX}, model.term{restNDX});
+  model.prior{i} = prior;
+  model.transmat{i} = transmat;
+  model.mu{i} = mu;
+  model.Sigma{i} = Sigma;
+  model.mixmat{i} = mixmat;
+  model.term{i} = term;
 end
 
 model.segment = trainsegment(Y, X, param.vocabularySize);
