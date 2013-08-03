@@ -75,8 +75,12 @@ else
           R.learnedModel);
     end
     R.trainingTime = toc(tid);
-  else
-    R.learnedModel = param.learnedModel{foldNDX};
+  else 
+    model = param.learnedModel;
+    if iscell(model)
+      model = model{foldNDX};
+    end
+    R.learnedModel = model;
   end
 
   if ~isempty(param.inference)

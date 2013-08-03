@@ -92,8 +92,9 @@ function [realStart, realEnd, path] = realstartend(obslik, hmm, gesture)
   
   gestureNDX = find(path > 3 & path <= 10);
   if ~isempty(gestureNDX)
-    realStart = gestureNDX(1);
-    realEnd = gestureNDX(end);
+    runs = contiguousindex(gestureNDX);
+    realStart = runs(1, 1);
+    realEnd = runs(1, 2);
   end
 end
 
