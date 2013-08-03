@@ -1,4 +1,4 @@
-function data = setsplit(data, testPerc)
+function split = getsplit(data, testPerc)
 %% SETSPLIT sets the training and testing split
 %
 % ARGS
@@ -10,5 +10,4 @@ nseq = size(data.Y, 2);
 ntest = floor(nseq * testPerc);
 split{1, 1} = 1 : nseq - ntest;
 split{2, 1} = nseq - ntest + 1 : nseq;
-data.split = split;
 end
