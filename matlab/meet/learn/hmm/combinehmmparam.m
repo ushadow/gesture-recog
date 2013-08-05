@@ -1,6 +1,6 @@
-function [combinedPrior, combinedTransmat, combinedMu, combinedSigma, ...
-    combinedMixmat, combinedTerm] = combinehmmparam(prior, transmat, ...
-    mu, Sigma, mixmat, term)
+function [combinedPrior, combinedTransmat, combinedTerm, combinedMu, ...
+    combinedSigma, combinedMixmat] = combinehmmparam(prior, transmat, ...
+    term, mu, Sigma, mixmat)
 %
 % ARGS
 % prior   - cell array of column vectors.
@@ -28,9 +28,13 @@ for i = 1 : length(nS)
   startNDX = startNDX + nS(i);
 end
 
-combinedMu = cat(2, mu{:});
-combinedSigma = cat(3, Sigma{:});
-combinedMixmat = cat(1, mixmat{:});
 combinedTerm = cat(1, term{:});
 combinedTerm(1 : end - nS(end)) = 0;
+assert(abs(sum(combinedPrior) - 1) < eps);
+
+if nargout > 3
+  combinedMu = cat(2, mu{:});
+  combinedSigma = cat(3, Sigma{:});
+  combinedMixmat = cat(1, mixmat{:});
+end
 end

@@ -1,32 +1,37 @@
-function [pred, prob, path] = testhmm(~, X, hmm, param)
+function [pred, prob, path] = testhmmprepost(~, X, hmm, param)
 %% TESTHMM tests HMM model
 
 nclass =  param.vocabularySize;
 hmm = hmm.model;
 
+isDiag = 0;
+
 restNDX = nclass;
 for i = 1 : nclass - 3
-  [gPrior, gTransmat, gMu, gSigma, gMixmat, gTerm] = combinehmmparam( ...
-      hmm.prior{i}, hmm.transmat{i}, hmm.mu{i}, hmm.Sigma{i}, ...
-      hmm.mixmat{i}, hmm.term{i});
-  [hmm.prior{i}, hmm.transmat{i}, hmm.mu{i}, hmm.Sigma{i}, ...
-      hmm.mixmat{i}, hmm.term{i}] = combinerestmodel(gPrior, gTransmat, ...
-      gMu, gSigma, gMixmat, gTerm, hmm.transmat{restNDX}, hmm.mu{restNDX}, ...
-      hmm.Sigma{restNDX}, hmm.mixmat{restNDX}, hmm.term{restNDX});
+  [gPrior, gTransmat, gTerm, gMu, gSigma, gMixmat] = combinehmmparam( ...
+      hmm.prior{i}, hmm.transmat{i}, hmm.term{i}, hmm.mu{i}, hmm.Sigma{i}, ...
+      hmm.mixmat{i});
+  [hmm.prior{i}, hmm.transmat{i}, hmm.term{i}, hmm.mu{i}, hmm.Sigma{i}, ...
+      hmm.mixmat{i}] = combinerestmodel(gPrior, gTransmat, ...
+      gTerm, hmm.transmat{restNDX}, hmm.term{restNDX}, param.nSMap, ...
+      gMu, gSigma, gMixmat, hmm.mu{restNDX}, hmm.Sigma{restNDX}, hmm.mixmat{restNDX});
 end
 
 seg = testsegment(X.Tr, hmm.segment); 
-[pred.Tr, prob.Tr, path.Tr] = inference(X.Tr, seg, hmm, nclass);
+[pred.Tr, prob.Tr, path.Tr] = inference(X.Tr, seg, hmm, nclass, ...
+                                        param.nSMap, isDiag);
 
 seg = testsegment(X.Va, hmm.segment);
-[pred.Va, prob.Va, path.Va] = inference(X.Va, seg, hmm, nclass);
+[pred.Va, prob.Va, path.Va] = inference(X.Va, seg, hmm, nclass, ...
+                                        param.nSMap, isDiag);
 end
 
-function [pred, prob, path] = inference(X, seg, hmm, nclass)
+function [pred, prob, path] = inference(X, seg, hmm, nclass, nSMap, isDiag)
 %%
 % ARGS
 % nclass  - total number of classes including pre-stroke, post-stroke and 
 %           rest.
+% isDiag  - true if covariance matrix is diagonal. 
 
 nseqs = length(X);
 ngestures = nclass - 3;
@@ -35,6 +40,7 @@ rest = nclass;
 pred = cell(1, nseqs);
 prob = cell(1, nseqs);
 path = cell(1, nseqs);
+
 for i = 1 : nseqs;
   ev = X{i};
   pred1 = ones(1, size(ev, 2)) * nclass;
@@ -52,13 +58,13 @@ for i = 1 : nseqs;
       if ~isempty(hmm.prior{c})       
         [ll(c), ~, obslik{c}] = mhmm_logprob(ev(:, startNDX : endNDX), ...
             hmm.prior{c}, hmm.transmat{c}, hmm.mu{c}, hmm.Sigma{c}, ...
-            hmm.mixmat{c}, hmm.term{c});
+            hmm.mixmat{c}, hmm.term{c}, isDiag);
       end
     end
     [~, mlPred] = max(ll);
     pred1(startNDX : endNDX) = mlPred;
     [realStart, realEnd, path1(startNDX : endNDX)] = ...
-        realstartend(obslik{mlPred}, hmm, mlPred);
+        realstartend(obslik{mlPred}, hmm, mlPred, nSMap);
     if realStart == -1
       pred1(startNDX : endNDX) = rest;
     else
@@ -73,11 +79,14 @@ for i = 1 : nseqs;
 end
 end
 
-function [realStart, realEnd, path] = realstartend(obslik, hmm, gesture)
-%%
+function [realStart, realEnd, path] = realstartend(obslik, hmm, ...
+    gesture, nSMap)
+%% REALSTRATEND detects the actual start and end of the gesture nucleus.
+%
 % ARGS
 % obslik  - a vector of observation likelihood for gesture c.
 % hmm     - a struct of HMM parameters for all gestures.
+% gesture - predicted gesture.
 %
 % RETURNS
 % realStart   - index of actual gesture start frame relative to the
@@ -85,23 +94,6 @@ function [realStart, realEnd, path] = realstartend(obslik, hmm, gesture)
 
   path = viterbi_path(hmm.prior{gesture}, hmm.transmat{gesture}, ...
                       obslik, hmm.term{gesture});
-  
-  realStart = -1;
-  realEnd = -1;
-  if computetransitions(path) <= 3, return; end
-  
-  gestureNDX = find(path > 3 & path <= 10);
-  if ~isempty(gestureNDX)
-    runs = contiguousindex(gestureNDX);
-    realStart = runs(1, 1);
-    realEnd = runs(1, 2);
-  end
+  [realStart, realEnd] = realstartendinpath(path, nSMap);
 end
 
-function n = computetransitions(path)
-  runs = contiguous(path);
-  n = 0;
-  for i = 1 : size(runs, 1)
-    n = n + size(runs{i, 2}, 1);
-  end
-end

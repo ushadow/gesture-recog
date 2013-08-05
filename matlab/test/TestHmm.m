@@ -2,6 +2,7 @@ classdef TestHmm < matlab.unittest.TestCase
 methods (Test)
   function testCombineHmmParam(self)
     nS = [3, 7, 3];
+    map = containers.Map(1 : 3, nS);
     d = 1;
     nM = 3;
     prior = cell(1, 3);
@@ -44,12 +45,10 @@ methods (Test)
     
     [cPrior, cTransmat, cMu, cSigma, cMixmat, cTerm] = ...
       combinerestmodel(gPrior, gTransmat, gMu, gSigma, gMixmat, gTerm, ...
-      rTransmat, rMu, rSigma, rMixmat, rTerm);
+      rTransmat, rMu, rSigma, rMixmat, rTerm, map);
     self.verifyEqual(sum(cPrior), 1);
     self.verifyEqual(cPrior, [expectedPrior; 0]); 
     self.verifyEqual(sum(cTransmat, 2), ones(14, 1), 'AbsTol', eps);
-    self.verifyEqual(cTransmat(1: 10, 1 : 10), ...
-        gTransmat(1 : 10, 1 : 10), 'AbsTol', eps);
     self.verifyEqual(diag(cTransmat(11 : 13, 11 : 13)), ...
         ones(3, 1) * 0.5 / (0.5 + 0.25)); 
     self.verifyEqual(cTerm, [0.01; 0.01; 0.01; zeros(7, 1); 0.25; 0.25; ...
@@ -60,6 +59,12 @@ methods (Test)
     self.verifyEqual(cTransmat(end, :), [1 / 9, 1 / 9, 1 / 9, ...
                      zeros(1, 7), ones(1, 3) / 9, 1 / 3 ]);
    
+  end
+  
+  function testGestureStageNDX(self)
+    map = containers.Map(1 : 3, [6, 7, 6]);
+    stageNDX = gesturestagendx(map);
+    self.verifyEqual(stageNDX, [1 6; 7 13; 14 19]);
   end
 end
 end

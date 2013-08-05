@@ -9,7 +9,7 @@ dataType = data.param.dataType;
 filename = [algo '_' dataType '.txt'];
 fid = fopen(fullfile(outputDir, filename), 'w');
 fprintf(fid, '#Algorithm\t%s\t%s\n', algo, name);
-fprintf(fid, '#Data\t%s\t%s\n', dataType, data.param.sensorType);
+fprintf(fid, '#Data\t%s\t%s\n', dataType, data.param.gtSensorType);
 
 prediction = result.prediction.Va;
 file = data.file(result.split{2});

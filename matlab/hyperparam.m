@@ -4,7 +4,9 @@ function hyperParam = hyperparam(paramFromData, varargin)
 hyperParam.startImgFeatNDX = paramFromData.startImgFeatNDX;
 hyperParam.dir = paramFromData.dir;
 hyperParam.vocabularySize = paramFromData.vocabularySize;
+hyperParam.subsampleFactor = paramFromData.subsampleFactor;
 hyperParam.learnedModel = []; % cell array, one model for each fold.
+hyperParam.dataFile = [];
 
 % Training parameters
 hyperParam.train = @trainhmmprepost;
@@ -12,43 +14,40 @@ hyperParam.maxIter = 20;
 hyperParam.thresh = 0.001;
 
 % HMM parameters
-hyperParam.nSMap = containers.Map(1 : 3, [3 7 3]);
+hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
 hyperParam.nM = 3;
 hyperParam.combineprepost = false;
 
-% HMM and AHMM parameters
+% Gaussian model parameters
 hyperParam.XcovType = 'diag';
 
+% AHMM parameters
 hyperParam.nS = 45; % number of hidden states S.
 hyperParam.L = 16;
-hyperParam.nprincomp = 7; % number of principal components from image.
 hyperParam.resetS = true;
-
-hyperParam.preprocess = {};
-
-
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
 hyperParam.inferMethod = 'fixed-interval-smoothing';
-
-hyperParam.inference = @testhmm;
-
-
-hyperParam.evalName = {'Error', 'Leven'};
-hyperParam.evalFun = {@errorperframe, @levenscore};
 hyperParam.Gclamp = 1;
-
-hyperParam.sBin = 4;
-hyperParam.oBin = 9;
-hyperParam.Fobserved = 1;
-hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 1};
-hyperParam.returnFeature = false;
-hyperParam.dataFile = 'dsImuStd';
-hyperParam.useGpu = false;
-hyperParam.imageWidth = 100;
-hyperParam.selectedFeature = [2 : 7, 11 : 13] + 18 * 3;
 hyperParam.clampCov = 0;
 hyperParam.covPrior = 2;
+hyperParam.Fobserved = 1;
+hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 1};
+
+% Preprocess parameters.
+hyperParam.preprocess = {};
+hyperParam.returnFeature = false;
+hyperParam.nprincomp = 7; % number of principal components from image.
+hyperParam.sBin = 4;
+hyperParam.oBin = 9;
+hyperParam.selectedFeature = [2 : 7, 11 : 13] + 18 * 3;
+
+hyperParam.inference = @testhmmprepost;
+hyperParam.evalName = {'Error', 'Leven'};
+hyperParam.evalFun = {@errorperframe, @levenscore};
+
+hyperParam.useGpu = false;
+hyperParam.imageWidth = 100;
 hyperParam.gSampleFactor = 1;
 hyperParam.rSampleFactor = 30;
 
@@ -63,6 +62,7 @@ for i = 1 : length(hyperParam.nS)
     param.vocabularySize = hyperParam.vocabularySize;
     param.startImgFeatNDX = hyperParam.startImgFeatNDX;
     param.dir = hyperParam.dir;
+    param.subsampleFactor = hyperParam.subsampleFactor;
     
     param.combineprepost = hyperParam.combineprepost;
     param.covPrior = hyperParam.covPrior;
