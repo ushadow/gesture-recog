@@ -15,7 +15,7 @@ if ~exist('seed','var'), seed = 0; end
 
 RandStream.setGlobalStream(RandStream('mt19937ar','seed',seed));
 randNDX = randperm(nsample - ntest);
-foldSize = round((nsample - ntest) / nfold);
+foldSize = floor((nsample - ntest) / nfold);
 
 I = cell(2, nfold);
 for i=1:nfold

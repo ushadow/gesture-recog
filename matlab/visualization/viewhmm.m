@@ -1,17 +1,18 @@
-function viewhmm(hmm, modelNDX, nSMap, varargin)
+function viewhmm(hmm, modelNDX, nSMap)
 % viewhmm(hmm, modelNDX, varargin)
 
 transmat = hmm.transmat{modelNDX};
 prior = hmm.prior{modelNDX};
-term = hmm.term{modelNDX}; 
+term = hmm.term{modelNDX};
+mu = hmm.mu{modelNDX};
 restNDX = 13;
 
 if iscell(hmm.transmat{modelNDX})
-  [prior, transmat, term] = combinehmmparam(prior, transmat, term);
-  [prior, transmat, term] = combinerestmodel(prior, transmat, term, ...
-      hmm.transmat{restNDX}, hmm.term{restNDX}, nSMap);
+  [prior, transmat, term, mu] = combinehmmparam(prior, transmat, term, mu);
+  [prior, transmat, term, mu] = combinerestmodel(prior, transmat, term, ...
+      hmm.transmat{restNDX}, hmm.term{restNDX}, nSMap, mu, hmm.mu{restNDX});
 end
   
 draw_hmm(transmat, 'startprob', prior, 'endprob', term, ...
-         'thresh', 1e-3, varargin{:});
+         'thresh', 1e-3, 'nodePos', mu(1 : 2, :)' * 500);
 end

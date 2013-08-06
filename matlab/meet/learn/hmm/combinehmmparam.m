@@ -34,6 +34,9 @@ assert(abs(sum(combinedPrior) - 1) < eps);
 
 if nargout > 3
   combinedMu = cat(2, mu{:});
+end
+
+if nargout > 4
   combinedSigma = cat(3, Sigma{:});
   combinedMixmat = cat(1, mixmat{:});
 end

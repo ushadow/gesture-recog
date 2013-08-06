@@ -12,6 +12,10 @@ methods (Test)
     Sigma = cell(1, 3);
     mixmat = cell(1, 3);
     [prior{1}, transmat{1}, term{1}] = makepreposttrans(nS(1));
+    % 0.33 0.33 0.33
+    %      0.33 0.33 0.33
+    % ...
+    %                           0.33 0.33
     [prior{2}, transmat{2}, term{2}] = makebakistrans(nS(2));
     [prior{3}, transmat{3}, term{3}] = makepreposttrans(nS(3));
     
@@ -21,8 +25,8 @@ methods (Test)
       mixmat{i} = zeros(nS(i), nM);
     end
     
-    [gPrior, gTransmat, gMu, gSigma, gMixmat, gTerm] = combinehmmparam(...
-        prior, transmat, mu, Sigma, mixmat, term);
+    [gPrior, gTransmat, gTerm, gMu, gSigma, gMixmat] = combinehmmparam(...
+        prior, transmat, term, mu, Sigma, mixmat);
     self.verifyEqual(sum(gPrior), 1);
     
     expectedPrior = [1 / 3; 1 / 3; 1 / 3; zeros(10, 1)];
@@ -32,6 +36,7 @@ methods (Test)
     self.verifyEqual(gTransmat(1 : 3, 4 : 5), ones(3, 2) * 0.25);
     self.verifyEqual(diag(gTransmat(4 : 8, 4 : 8)), ones(5, 1) / 3, ...
           'AbsTol', eps);
+    self.verifyEqual(gTransmat(11 : 13, 11 : 13), eye(3));
     self.verifyEqual(gTerm, [zeros(10, 1); 0.5; 0.5; 0.5]);
     self.verifyEqual(size(gMu), [d sum(nS) nM]);
     self.verifyEqual(size(gSigma), [d d sum(nS) nM]);
@@ -43,9 +48,9 @@ methods (Test)
     rMixmat = [1 0 0];
     rTerm = 0.5;
     
-    [cPrior, cTransmat, cMu, cSigma, cMixmat, cTerm] = ...
-      combinerestmodel(gPrior, gTransmat, gMu, gSigma, gMixmat, gTerm, ...
-      rTransmat, rMu, rSigma, rMixmat, rTerm, map);
+    [cPrior, cTransmat, cTerm, cMu, cSigma, cMixmat] = ...
+      combinerestmodel(gPrior, gTransmat, gTerm, rTransmat, rTerm, ...
+      map, gMu, rMu, gSigma, gMixmat, rSigma, rMixmat);
     self.verifyEqual(sum(cPrior), 1);
     self.verifyEqual(cPrior, [expectedPrior; 0]); 
     self.verifyEqual(sum(cTransmat, 2), ones(14, 1), 'AbsTol', eps);

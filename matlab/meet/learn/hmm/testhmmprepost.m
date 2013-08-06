@@ -14,7 +14,7 @@ for i = 1 : nclass - 3
   [hmm.prior{i}, hmm.transmat{i}, hmm.term{i}, hmm.mu{i}, hmm.Sigma{i}, ...
       hmm.mixmat{i}] = combinerestmodel(gPrior, gTransmat, ...
       gTerm, hmm.transmat{restNDX}, hmm.term{restNDX}, param.nSMap, ...
-      gMu, gSigma, gMixmat, hmm.mu{restNDX}, hmm.Sigma{restNDX}, hmm.mixmat{restNDX});
+      gMu, hmm.mu{restNDX}, gSigma, gMixmat, hmm.Sigma{restNDX}, hmm.mixmat{restNDX});
 end
 
 seg = testsegment(X.Tr, hmm.segment); 
@@ -44,7 +44,7 @@ path = cell(1, nseqs);
 for i = 1 : nseqs;
   ev = X{i};
   pred1 = ones(1, size(ev, 2)) * nclass;
-  path1 = ones(1, size(ev, 2)) * nclass;
+  path1 = ones(1, size(ev, 2)) * (sum(cell2num(values(nSMap))) + 1);
   runs = contiguous(seg{i}, 0);
   runs = runs{1, 2};
   nruns = size(runs, 1);

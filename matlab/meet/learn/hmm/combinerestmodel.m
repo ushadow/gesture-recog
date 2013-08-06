@@ -1,6 +1,6 @@
 function [cPrior, cTransmat, cTerm, cMu, cSigma, cMixmat] = ...
-  combinerestmodel(gPrior, gTransmat, gTerm, rTransmat, rTerm, nSMap, gMu, gSigma, gMixmat, ...
-  rMu, rSigma, rMixmat)
+  combinerestmodel(gPrior, gTransmat, gTerm, rTransmat, rTerm, nSMap, ...
+  gMu, rMu, gSigma, gMixmat, rSigma, rMixmat)
 %% COMBINERESTMODEL combines rest model with the gesture HMM model
 
 nSrest = length(rTerm); % number of hidden state for rest
@@ -17,21 +17,22 @@ gToR = gTerm - newGTerm;
 newGTerm(stageNDX(1, 2) - 2 : stageNDX(1, 2)) = ones(3, 1) * 0.01;
 cTerm = cat(1, newGTerm, rTerm);
 
-newRTransmat = rTransmat / 3;
-rToPre = rTransmat / 3;
-rToPost = rTransmat / 3;
+newRTransmat = rTransmat / 9;
+rToOther = rTransmat - newRTransmat;
 
 gTransmat(stageNDX(1, 2) - 2 : stageNDX(1, 2), ...
           stageNDX(3, 1) : stageNDX(3, 1) + 2) = 0.01;
 cTransmat = blkdiag(gTransmat, newRTransmat);
-cTransmat(end, 1 : 3) = rToPre * gPrior(1 : 3)';
-cTransmat(end, stageNDX(3, 1) : stageNDX(3, 1) + 2) = rToPost * ones(1, 3) / 3;
+cTransmat(end, [1 : 5, stageNDX(3, 1) : stageNDX(3, 1) + 2]) = rToOther * ones(1, 3) / 8;
 
 cTransmat(1 : end - nSrest, end) =  gToR;
 cTransmat = mk_stochastic(cTransmat);
 
 if nargout > 3
   cMu = cat(2, gMu, rMu);
+end
+
+if nargout > 4
   cSigma = cat(3, gSigma, rSigma);
   cMixmat = cat(1, gMixmat, rMixmat);
 end
