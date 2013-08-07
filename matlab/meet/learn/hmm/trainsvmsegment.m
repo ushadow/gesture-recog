@@ -2,7 +2,8 @@ function trainsvmsegment(Y, X, restNDX, dirname)
 % ARGS
 % Y, X  - training data
 
-fid = fopen(fullfile(dirname, 'svm-train-data.txt'), 'w');
+trainFile = fullfile(dirname, 'svm-train-data');
+fid = fopen(trainFile, 'w');
 % each column is a feature vector
 [rest, gesture] = separate(Y, X, restNDX);
 nrest = size(rest, 2);
@@ -17,6 +18,11 @@ end
 
 outputsvmdata(fid, rest, 1);
 outputsvmdata(fid, gesture, 1);
+fclose(fid);
+
+% Use default c = 1, gamma = 1/ nfeatures, use probability
+system(sprintf('svm-train.exe -b 1 %s', trainFile));
+
 end
 
 function outputsvmdata(fid, data, label)

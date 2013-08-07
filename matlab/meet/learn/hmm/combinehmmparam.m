@@ -30,7 +30,7 @@ end
 
 combinedTerm = cat(1, term{:});
 combinedTerm(1 : end - nS(end)) = 0;
-assert(abs(sum(combinedPrior) - 1) < eps);
+assert(abs(sum(combinedPrior) - 1) < 1e-9);
 
 if nargout > 3
   combinedMu = cat(2, mu{:});
