@@ -17,6 +17,7 @@ hyperParam.thresh = 0.001;
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
 hyperParam.nM = 3;
 hyperParam.combineprepost = false;
+hyperParam.nRest = 1;
 
 % Gaussian model parameters
 hyperParam.XcovType = 'diag';
@@ -63,7 +64,7 @@ for i = 1 : length(hyperParam.nS)
     param.startImgFeatNDX = hyperParam.startImgFeatNDX;
     param.dir = hyperParam.dir;
     param.subsampleFactor = hyperParam.subsampleFactor;
-    
+    param.nRest = hyperParam.nRest;
     param.combineprepost = hyperParam.combineprepost;
     param.covPrior = hyperParam.covPrior;
     param.clampCov = hyperParam.clampCov;

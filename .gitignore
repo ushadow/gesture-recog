@@ -9,3 +9,4 @@ matlab/chalearn/Examples
 *.dot
 *.ps
 *.png
+*.out

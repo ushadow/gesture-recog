@@ -18,12 +18,17 @@ end
 end
 
 function isRest = findrest(x, model)
-  d = size(model.restMean, 1);
+  d = size(model.restMu, 1);
   x = x(1 : d, :);
-  restProb = gaussian_prob(x, model.restMean, diag(model.restStd), 0, 1);
-  gestureProb = gaussian_prob(x, model.gestureMean, ...
-    diag(model.gestureStd), 0, 1);
-  isRest = restProb > gestureProb;
+  if size(model.restMu, 3) == 1
+    restProb = gaussian_prob(x, model.restMu, model.restSigma, 0, 1);
+  else
+    restProb = mixgauss_prob(x, model.restMu, model.restSigma, ...
+                             model.restMixmat, 0, 1);
+  end
+  % A column vector
+  gestureProb = gaussian_prob(x, model.gestureMu, model.gestureSigma, 0, 1);
+  isRest = restProb(:) > gestureProb(:);
   isRest = isRest';
 end
 

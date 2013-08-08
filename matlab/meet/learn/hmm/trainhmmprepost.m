@@ -15,9 +15,11 @@ model.term = cell(param.vocabularySize, 1);
 model.mixmat = cell(param.vocabularySize, 1);
 
 restNDX = param.vocabularySize;
+model.segment = trainsegment(Y, X, restNDX, param.nRest);
 [model.prior{restNDX}, model.transmat{restNDX}, model.mu{restNDX}, ...
       model.Sigma{restNDX}, model.mixmat{restNDX}, ...
-      model.term{restNDX}] = trainrestmodel(XByClass{restNDX}, param.nM);
+      model.term{restNDX}] = getrestmodel(model.segment.restMu, ...
+          model.segment.restSigma, model.segment.restMixmat, param.nM);
 
 for i = 1 : ngestures
   prior = cell(1, nstages);
@@ -42,7 +44,6 @@ for i = 1 : ngestures
   model.term{i} = term;
 end
 
-model.segment = trainsegment(Y, X, param.vocabularySize);
 hmm.type = 'hmm';
 hmm.model = model;
 end

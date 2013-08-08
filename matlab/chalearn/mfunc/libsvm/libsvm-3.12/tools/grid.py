@@ -37,7 +37,7 @@ global out_filename, png_filename
 
 telnet_workers = []
 ssh_workers = []
-nr_local_worker = 1
+nr_local_worker = 32 
 
 # process command line options, set global parameters
 def process_options(argv=sys.argv):

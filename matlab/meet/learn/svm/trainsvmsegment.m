@@ -5,7 +5,7 @@ function trainsvmsegment(Y, X, restNDX, dirname)
 trainFile = fullfile(dirname, 'svm-train-data');
 fid = fopen(trainFile, 'w');
 % each column is a feature vector
-[rest, gesture] = separate(Y, X, restNDX);
+[rest, gesture] = separaterest(Y, X, restNDX);
 nrest = size(rest, 2);
 ngesture = size(gesture, 2);
 if nrest > ngesture
@@ -17,21 +17,14 @@ elseif ngesture > nrest
 end
 
 outputsvmdata(fid, rest, 1);
-outputsvmdata(fid, gesture, 1);
+outputsvmdata(fid, gesture, -1);
 fclose(fid);
 
-% Use default c = 1, gamma = 1/ nfeatures, use probability
-system(sprintf('svm-train.exe -b 1 %s', trainFile));
+svmDir = fullfile(pwd, 'chalearn', 'mfunc', 'libsvm', 'code');
+trainExeFile = fullfile(svmDir, 'svm-train.exe');
+% Use default c = 1, gamma = 1/ nfeatures, use probability (b = 1)
+% Do not use shrinking heuristics (h = 0).
+system(sprintf('%s -c 32 -g 0.5 -v 3 %s', trainExeFile, trainFile));
 
 end
 
-function outputsvmdata(fid, data, label)
-d = size(data, 1);
-for i = 1 : size(data, 2)
-  fprintf(fid, '%d', label);
-  for j = 1 : d
-    fprintf(fid, ' %d:%f', j, data(j, i));
-  end
-  fprintf(fid, '\n');
-end
-end
