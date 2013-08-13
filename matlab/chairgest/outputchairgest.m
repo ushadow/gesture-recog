@@ -1,7 +1,7 @@
 function outputchairgest(data, result, algo, name, gestureLabel)
 % ARGS
 % data - struct with field: param.
-% result - struct with field: param.
+% result - cell array of struct with fields: param, prediction.
 % gestureLabel - cell array of gesture label strings.
 
 dataType = data.param.dataType;

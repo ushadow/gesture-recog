@@ -1,5 +1,6 @@
-function X = selectfeature(X, param)
+function [X, model] = selectfeature(X, param)
 
+model = [];
 dataType = {'Tr', 'Va', 'Te'};
 for i = 1 : length(dataType)
   type = dataType{i};

@@ -17,13 +17,17 @@ for i = 1 : nclass - 3
       gMu, hmm.mu{restNDX}, gSigma, gMixmat, hmm.Sigma{restNDX}, hmm.mixmat{restNDX});
 end
 
-seg = testsegment(X.Tr, hmm.segment); 
-[pred.Tr, prob.Tr, path.Tr] = inference(X.Tr, seg, hmm, nclass, ...
-                                        param.nSMap, isDiag);
+if isfield(X, 'Tr')
+  seg = testsegment(X.Tr, hmm.segment, param.subsampleFactor); 
+  [pred.Tr, prob.Tr, path.Tr] = inference(X.Tr, seg, hmm, nclass, ...
+                                          param.nSMap, isDiag);
+end
 
-seg = testsegment(X.Va, hmm.segment);
-[pred.Va, prob.Va, path.Va] = inference(X.Va, seg, hmm, nclass, ...
-                                        param.nSMap, isDiag);
+if isfield(X, 'Va')
+  seg = testsegment(X.Va, hmm.segment, param.subsampleFactor);
+  [pred.Va, prob.Va, path.Va] = inference(X.Va, seg, hmm, nclass, ...
+                                          param.nSMap, isDiag);
+end
 end
 
 function [pred, prob, path] = inference(X, seg, hmm, nclass, nSMap, isDiag)

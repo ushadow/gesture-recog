@@ -1,5 +1,7 @@
 function hyperParam = hyperparam(paramFromData, varargin)
 
+hyperParam.trainIter = 1; % Training iterations
+
 % Default values.
 hyperParam.startImgFeatNDX = paramFromData.startImgFeatNDX;
 hyperParam.dir = paramFromData.dir;
@@ -36,7 +38,7 @@ hyperParam.Fobserved = 1;
 hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 1};
 
 % Preprocess parameters.
-hyperParam.preprocess = {};
+hyperParam.preprocess = {@selectfeature @standardizefeature};
 hyperParam.returnFeature = false;
 hyperParam.nprincomp = 7; % number of principal components from image.
 hyperParam.sBin = 4;

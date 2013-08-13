@@ -1,4 +1,4 @@
-function R = runexperiment(param, foldNDX, batchNDX, data)    
+function R = runexperiment(param, foldNDX, batchNDX, seed, data)    
 %% RUNEXPERIMENT runs the experiment for one fold.
 % R = runexperiment(param, split, data)
 %
@@ -13,7 +13,7 @@ function R = runexperiment(param, foldNDX, batchNDX, data)
 % R   - if param.returnFeature is true, returns the processed feature;
 %       else returns struct of result.
 
-rng(0, 'twister');
+rng(seed, 'twister');
 
 %% Step 1: Prepare data
 if ~exist('data', 'var')
@@ -49,9 +49,11 @@ end
 %% Step 2: Preprocess data
 %   Dimensionality reduction, standardzation, sparsification
 if isfield(param, 'preprocess')
-  for i = 1 : length(param.preprocess)
+  npreprocesses = length(param.preprocess); 
+  R.preprocessModel = cell(1, npreprocesses); 
+  for i = 1 : npreprocesses
     fun = param.preprocess{i};
-    X = fun(X, param);
+    [X, R.preprocessModel{i}]  = fun(X, param);
   end
 end
 
@@ -62,7 +64,7 @@ if param.returnFeature
     data.X(split{3}) = X.Te;
   end
   data.split = split;
-  R = data;
+  R.data = data;
 else
   
 %% Step 3: Train and test model, get prediction on all three splits

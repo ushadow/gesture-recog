@@ -15,49 +15,54 @@ fprintf('\n-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-|-o-\n');
 fprintf('Parameters:\n')
 disp(hyperParam);
 
-% Run experiments.
-verbose = jobParam.verbose;
-jm = findResource('scheduler', 'type', 'local');
-job = createJob(jm);
+for iter = 1 : hyperParam.trainIter
+  % Run experiments.
+  verbose = jobParam.verbose;
+  jm = findResource('scheduler', 'type', 'local');
+  job = createJob(jm);
 
-ntask = zeros(nBatch, 2);
+  ntask = zeros(nBatch, 2);
 
-for i = 1 : nBatch
-  data = batch{i};
-  [nrow, ncol] = runexperimentparallel(data, i, hyperParam.model, ...
-                 jobParam, job);
-  ntask(i, :) = [nrow ncol];
-end
+  for i = 1 : nBatch
+    data = batch{i};
+    [nrow, ncol] = runexperimentparallel(data, i, hyperParam.model, ...
+                   jobParam, job, iter);
+    ntask(i, :) = [nrow ncol];
+  end
 
-% Set jobData (global variable to all tasks)    
-if verbose, fprintf('Set job data...'); tid = tic(); end    
-set(job, 'PathDependencies', strread(jobParam.path, '%s', ...
-    'delimiter', ';'));
-jobData.ntask = ntask;
-set(job, 'JobData', jobData);
-if verbose, t = toc(tid); fprintf('Done setting data (%.2f s)\n', t); end
+  % Set jobData (global variable to all tasks)    
+  if verbose, fprintf('Set job data...'); tid = tic(); end    
+  set(job, 'PathDependencies', strread(jobParam.path, '%s', ...
+      'delimiter', ';'));
+  jobData.ntask = ntask;
+  set(job, 'JobData', jobData);
+  if verbose, t = toc(tid); fprintf('Done setting data (%.2f s)\n', t); end
 
-% Submit and wait
-if verbose, fprintf('Submit and wait...\n'); end    
-submit(job);  
-tid = tic();
-waitForState(job, 'finished');
+  % Submit and wait
+  submit(job);  
+  if verbose, fprintf('Job submited\n'); end
 
-% Destroy job
-if jobParam.destroy,
-  job.destroy();
-end
+  if jobParam.wait
+    tid = tic();
+    waitForState(job, 'finished');
 
-if hyperParam.returnFeature
-  res = arrayfun(@(x) x.OutputArguments{1}, job.Tasks, ...
-                 'UniformOutput', false);
-else
-  % Report results.
-  fprintf('\n==========================================\n'); 
+    % Destroy job
+    if jobParam.destroy,
+      job.destroy();
+    end
 
-  res = batchresult(job, batch, hyperParam);
+    if hyperParam.returnFeature
+      res = arrayfun(@(x) x.OutputArguments{1}, job.Tasks, ...
+                     'UniformOutput', false);
+    else
+      % Report results.
+      fprintf('\n==========================================\n'); 
 
-  fprintf('Time(s) used\t');
-  fprintf('%5.2f\n', toc(tid)); 
+      res = batchresult(job, batch, hyperParam);
+
+      fprintf('Time(s) used\t');
+      fprintf('%5.2f\n', toc(tid)); 
+    end
+  end
 end
 end

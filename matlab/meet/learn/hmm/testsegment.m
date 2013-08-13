@@ -1,4 +1,4 @@
-function seg = testsegment(X, model)
+function seg = testsegment(X, model, subsampleFactor)
 %% TESTSEGMENT test the segmentation of rest position from gestures.
 %
 % ARGS
@@ -13,7 +13,7 @@ seg = cell(1, nseqs);
 for i = 1 : nseqs
   seqX = X{i};
   seg1 = findrest(seqX, model);
-  seg{i} = removeshortseg(seg1);
+  seg{i} = removeshortseg(seg1, subsampleFactor);
 end
 end
 
@@ -32,19 +32,19 @@ function isRest = findrest(x, model)
   isRest = isRest';
 end
 
-function seg = removeshortseg(seg)
+function seg = removeshortseg(seg, subsampleFactor)
 % ARGS
 % seg   - segment of rest and gestures. 1 is rest, 0 is gesture.
 
 label = [1 0];
-minLength = [10 10];
+minLength = [50 50];
 for i = 1 : length(label)
   runs = contiguous(seg, label(i));
   run1 = runs{1, 2};
   for r = 1 : size(run1, 1)
     startNDX = run1(r, 1);
     endNDX = run1(r, 2);
-    if endNDX - startNDX < minLength(i);
+    if endNDX - startNDX < minLength(i) / subsampleFactor;
       seg(startNDX : endNDX) = 1 - label(i);
     end
   end

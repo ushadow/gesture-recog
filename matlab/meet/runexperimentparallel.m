@@ -1,5 +1,5 @@
 function [nrow, ncol] = runexperimentparallel(data, batchNDX, modelParam, ...
-                        jobParam, job)
+                        jobParam, job, seed)
 %% RUNEXPERIMENTPARALLEL runs experiment for one batch of data in parallel.
 %
 % ARGS
@@ -21,7 +21,7 @@ for model = 1 : nrow % for each model (row)
   params.jobId = job.ID;
   for fold = 1 : ncol % for each fold (col)
     if verbose, fprintf('.'); end 
-    createTask(job, @runexperiment, nargout, {params, fold, batchNDX});
+    createTask(job, @runexperiment, nargout, {params, fold, batchNDX, seed});
   end
 end
 if verbose

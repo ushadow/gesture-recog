@@ -10,3 +10,5 @@ matlab/chalearn/Examples
 *.ps
 *.png
 *.out
+*.mat
+*.txt
