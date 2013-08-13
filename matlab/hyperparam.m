@@ -9,6 +9,7 @@ hyperParam.vocabularySize = paramFromData.vocabularySize;
 hyperParam.subsampleFactor = paramFromData.subsampleFactor;
 hyperParam.learnedModel = []; % cell array, one model for each fold.
 hyperParam.dataFile = [];
+hyperParam.mce = false;
 
 % Training parameters
 hyperParam.train = @trainhmmprepost;
@@ -38,7 +39,7 @@ hyperParam.Fobserved = 1;
 hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 1};
 
 % Preprocess parameters.
-hyperParam.preprocess = {@selectfeature @standardizefeature};
+hyperParam.preprocess = {@standardizefeature};
 hyperParam.returnFeature = false;
 hyperParam.nprincomp = 7; % number of principal components from image.
 hyperParam.sBin = 4;
@@ -96,6 +97,7 @@ for i = 1 : length(hyperParam.nS)
     param.sBin = hyperParam.sBin;
     param.oBin = hyperParam.oBin;
     param.initMeanFilePrefix = hyperParam.initMeanFilePrefix; 
+    param.mce = hyperParam.mce;
     
     ndx = (i - 1) * length(hyperParam.L) + j;
     hyperParam.model{ndx} = param;

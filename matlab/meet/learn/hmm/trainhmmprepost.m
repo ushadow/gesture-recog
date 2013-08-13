@@ -7,41 +7,32 @@ nstages = 3;
 
 XByClass = segmentbyclassprepost(Y, X, ngestures);
 
-model.prior = cell(param.vocabularySize, 1);
-model.transmat = cell(param.vocabularySize, 1);
-model.mu = cell(param.vocabularySize, 1); % d x nS x nM matrix
-model.Sigma = cell(param.vocabularySize, 1);
-model.term = cell(param.vocabularySize, 1);
-model.mixmat = cell(param.vocabularySize, 1);
+model.prior = cell(param.vocabularySize, nstages);
+model.transmat = cell(param.vocabularySize, nstages);
+model.mu = cell(param.vocabularySize, nstages); % d x nS x nM matrix
+model.Sigma = cell(param.vocabularySize, nstages);
+model.term = cell(param.vocabularySize, nstages);
+model.mixmat = cell(param.vocabularySize, nstages);
 
 restNDX = param.vocabularySize;
 model.segment = trainsegment(Y, X, restNDX, param.nRest);
-[model.prior{restNDX}, model.transmat{restNDX}, model.mu{restNDX}, ...
-      model.Sigma{restNDX}, model.mixmat{restNDX}, ...
-      model.term{restNDX}] = getrestmodel(model.segment.restMu, ...
+[model.prior{restNDX, 1}, model.transmat{restNDX, 1}, model.mu{restNDX, 1}, ...
+      model.Sigma{restNDX, 1}, model.mixmat{restNDX, 1}, ...
+      model.term{restNDX, 1}] = getrestmodel(model.segment.restMu, ...
           model.segment.restSigma, model.segment.restMixmat, param.nM);
 
 for i = 1 : ngestures
-  prior = cell(1, nstages);
-  transmat = cell(1, nstages);
-  term = cell(1, nstages);
-  mu = cell(1, nstages);
-  Sigma = cell(1, nstages);
-  mixmat = cell(1, nstages);
   for s = 1 : nstages
-    [prior{s}, transmat{s}, term{s}, mu{s}, Sigma{s}, mixmat{s}] = inithmmparam(...
+    [model.prior{i, s}, model.transmat{i, s}, model.term{i, s}, ...
+        model.mu{i, s}, model.Sigma{i, s}, model.mixmat{i, s}] = inithmmparam(...
         XByClass{i, s}, param.nSMap(s), param.nM, param.XcovType, s);
-    [~, prior{s}, transmat{s}, mu{s}, Sigma{s}, mixmat{s}, term{s}] = ...
-      mhmm_em(XByClass{i, s}, prior{s}, transmat{s}, mu{s}, Sigma{s}, ...
-      mixmat{s}, 'adj_prior', 1, 'max_iter', param.maxIter, 'cov_type', ...
-      param.XcovType, 'adj_Sigma', 1, 'term', term{s});
+    [~, model.prior{i, s}, model.transmat{i, s}, model.mu{i, s}, ...
+      model.Sigma{i, s}, model.mixmat{i, s}, model.term{i, s}] = ...
+      mhmm_em(XByClass{i, s}, model.prior{i, s}, model.transmat{i, s}, ...
+      model.mu{i, s}, model.Sigma{i, s}, ...
+      model.mixmat{i, s}, 'adj_prior', 1, 'max_iter', param.maxIter, 'cov_type', ...
+      param.XcovType, 'adj_Sigma', 1, 'term', model.term{i, s});
   end
-  model.prior{i} = prior;
-  model.transmat{i} = transmat;
-  model.mu{i} = mu;
-  model.Sigma{i} = Sigma;
-  model.mixmat{i} = mixmat;
-  model.term{i} = term;
 end
 
 hmm.type = 'hmm';
