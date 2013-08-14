@@ -10,14 +10,13 @@ for c = cat
   for i = 1 : nfold
     % User split from the result.
     split1 = R{i}.split;
-    Ytrue.Tr = Y(split1{1});
-    Ytrue.Va = Y(split1{2});
+    Ytrue = separatedata(Y, split1);
     stat{i} = evalOneFold(Ytrue, R{i}.prediction, c);
   end
   allStat = [allStat; stat{i}]; %#ok<AGROW>
 end
 
-dataType = {'Tr', 'Va'};
+dataType = fields(Ytrue);
 value = {'Precision', 'Recall', 'F1'};
 for i = 1 : length(dataType)
   for j = 1 : length(value)
@@ -35,10 +34,7 @@ end
 end
 
 function stat = evalOneFold(Y, R, cat)
-key = {'Tr', 'Va'};
-if isfield(Y, 'Te')
-  key{end + 1} = 'Te'; 
-end
+key = fields(Y);
 
 stat = containers.Map();
 for i = 1 : length(key)

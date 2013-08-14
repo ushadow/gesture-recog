@@ -12,3 +12,6 @@ matlab/chalearn/Examples
 *.out
 *.mat
 *.txt
+matlab/chairgest/lib/FullBNT*
+matlab/chairgest/lib/util
+matlab/chairgest/lib/preprocess

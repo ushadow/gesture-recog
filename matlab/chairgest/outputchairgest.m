@@ -23,6 +23,7 @@ for i = 1 : length(result)
     fr1 = frame{j}; 
     outputonesequence(p1, f1, fr1, gestureLabel, fid);
   end
+  fprintf('Result out put to %s.\n', filename);
   fclose(fid);
 end
 end

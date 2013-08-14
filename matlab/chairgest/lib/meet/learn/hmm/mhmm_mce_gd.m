@@ -43,7 +43,7 @@ function [prior, transmat, term, mu, sigma, mixmat] = gradmhmm(...
 %   a cell arrayd of sequences.
 % sigma - sqrt of covariance matrix.
 
-eta = 1;
+eta = 0.01;
 varsigma = 0.02; % Inversely proportional to average sequence length.
 
 [O, Q, M, ngestures] = size(mu);

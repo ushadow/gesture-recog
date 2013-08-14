@@ -1,4 +1,4 @@
-function res = runexperimentbatch(batch, hyperParam, jobParam)
+function res = runexperimentbatch(batch, split, hyperParam, jobParam)
 %% RUNEXPERIMENTBATCH runs experiment for each batch in paraleel and 
 %  reports data.
 %
@@ -24,8 +24,7 @@ for iter = 1 : hyperParam.trainIter
   ntask = zeros(nBatch, 2);
 
   for i = 1 : nBatch
-    data = batch{i};
-    [nrow, ncol] = runexperimentparallel(data, i, hyperParam.model, ...
+    [nrow, ncol] = runexperimentparallel(split, i, hyperParam.model, ...
                    jobParam, job, iter);
     ntask(i, :) = [nrow ncol];
   end

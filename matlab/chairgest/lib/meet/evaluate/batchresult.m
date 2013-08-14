@@ -48,15 +48,17 @@ for m = 1 : nmodel
       for r = 1 : length(evalName)
         resnameMean = [dataType{d} evalName{r} 'Mean'];
         resnameStd = [dataType{d} evalName{r} 'Std'];
-        resMean = stat(resnameMean);
-        resStd = stat(resnameStd);
-        batchMean = batchRes(resnameMean);
-        batchStd = batchRes(resnameStd);
-        fprintf('%3.2f(%.2f)\t', 100 * resMean(1), 100 * resStd(1));
-        batchMean(i) = resMean(1);
-        batchStd(i) = resStd(1);
-        batchRes(resnameMean) = batchMean;
-        batchRes(resnameStd) = batchStd;
+        if isKey(stat, resnameMean)
+          resMean = stat(resnameMean);
+          resStd = stat(resnameStd);
+          batchMean = batchRes(resnameMean);
+          batchStd = batchRes(resnameStd);
+          fprintf('%3.2f(%.2f)\t', 100 * resMean(1), 100 * resStd(1));
+          batchMean(i) = resMean(1);
+          batchStd(i) = resStd(1);
+          batchRes(resnameMean) = batchMean;
+          batchRes(resnameStd) = batchStd;
+        end
       end
     end
     fprintf('\n');

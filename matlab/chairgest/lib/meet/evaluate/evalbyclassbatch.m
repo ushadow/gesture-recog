@@ -36,8 +36,10 @@ for i = 1 : length(data)
   for d = 1 : length(dataType)
     for v = 1 : length(value)
       valueName = [dataType{d} value{v}];
-      fprintf('%3.2f(%.2f)\t', 100* batchResMap([valueName 'Mean']), ...
-              100 * batchResMap([valueName 'Std']));
+      if isKey(batchResMap, [valueName 'Mean'])
+        fprintf('%3.2f(%.2f)\t', 100* batchResMap([valueName 'Mean']), ...
+                100 * batchResMap([valueName 'Std']));
+      end
     end
   end
   fprintf('\n');
@@ -53,8 +55,10 @@ fprintf('Average\t');
 for d = 1 : length(dataType)
   for v = 1 : length(value)
     valueName = [dataType{d} value{v}];
-    fprintf('%3.2f(%2.2f)\t', 100 * aveRes([valueName 'MeanBatchMean']), ...
-            100 * aveRes([valueName 'MeanBatchStd']));
+    if isKey(aveRes, [valueName 'MeanBatchMean'])
+      fprintf('%3.2f(%2.2f)\t', 100 * aveRes([valueName 'MeanBatchMean']), ...
+              100 * aveRes([valueName 'MeanBatchStd']));
+    end
   end
 end
 fprintf('\n');

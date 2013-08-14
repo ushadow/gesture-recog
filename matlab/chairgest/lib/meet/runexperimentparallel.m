@@ -1,4 +1,4 @@
-function [nrow, ncol] = runexperimentparallel(data, batchNDX, modelParam, ...
+function [nrow, ncol] = runexperimentparallel(split, batchNDX, modelParam, ...
                         jobParam, job, seed)
 %% RUNEXPERIMENTPARALLEL runs experiment for one batch of data in parallel.
 %
@@ -7,7 +7,6 @@ function [nrow, ncol] = runexperimentparallel(data, batchNDX, modelParam, ...
 
 verbose = jobParam.verbose;
 
-split = data.split;
 nrow = numel(modelParam);
 ncol = size(split, 2);
 
@@ -21,7 +20,7 @@ for model = 1 : nrow % for each model (row)
   params.jobId = job.ID;
   for fold = 1 : ncol % for each fold (col)
     if verbose, fprintf('.'); end 
-    createTask(job, @runexperiment, nargout, {params, fold, batchNDX, seed});
+    createTask(job, @runexperiment, nargout, {params, split(:, fold), fold, batchNDX, seed});
   end
 end
 if verbose

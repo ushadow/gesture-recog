@@ -4,6 +4,7 @@ function chairgestmain(dirname)
 % dirname   - the directory of the main database containing the
 %             folders for each user ID.
 
+addpath(genpath(pwd), '-end');
 sensorType = 'Kinect';        
 dataParam.vocabularySize = 13;
 dataParam.dir = fullfile(pwd, 'data');
@@ -16,7 +17,7 @@ model = matObj.model;
 param = model.param;
 
 if exist(dataParam.dir, 'dir') == 0
-  extractfeature(dirname, dataParam.dir)
+  extractfeature(dirname, dataParam.dir);
 end
 
 data = getdata(dataParam.dir, sensorType);
@@ -60,14 +61,14 @@ for p = 1 : npids
   for i = 1 : length(sessionNames)
     sessionName = sessionNames{i};
     sessionDir = fullfile(dirname, pid, sessionName);
-    [batch, prefixLen] = dataSet.getBatchNames(pid, sessionName, sensorType);
+    [batch, ndx] = dataSet.getBatchNames(pid, sessionName, sensorType);
 
     for j = 1 : length(batch)
       fileName = batch{j};
-      fileNDX = fileName(prefixLen + 1);
+      fileNDX = ndx{j};
       if str2double(fileNDX) > 0
         fullPath = fullfile(sessionDir, fileName);
-        logdebug('chairgestmain', 'batch', fullPath);
+        fprintf('Read batch: %s.\n', fullPath);
         featureData = readfeature(fullPath, sensorType);
 
         [X, frame] = separateframe(featureData);

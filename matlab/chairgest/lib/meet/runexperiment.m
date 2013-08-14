@@ -1,4 +1,4 @@
-function R = runexperiment(param, foldNDX, batchNDX, seed, data)    
+function R = runexperiment(param, split, foldNDX, batchNDX, seed, data)    
 %% RUNEXPERIMENT runs the experiment for one fold.
 % R = runexperiment(param, split, data)
 %
@@ -32,19 +32,10 @@ end
 param.fold = foldNDX;
 R.param = param;
 
-split = data.split(:, foldNDX);
 R.split = split;
 
-Y.Tr = data.Y(split{1});
-Y.Va = data.Y(split{2}); 
-
-X.Tr = data.X(split{1});
-X.Va = data.X(split{2});
-
-if ~isempty(split{3})
-  Y.Te = data.Y(split{3}); 
-  X.Te = data.X(split{3});
-end
+Y = separatedata(data.Y, split);
+X = separatedata(data.X, split);
 
 %% Step 2: Preprocess data
 %   Dimensionality reduction, standardzation, sparsification

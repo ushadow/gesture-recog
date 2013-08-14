@@ -35,7 +35,7 @@ methods
     fileData = dir(fullfile(self.dirname, pid, session));
     name = {fileData.name};
     pat = [sensor 'Data_(\d+)\..+'];
-    [batches, ndx] = cellfun(@(x) regexp(x, pat, 'match', 'tokens'), name, ...
+    [batches, ndx] = cellfun(@(x) regexp(x, pat, 'match', 'tokens', 'once'), name, ...
           'UniformOutput', false);
     batches = batches(~cellfun('isempty', batches));
     ndx = ndx(~cellfun('isempty', ndx));

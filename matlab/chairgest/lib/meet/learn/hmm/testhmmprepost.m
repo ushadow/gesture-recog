@@ -1,15 +1,15 @@
-function [pred, prob, path] = testhmmprepost(~, X, hmm, param)
+function [pred, prob, path] = testhmmprepost(Y, X, hmm, param)
 %% TESTHMM tests HMM model
 
 nclass =  param.vocabularySize;
 hmm = hmm.model;
 
 isDiag = 0;
-
 if param.mce
-[hmm.prior, hmm.transmat, hmm.term, hmm.mu, hmm.Sigma, ...
-    hmm.mixmat] = mhmm_mce_gd(XByClass, hmm.prior, hmm.transmat, ...
-    hmm.term, hmm.mu, hmm.Sigma, hmm.mixmat);
+  XByClass = segmentbyclassprepost(Y.Tr, X.Tr, nclass - 3);
+  [hmm.prior, hmm.transmat, hmm.term, hmm.mu, hmm.Sigma, ...
+      hmm.mixmat] = mhmm_mce_gd(XByClass, hmm.prior, hmm.transmat, ...
+      hmm.term, hmm.mu, hmm.Sigma, hmm.mixmat);
 end
 
 restNDX = nclass;

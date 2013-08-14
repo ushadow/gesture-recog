@@ -1,6 +1,8 @@
 function hmm = trainhmmprepost(Y, X, param)
 %% TRAINHMMPREPPOST trains HMMs for each gesture and its pre and post-strokes.
 %
+% ARGS
+% Y, X  - training data
 
 ngestures = param.vocabularySize - 3;
 nstages = 3;
