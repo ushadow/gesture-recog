@@ -31,13 +31,15 @@ methods
     sessions = name(NDX);
   end
   
-  function [batches, prefixLen] = getBatchNames(self, pid, session, sensor)
-    dirData = dir(fullfile(self.dirname, pid, session));
-    name = {dirData.name};
-    prefix = [sensor 'Data_'];
-    NDX = cellfun(@(x) strstartswith(x, prefix), name);
-    batches = name(NDX);
-    prefixLen = length(prefix);
+  function [batches, ndx] = getBatchNames(self, pid, session, sensor)
+    fileData = dir(fullfile(self.dirname, pid, session));
+    name = {fileData.name};
+    pat = [sensor 'Data_(\d+)\..+'];
+    [batches, ndx] = cellfun(@(x) regexp(x, pat, 'match', 'tokens'), name, ...
+          'UniformOutput', false);
+    batches = batches(~cellfun('isempty', batches));
+    ndx = ndx(~cellfun('isempty', ndx));
+    ndx = cellfun(@(x) x{1}, ndx, 'UniformOutput', false);
   end
 end
 

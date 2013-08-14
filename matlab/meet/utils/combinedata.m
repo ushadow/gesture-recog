@@ -1,4 +1,7 @@
 function combined = combinedata(data)
+% COMBINEDATA combines all user data one after the other.
+%
+% ARGS
 % data - cell array of user data.
 
 [Y, X, frame, file] = cellfun(@getfields, data, 'UniformOutput', false);

@@ -1,8 +1,8 @@
 function split = getsplit(data, nfold)
-%% SETSPLIT sets the training and testing split
+%% GETSPLIT creates the training and testing split
 %
 % ARGS
-% data     - struct of MEET data.
+% data - struct of MEET data.
 % testPerc - percentage of test data.
 
 split = cell(3, nfold);

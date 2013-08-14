@@ -8,15 +8,15 @@ function data = prepdatachairgest(dirname, varargin)
 %
 % RETRURN
 % data  - a structure with fields:
-% Y     - a cell array of ground truth labels.
-% X     - a cell array of features.
-% split - a 2 x 1 cell array with one fold evalutation.
+%   Y     - a cell array of ground truth labels.
+%   X     - a cell array of features.
+%   split - a 2 x 1 cell array with one fold evalutation.
 
 sensorType = 'Kinect';
-gtSensorType = sensorType;
+gtSensorType = 'Xsens';
 testPerc = 0.33; 
 dataType = 'Converted'; 
-subsampleFactor = 1; 
+subsampleFactor = 2; 
 
 for i = 1 : 2 : length(varargin)
   switch varargin{i}
@@ -52,11 +52,11 @@ for p = 1 : npids
   for i = 1 : length(sessionNames)
     sessionName = sessionNames{i};
     sessionDir = fullfile(dirname, pid, sessionName);
-    [batch, prefixLen] = dataSet.getBatchNames(pid, sessionName, sensorType);
+    [batches, ndx] = dataSet.getBatchNames(pid, sessionName, sensorType);
 
-    for j = 1 : length(batch)
-      fileName = batch{j};
-      fileNDX = fileName(prefixLen + 1);
+    for j = 1 : length(batches)
+      fileName = batches{j};
+      fileNDX = ndx{j};
       if str2double(fileNDX) > 0
         gtFile = fullfile(sessionDir, sprintf(gtFileFormat, fileNDX));
         logdebug('prepdatachairgest', 'batch', gtFile);
