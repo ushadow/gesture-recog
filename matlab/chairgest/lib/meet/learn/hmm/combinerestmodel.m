@@ -17,13 +17,14 @@ gToR = gTerm - newGTerm;
 newGTerm(stageNDX(1, 2) - 2 : stageNDX(1, 2)) = ones(3, 1) * 0.01;
 cTerm = cat(1, newGTerm, rTerm);
 
-ndx = [1 : 3, stageNDX(3, 1) : stageNDX(3, 1) + 2];
-nRToOtherStates = length(ndx);
-newRTransmat = rTransmat / (nRToOtherStates + 1);
+% Allow pre-stroke to transit to post-stroke.
 gTransmat(stageNDX(1, 2) - 2 : stageNDX(1, 2), ...
           stageNDX(3, 1) : stageNDX(3, 1) + 2) = 0.01;
-cTransmat = blkdiag(gTransmat, newRTransmat);
-cTransmat(end, ndx) = newRTransmat;
+cTransmat = blkdiag(gTransmat, rTransmat);
+totalNStates = size(cTransmat, 1);
+ndx = [1 : 3, stageNDX(3, 1) : stageNDX(3, 1) + 2, totalNStates];
+nRToOtherStates = length(ndx);
+cTransmat(end, ndx) = 1 / nRToOtherStates;
 
 cTransmat(1 : end - nSrest, end) =  gToR;
 cTransmat = mk_stochastic(cTransmat);

@@ -1,7 +1,7 @@
 function outputchairgest(data, result, algo, name, gestureLabel)
 % ARGS
 % data - struct with field: param.
-% result - cell array of struct with fields: param, prediction.
+% result - cell array of struct with fields: param, prediction, split.
 % gestureLabel - cell array of gesture label strings.
 
 dataType = data.param.dataType;
@@ -23,7 +23,7 @@ for i = 1 : length(result)
     fr1 = frame{j}; 
     outputonesequence(p1, f1, fr1, gestureLabel, fid);
   end
-  fprintf('Result out put to %s.\n', filename);
+  fprintf('Result output to %s.\n', filename);
   fclose(fid);
 end
 end

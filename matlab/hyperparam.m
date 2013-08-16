@@ -13,7 +13,7 @@ hyperParam.mce = false;
 
 % Training parameters
 hyperParam.train = @trainhmmprepost;
-hyperParam.maxIter = 20;
+hyperParam.maxIter = 30;
 hyperParam.thresh = 0.001;
 
 % HMM parameters

@@ -2,7 +2,6 @@ classdef TestAHMM < matlab.unittest.TestCase
   
 properties
   params;
-  hand_size = 4 * 4;
 end
 
 methods (TestClassSetup)
@@ -63,20 +62,12 @@ methods (TestClassSetup)
                                       0 0
                                       0 0
                                       0 1];
-                             
-    self.params.hand = zeros(self.hand_size, self.params.nS);
-    for i = 1 : self.params.nS
-      self.params.hand(:, i) = repmat(i, self.hand_size, 1);
-    end
-
-    self.params.hd_mu = 0;
-    self.params.hd_sigma = 1;
 
     self.params.Xmean = reshape(1 : self.params.nX * self.params.nS, ...
                                 [self.params.nX self.params.nS]);
     self.params.Xcov = repmat(eye(self.params.nX) * 0.0001, ...
                               [1, 1, self.params.nS]);
-                            
+    self.params.XcovType = 'diag';
     self.params.resetS = false;
     self.params.Gclamp = false;
     self.params.clampCov = 1;
@@ -97,10 +88,7 @@ methods (Test)
     G1 = 1; S1 = 2; F1 = 3; X1 = 4; 
     for i = 1 : T
       s = evidence{S1, i};
-      hand = evidence{X1, i}{2};
-      testCase.verifyEqual(size(hand), [testCase.hand_size, 1]);
-      testCase.verifyEqual(size(evidence{X1, i}{1}), [ns(X1), 1]);
-      testCase.verifyTrue(all(hand(:) == s));
+      testCase.verifyEqual(size(evidence{X1, i}), [ns(X1), 1]);
       testCase.verifyEqual(s, evidence{G1, i});
       checkahmmresult(evidence, G1, F1);
     end

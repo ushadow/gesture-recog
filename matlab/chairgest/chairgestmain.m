@@ -1,30 +1,49 @@
-function chairgestmain(dirname)
+function chairgestmain(dirname, extract)
 %%
 % ARGS
 % dirname   - the directory of the main database containing the
 %             folders for each user ID.
+% extract   - [optional] if true, performs feature extraction. Default is
+%             true.
 
-addpath(genpath(pwd), '-end');
+if nargin < 2
+  extract = true;
+end
+
+addpath(genpath(fullfile(pwd, 'lib')), '-end');
+addpath(genpath(fullfile(pwd, 'src')), '-end');
+
 sensorType = 'Kinect';        
+subsampleFactor = 2;
+featureSampleRate = 2;
+
 dataParam.vocabularySize = 13;
 dataParam.dir = fullfile(pwd, 'data');
-dataParam.subsampleFactor = 2;
 dataParam.gtSensorType = 'Xsens';
 dataParam.dataType = 'Converted';
+
 modelFile = fullfile(pwd, 'model.mat');
 matObj = matfile(modelFile);
 model = matObj.model;
 param = model.param;
+assert(subsampleFactor * featureSampleRate == param.subsampleFactor);
 
-if exist(dataParam.dir, 'dir') == 0
+if extract
+  [~, ~] = rmdir(dataParam.dir, 's'); % Removes existing directory.
   extractfeature(dirname, dataParam.dir);
 end
 
-data = getdata(dataParam.dir, sensorType);
-data = subsample(data, dataParam.subsampleFactor);
+data = getdata(dataParam.dir, sensorType, featureSampleRate);
+data = subsample(data, subsampleFactor);
 data.param = dataParam;
 X.Va = data.X;
-result.split = {[]; 1 : length(X.Va)};
+nseqs = length(X.Va);
+
+if nseqs <= 0
+  error('Wrong input directory. No input found. Use RAW feature input directory.');
+end
+
+result.split = {[]; 1 : nseqs};
 
 if isfield(param, 'preprocess')
   npreprocesses = length(param.preprocess); 
@@ -39,13 +58,21 @@ result.param.dir = pwd;
 outputchairgest(data, {result}, 'hmm', 'yingyin', gesturelabel);
 end
 
-function [X, frame] = separateframe(feature)
-startFrame = 200;
+function [X, frame] = separateframe(feature, fileNDX, sampleRate)
+%% Separates frame indices from features.
+
+startFrame = 1;
+
+if fileNDX == 1
+  % Ignores the first 400 frames. This is before subsampling.
+  startFrame = 400 / sampleRate;
+end
+
 X = feature(startFrame : end, 2 : end)';
 frame = feature(startFrame : end, 1)';
 end
 
-function data = getdata(dirname, sensorType)
+function data = getdata(dirname, sensorType, featureSampleRate)
 dataSet = ChairgestData(dirname);
 pids = dataSet.getPIDs;
 npids = length(pids);
@@ -65,16 +92,17 @@ for p = 1 : npids
 
     for j = 1 : length(batch)
       fileName = batch{j};
-      fileNDX = ndx{j};
-      if str2double(fileNDX) > 0
+      fileNDXstr = ndx{j};
+      fileNDX = str2double(fileNDXstr);
+      if fileNDX > 0
         fullPath = fullfile(sessionDir, fileName);
         fprintf('Read batch: %s.\n', fullPath);
         featureData = readfeature(fullPath, sensorType);
 
-        [X, frame] = separateframe(featureData);
+        [X, frame] = separateframe(featureData, fileNDX, featureSampleRate);
         data.X{end + 1} = X;
         data.frame{end + 1} = frame;
-        data.file{end + 1} = {pid, sessionName, fileNDX};
+        data.file{end + 1} = {pid, sessionName, fileNDXstr};
       end
     end
   end

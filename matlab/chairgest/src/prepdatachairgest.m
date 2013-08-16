@@ -14,9 +14,9 @@ function data = prepdatachairgest(dirname, varargin)
 
 sensorType = 'Kinect';
 gtSensorType = 'Xsens';
-testPerc = 0.33; 
 dataType = 'Converted'; 
 subsampleFactor = 2; 
+featureSampleRate = 2;
 
 for i = 1 : 2 : length(varargin)
   switch varargin{i}
@@ -24,8 +24,6 @@ for i = 1 : 2 : length(varargin)
       sensorType = varargin{i + 1};
     case 'gtSensorType'
       gtSensorType = varargin{i + 1};
-    case 'testPerc'
-      testPerc = varargin{i + 1};
     case 'subsampleFactor'
       subsampleFactor = varargin{i + 1};
     otherwise
@@ -56,49 +54,58 @@ for p = 1 : npids
 
     for j = 1 : length(batches)
       fileName = batches{j};
-      fileNDX = ndx{j};
-      if str2double(fileNDX) > 0
-        gtFile = fullfile(sessionDir, sprintf(gtFileFormat, fileNDX));
+      batchNDXstr = ndx{j};
+      batchNDX = str2double(batchNDXstr);
+      if batchNDX > 0
+        gtFile = fullfile(sessionDir, sprintf(gtFileFormat, batchNDXstr));
         logdebug('prepdatachairgest', 'batch', gtFile);
-        [gt, vocabSize] = readgtchairgest(gtFile);
         [featureData, nconFeat] = readfeature(...
             fullfile(sessionDir, fileName), sensorType);
+        [gt, vocabSize] = readgtchairgest(gtFile, featureData(1, 1), ...
+            featureData(end, 1));
 
         if ~paramInitialized
           dataParam.vocabularySize = vocabSize;
           dataParam.startImgFeatNDX = nconFeat + 1;
           dataParam.dir = dirname;
-          dataParam.subsampleFactor = subsampleFactor;
+          dataParam.subsampleFactor = subsampleFactor * featureSampleRate;
           dataParam.gtSensorType = gtSensorType;
           dataParam.dataType = dataType;
           paramInitialized = true;
         end
-        [Y, X, frame] = combinelabelfeature(gt, featureData);
+        [Y, X, frame] = combinelabelfeature(gt, featureData, batchNDX, ...
+                                            featureSampleRate);
         data{p}.Y{end + 1} = Y;
         data{p}.X{end + 1} = X;
         data{p}.frame{end + 1} = frame;
-        data{p}.file{end + 1} = {pid, sessionName, fileNDX};
+        data{p}.file{end + 1} = {pid, sessionName, batchNDXstr};
       end
     end
   end
   data{p} = subsample(data{p}, subsampleFactor);
   data{p}.Y = addflabel(data{p}.Y);
   data{p}.param = dataParam;
-  data{p}.split = getsplit(data{p}, testPerc);
 end
 end
 
-function [Y, X, frame] = combinelabelfeature(label, feature)
+function [Y, X, frame] = combinelabelfeature(label, feature, batchNDX, ...
+    featureSampleRate)
 %% Combines label and feature with common frame id.
 %
 % ARGS
-% label   - matrix of all labels for a batch.
+% label   - matrix of all ground truth labels for a batch.
 % feature - matrix of all features for a batch. Each row is an observation.
 % 
 % RETURNS
 % Y   - cell array of labels. Each cell is a 2 x nframe matrix.
 % X   - cell array of feature vectors. Each cell is a d x nframe matrix. 
 % frame   - cell arrays of frame numbers. Each cell is a 1 x nframe matrix.
+
+startNDX = 400 / featureSampleRate;
+
+if batchNDX == 1
+  feature = feature(startNDX : end, :);
+end
 
 labelFrameId = label(:, 1);
 featureFrameId = feature(:, 1);

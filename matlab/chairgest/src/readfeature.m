@@ -1,5 +1,5 @@
-function [data, nconFeat] = readfeature(...
-    inputFile, sensor)
+function [data, nconFeat] = readfeature(inputFile, ...
+  sensor)
 %% READFEATURE reads features from one Chairgest data set file.
 %
 % ARGS
@@ -20,8 +20,11 @@ else
   % There are 4 sensors and the order is: neck, upperarm, forearm, hand.
   formatSpec = [formatSpec repmat(oneSensor, 1, 4)];
   fid = fopen(inputFile);
+  % data is a cell array. Each cell contains data for one specifier in the
+  % formatSpec.
   data = textscan(fid, formatSpec, 'HeaderLines', 1, 'ReturnOnError', 0);
   NDX = ~isnan(data{3});
+  % Ignore the first column which is the timestamp.
   data = cell2mat(data(2 : end));
   data = data(NDX, :);
   nconFeat = size(data, 2) - 1;

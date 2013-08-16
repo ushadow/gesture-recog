@@ -26,8 +26,12 @@ for i = 1 : nseqs
         gestureLabel = seqY(1, endNDX + 1);
         stage = PRE;
       case 12 
-        gestureLabel = seqY(1, ndx(j - 1));
-        stage = POST;
+        if j > 1
+          gestureLabel = seqY(1, ndx(j - 1));
+          stage = POST;
+        else
+          stage = REST;
+        end
       case 13
         stage = REST;
       otherwise

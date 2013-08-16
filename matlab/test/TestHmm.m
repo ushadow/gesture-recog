@@ -11,13 +11,13 @@ methods (Test)
     mu = cell(1, 3);
     Sigma = cell(1, 3);
     mixmat = cell(1, 3);
-    [prior{1}, transmat{1}, term{1}] = makepreposttrans(nS(1));
+    [prior{1}, transmat{1}, term{1}] = makepretrans(nS(1));
     % 0.33 0.33 0.33
     %      0.33 0.33 0.33
     % ...
     %                           0.33 0.33
     [prior{2}, transmat{2}, term{2}] = makebakistrans(nS(2));
-    [prior{3}, transmat{3}, term{3}] = makepreposttrans(nS(3));
+    [prior{3}, transmat{3}, term{3}] = makeposttrans(nS(3));
     
     for i = 1 : length(nS)
       mu{i} = zeros(d, nS(i), nM);
@@ -53,16 +53,18 @@ methods (Test)
       map, gMu, rMu, gSigma, gMixmat, rSigma, rMixmat);
     self.verifyEqual(sum(cPrior), 1);
     self.verifyEqual(cPrior, [expectedPrior; 0]); 
-    self.verifyEqual(sum(cTransmat, 2), ones(14, 1), 'AbsTol', eps);
-    self.verifyEqual(diag(cTransmat(11 : 13, 11 : 13)), ...
-        ones(3, 1) * 0.5 / (0.5 + 0.25)); 
     self.verifyEqual(cTerm, [0.01; 0.01; 0.01; zeros(7, 1); 0.25; 0.25; ...
                              0.25; rTerm]);
     self.verifyEqual(size(cMu), [d, sum(nS) + 1, nM]);
     self.verifyEqual(size(cSigma), [d, d sum(nS) + 1, nM]);
     self.verifyEqual(size(cMixmat), [sum(nS) + 1, nM]);
-    self.verifyEqual(cTransmat(end, :), [1 / 9, 1 / 9, 1 / 9, ...
-                     zeros(1, 7), ones(1, 3) / 9, 1 / 3 ]);
+    
+    self.verifyGreaterThan(cTransmat(1 : 3, 11 : 13), 0);
+    self.verifyEqual(sum(cTransmat, 2), ones(14, 1), 'AbsTol', eps);
+    self.verifyEqual(diag(cTransmat(11 : 13, 11 : 13)), ...
+        ones(3, 1) * 0.5 / (0.5 + 0.25)); 
+    self.verifyEqual(cTransmat(end, :), [ones(1, 3) / 7, ...
+                     zeros(1, 7), ones(1, 3) / 7, 1 / 7 ], 'AbsTol', eps);
    
   end
   

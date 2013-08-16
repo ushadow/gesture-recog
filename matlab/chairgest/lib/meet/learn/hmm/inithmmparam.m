@@ -24,12 +24,15 @@ d = size(mu, 1);
 mu = reshape(mu, [d nS nM]);
 Sigma = reshape(Sigma, [d d nS nM]);
 
-if stage == 2
-  [prior, transmat, term] = makebakistrans(nS);
-else
-  [prior, transmat, term] = makepreposttrans(nS);
-  Sigma = Sigma(:, :, :, 1);
+switch stage
+  case 1
+    [prior, transmat, term] = makepretrans(nS);
+    Sigma = Sigma(:, :, :, 1); % Tied covariance across mixtures
+  case 2
+    [prior, transmat, term] = makebakistrans(nS);
+  case 3
+    [prior, transmat, term] = makeposttrans(nS);
+    Sigma = Sigma(:, :, :, 1);
 end
-
 
 end

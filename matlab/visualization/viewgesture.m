@@ -4,7 +4,7 @@ function viewgesture(data, result, ndx)
 
 figure;
 ngestures = data.param.vocabularySize;
-seqNDX = data.split{2}(ndx);
+seqNDX = result.split{2}(ndx);
 nS = sum(cell2mat(values(result.param.nSMap)));
 im = [data.Y{seqNDX}(1, :); result.prediction.Va{ndx}(1, :); ...
       result.path.Va{ndx} * ngestures / nS];

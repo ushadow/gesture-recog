@@ -27,17 +27,18 @@ end
 if isfield(X, 'Tr')
   seg = testsegment(X.Tr, hmm.segment, param.subsampleFactor); 
   [pred.Tr, prob.Tr, path.Tr] = inference(X.Tr, seg, hmm, nclass, ...
-                                          param.nSMap, isDiag);
+      param.nSMap, isDiag, param.subsampleFactor);
 end
 
 if isfield(X, 'Va')
   seg = testsegment(X.Va, hmm.segment, param.subsampleFactor);
   [pred.Va, prob.Va, path.Va] = inference(X.Va, seg, hmm, nclass, ...
-                                          param.nSMap, isDiag);
+      param.nSMap, isDiag, param.subsampleFactor);
 end
 end
 
-function [pred, prob, path] = inference(X, seg, hmm, nclass, nSMap, isDiag)
+function [pred, prob, path] = inference(X, seg, hmm, nclass, nSMap, isDiag, ...
+      subsampleFactor)
 %%
 % ARGS
 % nclass  - total number of classes including pre-stroke, post-stroke and 
@@ -75,7 +76,7 @@ for i = 1 : nseqs;
     [~, mlPred] = max(ll);
     pred1(startNDX : endNDX) = mlPred;
     [realStart, realEnd, path1(startNDX : endNDX)] = ...
-        realstartend(obslik{mlPred}, hmm, mlPred, nSMap);
+        realstartend(obslik{mlPred}, hmm, mlPred, nSMap, subsampleFactor);
     if realStart == -1
       pred1(startNDX : endNDX) = rest;
     else
@@ -91,7 +92,7 @@ end
 end
 
 function [realStart, realEnd, path] = realstartend(obslik, hmm, ...
-    gesture, nSMap)
+    gesture, nSMap, subsampleFactor)
 %% REALSTRATEND detects the actual start and end of the gesture nucleus.
 %
 % ARGS
@@ -105,6 +106,6 @@ function [realStart, realEnd, path] = realstartend(obslik, hmm, ...
 
   path = viterbi_path(hmm.prior{gesture}, hmm.transmat{gesture}, ...
                       obslik, hmm.term{gesture});
-  [realStart, realEnd] = realstartendinpath(path, nSMap);
+  [realStart, realEnd] = realstartendinpath(path, nSMap, subsampleFactor);
 end
 
