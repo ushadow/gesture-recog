@@ -14,8 +14,6 @@ addpath(genpath(fullfile(pwd, 'lib')), '-end');
 addpath(genpath(fullfile(pwd, 'src')), '-end');
 
 sensorType = 'Kinect';        
-subsampleFactor = 2;
-featureSampleRate = 2;
 
 dataParam.vocabularySize = 13;
 dataParam.dir = fullfile(pwd, 'data');
@@ -26,15 +24,18 @@ modelFile = fullfile(pwd, 'model.mat');
 matObj = matfile(modelFile);
 model = matObj.model;
 param = model.param;
-assert(subsampleFactor * featureSampleRate == param.subsampleFactor);
 
 if extract
   [~, ~] = rmdir(dataParam.dir, 's'); % Removes existing directory.
   extractfeature(dirname, dataParam.dir);
 end
 
-data = getdata(dataParam.dir, sensorType, featureSampleRate);
-data = subsample(data, subsampleFactor);
+[data, featureSampleRate] = getdata(dataParam.dir, sensorType);
+assert(mod(param.subsampleFactor, featureSampleRate) == 0);
+subsampleRate = param.subsampleFactor / featureSampleRate;
+if subsampleRate > 1
+  data = subsample(data, subsmapleRate);
+end
 data.param = dataParam;
 X.Va = data.X;
 nseqs = length(X.Va);
@@ -54,7 +55,7 @@ if isfield(param, 'preprocess')
 end
 
 result.prediction = param.inference([], X, model.learnedModel, param);
-result.param.dir = pwd;
+result.param.dir = pwd; % output directory
 outputchairgest(data, {result}, 'hmm', 'yingyin', gesturelabel);
 end
 
@@ -72,7 +73,7 @@ X = feature(startFrame : end, 2 : end)';
 frame = feature(startFrame : end, 1)';
 end
 
-function data = getdata(dirname, sensorType, featureSampleRate)
+function [data, sampleRate] = getdata(dirname, sensorType)
 dataSet = ChairgestData(dirname);
 pids = dataSet.getPIDs;
 npids = length(pids);
@@ -97,9 +98,9 @@ for p = 1 : npids
       if fileNDX > 0
         fullPath = fullfile(sessionDir, fileName);
         fprintf('Read batch: %s.\n', fullPath);
-        featureData = readfeature(fullPath, sensorType);
+        [featureData, ~, sampleRate] = readfeature(fullPath, sensorType);
 
-        [X, frame] = separateframe(featureData, fileNDX, featureSampleRate);
+        [X, frame] = separateframe(featureData, fileNDX, sampleRate);
         data.X{end + 1} = X;
         data.frame{end + 1} = frame;
         data.file{end + 1} = {pid, sessionName, fileNDXstr};

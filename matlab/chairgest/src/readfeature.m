@@ -1,4 +1,4 @@
-function [data, nconFeat] = readfeature(inputFile, ...
+function [data, nconFeat, sampleRate] = readfeature(inputFile, ...
   sensor)
 %% READFEATURE reads features from one Chairgest data set file.
 %
@@ -8,8 +8,12 @@ function [data, nconFeat] = readfeature(inputFile, ...
 if strcmp(sensor, 'Kinect')
   feature = importdata(inputFile, ',', 1);
   data  = feature.data;
-  header = textscan(feature.textdata{1}, '%s%s%d%s%d', 'delimiter', ',');
+  
+  % Header format
+  % # frame_id, continuous_feature_size, {0}, image_width, {1}, sample_rate, {2}
+  header = textscan(feature.textdata{1}, '%s%s%d%s%d%s%d', 'delimiter', ',');
   nconFeat = header{3};
+  sampleRate = header{7};
 else
   %% Xsense data format in the converted file.
   formatSpec = '%s%f'; % AbsTimeStamp FrameID
