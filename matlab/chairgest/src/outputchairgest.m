@@ -1,10 +1,18 @@
-function outputchairgest(data, result, algo, name, gestureLabel)
+function outputchairgest(data, result, algo, name, gestureLabel, dtNDX)
 % ARGS
 % data - struct with field: param.
 % result - cell array of struct with fields: param, prediction, split.
 % gestureLabel - cell array of gesture label strings.
+% dtNDX  - data type index, 1 = Tr and 2 = Va.
 
 dataType = data.param.dataType;
+
+if nargin < 6
+  dtNDX = 2;
+end
+
+dt = {'Tr', 'Va'};
+dt = dt{dtNDX};
 
 for i = 1 : length(result)  
   result1 = result{i};
@@ -14,9 +22,9 @@ for i = 1 : length(result)
   fprintf(fid, '#Algorithm\t%s\t%s\n', algo, name);
   fprintf(fid, '#Data\t%s\t%s\n', dataType, data.param.gtSensorType);
 
-  prediction = result1.prediction.Va;
-  file = data.file(result1.split{2});
-  frame = data.frame(result1.split{2});
+  prediction = result1.prediction.(dt);
+  file = data.file(result1.split{dtNDX});
+  frame = data.frame(result1.split{dtNDX});
   for j = 1 : length(prediction)
     f1 = file{j};
     p1 = prediction{j}(1, :);
