@@ -19,8 +19,12 @@ for i = 1 : nseqs
         seq(1, startNDX : endNDX) = seq(1, endNDX + 1);
         seq(2, endNDX) = 1;
       case 12
-        seq(1, startNDX : endNDX) = seq(1, startNDX - 1);
-        seq(2, startNDX - 1) = 1;
+        newLabel = 13;
+        if startNDX > 1
+          newLabel = seq(1, startNDX - 1);
+          seq(2, startNDX - 1) = 1;
+        end
+        seq(1, startNDX : endNDX) = newLabel;
     end
     startNDX = endNDX + 1;
   end

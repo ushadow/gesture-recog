@@ -1,5 +1,5 @@
 function dataByClass = segmentbyclass(Y, X, nclass, combineprepost)
-%% SEGMENTBYCLASS segments the sequences according to class labes.
+%% SEGMENTBYCLASS segments the sequences according to class labels.
 %
 % ARGS
 % Y   - cell array of labels. Each cell is a sequence for one recording.
