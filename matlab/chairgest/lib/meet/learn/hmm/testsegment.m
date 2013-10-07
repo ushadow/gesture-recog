@@ -39,13 +39,15 @@ function seg = removeshortseg(seg, subsampleFactor)
 label = [1 0];
 minLength = [50 50];
 for i = 1 : length(label)
-  runs = contiguous(seg, label(i));
-  run1 = runs{1, 2};
-  for r = 1 : size(run1, 1)
-    startNDX = run1(r, 1);
-    endNDX = run1(r, 2);
-    if endNDX - startNDX < minLength(i) / subsampleFactor;
-      seg(startNDX : endNDX) = 1 - label(i);
+  if ~isempty(find(seg == label(i), 1))
+    runs = contiguous(seg, label(i));
+    run1 = runs{1, 2};
+    for r = 1 : size(run1, 1)
+      startNDX = run1(r, 1);
+      endNDX = run1(r, 2);
+      if endNDX - startNDX < minLength(i) / subsampleFactor;
+        seg(startNDX : endNDX) = 1 - label(i);
+      end
     end
   end
 end

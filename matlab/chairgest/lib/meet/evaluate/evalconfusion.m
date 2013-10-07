@@ -1,11 +1,10 @@
-function cm = evalconfusion(batchData, batchRes, nmodel)
+function cm = evalconfusion(batchData, batchRes, nmodel, nfold)
 %
 % ARGS
 % batchData - cell array of all data.
 % batchRes  - cell array of all results.
 
 nbatch = numel(batchData);
-nfold = size(batchData{1}.split, 2);
 batchRes = groupres(batchRes, nbatch, nmodel, nfold); 
 
 cm = zeros(13, 13);

@@ -1,7 +1,7 @@
 function drawcm(mat, tick)
 %%
 % Matlab code for visualization of confusion matrix;
-% Parameters£ºmat: confusion matrix;
+% Parameters mat: confusion matrix;
 % tick: name of each class, e.g. 'class_1' 'class_2'...
 % num_class: number of class
 %
@@ -29,3 +29,4 @@ set(gca, 'XTick', 1 : nclass, 'YTick', 1 : nclass);
 set(gca,'yticklabel',tick, 'FontSize', 12);
 ylabel('ground truth', 'FontSize', 14);
 xlabel('prediction', 'FontSize', 14);
+xticklabel_rotate([], 45, []);

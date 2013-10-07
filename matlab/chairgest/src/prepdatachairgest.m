@@ -1,13 +1,16 @@
 function data = prepdatachairgest(dirname, varargin)
-%% PREPAREDATACHAIRGEST prepares the data from CHAIRGEST dataset from one 
-% user into right structure for preprocessing.
+%% PREPAREDATACHAIRGEST prepares the data from CHAIRGEST dataset into right 
+% structure for preprocessing.
 %
 % ARGS
 % dirname     - directory of the main database name, i.e. 'chairgest'.
-% sensorType  - string of sensor type, i.e., 'Kinect' or 'Xsens'.
+%
+% OPTIONAL ARGS
+% sensorType  - string of sensor type, i.e., 'Kinect' or 'Xsens'. ['Xsens']
+% subsmapleFactor - subsampling factor. [2]
 %
 % RETRURN
-% data  - a structure with fields:
+% data  - a cell array. Each cell is for one user and is a structure with fields:
 %   Y     - a cell array of ground truth labels.
 %   X     - a cell array of features.
 %   split - a 2 x 1 cell array with one fold evalutation.

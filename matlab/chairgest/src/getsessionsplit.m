@@ -2,8 +2,8 @@ function split = getsessionsplit(dirname, sensorType)
 %% GETSESSIONSPLIT creates the training and testing split according to sessions.
 %
 % ARGS
-% data     - struct of MEET data.
-% testPerc - percentage of test data.
+% dirname    - directory of processed data.
+% sensorType - the sensor type data file to use.
 
 dataset = ChairgestData(dirname);
 pids = dataset.getPIDs;

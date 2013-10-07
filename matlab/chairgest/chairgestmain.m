@@ -6,6 +6,8 @@ function chairgestmain(dirname, extract)
 % extract   - [optional] if true, performs feature extraction. Default is
 %             true.
 
+tic;
+
 if nargin < 2
   extract = true;
 end
@@ -57,6 +59,7 @@ end
 result.prediction = param.inference([], X, model.learnedModel, param);
 result.param.dir = pwd; % output directory
 outputchairgest(data, {result}, 'hmm', 'yingyin', gesturelabel);
+toc;
 end
 
 function [X, frame] = separateframe(feature, fileNDX, sampleRate)
