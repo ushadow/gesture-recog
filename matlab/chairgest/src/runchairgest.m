@@ -1,5 +1,5 @@
-dirname = 'G:\salience';
-data = prepdata(dirname);
+dirname = 'D:\chairgest-kinectxsens';
+data = prepdatachairgest(dirname, 'gtSensorType', 'Xsens', 'subsampleFactor', 1);
 combinedData = {combinedata(data)};
 savevariable(fullfile(dirname, 'data.mat'), 'data', combinedData);
 sessionSplit = getsessionsplit(dirname, 'Kinect');

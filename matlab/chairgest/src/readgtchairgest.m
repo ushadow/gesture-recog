@@ -6,7 +6,8 @@ function [gt, vocabSize] = readgtchairgest(filename, startNDX, endNDX)
 % endNDX  - feature end indx
 %
 % Return
-% - gt: n x 3 matrix.
+% - gt: n x 3 matrix. The first column is frame ids. The seconde column is 
+%       gesture labels.
 
 [allLabel, gestureDict] = gesturelabel();
 vocabSize = length(allLabel);
@@ -15,6 +16,11 @@ data = importdata(filename);
 frameIndices = data.data;
 label = data.textdata;
 nevent = size(frameIndices, 1);
+
+if nargin < 2
+  startNDX = frameIndices(1, 1);
+  endNDX = frameIndices(end, 1);
+end
 
 startNDX = min(startNDX, frameIndices(1, 1));
 endNDX = max(endNDX, frameIndices(end, 1));

@@ -1,5 +1,4 @@
-function [data, nconFeat, sampleRate] = readfeature(inputFile, ...
-  sensor)
+function [data, nconFeat, sampleRate] = readfeature(inputFile, sensor)
 %% READFEATURE reads features from one Chairgest data set file.
 %
 % ARGS
@@ -15,7 +14,7 @@ if strcmp(sensor, 'Kinect')
   nconFeat = header{3};
   sampleRate = header{7};
 else
-  %% Xsense data format in the converted file.
+  %% Xsens data format in the converted file.
   formatSpec = '%s%f'; % AbsTimeStamp FrameID
   % For each sensor, the data are:
   % SensorId LinAccX/Y/Z, AngVelX/Y/Z, MagX/Y/Z, Yaw, Pitch, Roll,

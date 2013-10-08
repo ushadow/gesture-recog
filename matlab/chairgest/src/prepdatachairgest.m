@@ -6,8 +6,8 @@ function data = prepdatachairgest(dirname, varargin)
 % dirname     - directory of the main database name, i.e. 'chairgest'.
 %
 % OPTIONAL ARGS
-% sensorType  - string of sensor type, i.e., 'Kinect' or 'Xsens'. ['Xsens']
-% subsmapleFactor - subsampling factor. [2]
+% sensorType  - string of sensor type, i.e., 'Kinect' or 'Xsens'. ['Kinect']
+% subsmapleFactor - subsampling factor. [1]
 %
 % RETRURN
 % data  - a cell array. Each cell is for one user and is a structure with fields:
@@ -16,9 +16,9 @@ function data = prepdatachairgest(dirname, varargin)
 %   split - a 2 x 1 cell array with one fold evalutation.
 
 sensorType = 'Kinect';
-gtSensorType = 'Xsens';
+gtSensorType = 'Kinect';
 dataType = 'Converted'; 
-subsampleFactor = 2; 
+subsampleFactor = 1; 
 featureSampleRate = 2;
 
 for i = 1 : 2 : length(varargin)
