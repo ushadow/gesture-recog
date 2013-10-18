@@ -3,7 +3,7 @@ jobParam.verbose = true;
 jobParam.destroy = false;
 jobParam.parallel = true;
 jobParam.wait = false;
-libPath = genpath('c:/users/yingyin/workspace/matlab-lib/lib');
+libPath = genpath('G:/workspace/matlab-lib/lib');
 jobParam.path = [libPath ';' genpath(pwd)];
 
 for i = 1 : 2 : length(varargin)

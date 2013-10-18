@@ -1,6 +1,8 @@
 function [combinedPrior, combinedTransmat, combinedTerm, combinedMu, ...
     combinedSigma, combinedMixmat] = combinehmmparam(prior, transmat, ...
     term, mu, Sigma, mixmat)
+%%
+% Combines pre-stroke, nucleus and post-stroke HMMs together.
 %
 % ARGS
 % prior   - cell array of column vectors.

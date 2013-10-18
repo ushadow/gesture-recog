@@ -14,10 +14,10 @@ model.Sigma = cell(param.vocabularySize, 1);
 model.term = cell(param.vocabularySize, 1);
 model.mixmat = cell(param.vocabularySize, 1);
 
-for i = 1 : param.vocabularySize - 1
+for i = 1 : param.vocabularySize
   if ~isempty(XByClass{i})
     [prior0, transmat0, term0, mu0, Sigma0, mixmat0] = inithmmparam(...
-        XByClass{i}, param.nSMap(i), param.nM, param.XcovType, i);
+        XByClass{i}, param.nS, param.nM, param.XcovType, 2);
     [~, model.prior{i}, model.transmat{i}, model.mu{i}, model.Sigma{i}, ...
         model.mixmat{i}, model.term{i}] = mhmm_em(XByClass{i}, prior0, ...
         transmat0, mu0, Sigma0, mixmat0, 'adj_prior', 1, ...
@@ -26,21 +26,7 @@ for i = 1 : param.vocabularySize - 1
   end
 end
 
-ngestures = param.vocabularySize - 3;
-for i = 1 : ngestures
-  ndx = [ngestures + 1 i ngestures + 2];
-  [model.prior{i}, model.transmat{i}, model.mu{i}, model.Sigma{i}, ... 
-      model.mixmat{i}, modle.term{i}] = combinehmmparam(...
-      model.prior(ndx), model.transmat(ndx), model.mu(ndx), ...
-      model.Sigma(ndx), model.mixmat(ndx), model.term(ndx));
-end
-
-i = param.vocabularySize;
-[model.prior{i}, model.transmat{i}, model.mu{i}, model.Sigma{i}, ...
-      model.mixmat{i}, model.term{i}] = trainrestmodel(XByClass{i}, param.nM);
-    
-model.segment = trainsegment(Y, X, param.vocabularySize);
-    
 hmm.type = 'hmm';
-hmm.model = model;
+hmm.model = combinetoonehmm(model.prior, model.transmat, model.term, ...
+    model.mu, model.Sigma, model.mixmat);
 end

@@ -1,4 +1,5 @@
-function [data, nconFeat, sampleRate] = readfeature(inputFile, sensor)
+function [data, startDescriptorNDX, sampleRate] = readfeature(inputFile, ...
+    sensor)
 %% READFEATURE reads features from one Chairgest data set file.
 %
 % ARGS
@@ -9,9 +10,9 @@ if strcmp(sensor, 'Kinect')
   data  = feature.data;
   
   % Header format
-  % # frame_id, continuous_feature_size, {0}, image_width, {1}, sample_rate, {2}
+  % # frame_id, feature_length, {0}, descriptor_length, {1}, sample_rate, {2}
   header = textscan(feature.textdata{1}, '%s%s%d%s%d%s%d', 'delimiter', ',');
-  nconFeat = header{3};
+  startDescriptorNDX = header{3} - header{5} + 1;
   sampleRate = header{7};
 else
   %% Xsens data format in the converted file.
@@ -30,6 +31,6 @@ else
   % Ignore the first column which is the timestamp.
   data = cell2mat(data(2 : end));
   data = data(NDX, :);
-  nconFeat = size(data, 2) - 1;
+  startDescriptorNDX = size(data, 2) - 1;
 end
 end

@@ -1,4 +1,4 @@
-function [label, dict] = gesturelabel()
+function [label, dict] = gesturelabelchairgest()
 % RETURNS
 % label   - cell array of gesture label string.
 

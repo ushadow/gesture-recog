@@ -1,5 +1,5 @@
 function [pred, prob, path] = testhmmprepost(~, X, hmm, param)
-%% TESTHMM tests HMM model
+%% TESTHMMPREPOST tests HMM model with pre- and post-stroke models. 
 
 nclass =  param.vocabularySize;
 hmm = hmm.model;

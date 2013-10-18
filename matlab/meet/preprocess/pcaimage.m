@@ -1,4 +1,4 @@
-function [newX, sortedEigVal, pc] = pcaimage(X, param)
+function [newX, model] = pcaimage(X, param)
 %% PCAIMAGE PCA for image features.
 %
 % [eigHand handFeature rawFeature H] = eigenhand(X) 
@@ -14,9 +14,7 @@ function [newX, sortedEigVal, pc] = pcaimage(X, param)
 % newX: if X is a structure of train, validate, test data, newX is also a
 %       structure with the same fields with eigenhand features. If X is a 
 %       cell array, newX is also a cell array.
-% sortedEigVal: a vector of sorted eigenvalues correspoinding to the 
-%               eigHand.
-% eigHand: a npixel x K matrix where K is the number of eigenvectors chosen.
+% pc: a npixel x K matrix where K is the number of eigenvectors chosen.
 % handFeature: K x nframe matrix.
 % rawFeature: all hand images in column vectors.
 
@@ -27,10 +25,10 @@ else
 end
 
 % Number of principal components to use for image.
-startImgFeatNDX = param.startImgFeatNDX;
+startDescriptorNDX = param.startDescriptorNDX;
 k = param.nprincomp;
 
-[A, mean] = normalizefeature(train, startImgFeatNDX);
+[A, model.mean] = normalizefeature(train, startDescriptorNDX);
 
 % Let u be the eigenhand. We want to find AA' * u = lamda * u, but AA' is a 
 % large matrix because the dimension of the feature vector is probabily 
@@ -50,8 +48,8 @@ if D > n
     eigVec = gather(eigVec);
     eigVal = gather(eigVal);
   end
-  [sortedEigVec, sortedEigVal] = getprincomp(eigVec, eigVal, k);
-  pc = normc(A * sortedEigVec); % npixel x neigenhand
+  sortedEigVec = getprincomp(eigVec, eigVal, k);
+  model.pc = normc(A * sortedEigVec); % npixel x neigenhand
 else
   C = A * A';
   if param.useGpu > 0
@@ -64,9 +62,9 @@ else
     eigVec = gather(eigVec);
     eigVal = gather(eigVal);
   end
-  [pc, sortedEigVal] = getprincomp(eigVec, eigVal, k);
+  model.pc = getprincomp(eigVec, eigVal, k);
 end
-newFeature = updatedata(train, pc, startImgFeatNDX, ...
+newFeature = updatedata(train, model.pc, startDescriptorNDX, ...
                         'normalized', A);
 
 if isfield(X, 'Tr')
@@ -76,13 +74,17 @@ else
 end
 
 if isfield(X, 'Va')
-  newX.Va = updatedata(X.Va, pc, startImgFeatNDX, 'mean', mean);
+  newX.Va = updatedata(X.Va, model.pc, startDescriptorNDX, ...
+                       'mean', model.mean);
 end
 
 if isfield(X, 'Te')
-  newX.Te = updatedata(X.Te, pc, startImgFeatNDX, 'mean', mean);
+  newX.Te = updatedata(X.Te, model.pc, startDescriptorNDX, ...
+                       'mean', model.mean);
 end
 
+model.mean = single(model.mean);
+model.pc = single(model.pc');
 end
   
 function [sortedEigVec, sortedEigVal] = getprincomp(eigVec, eigVal, k)
@@ -98,9 +100,10 @@ mat = cell2mat(data);
 rawImgFeature = mat(startImgFetNDX : end, :);
 end
 
-function [normalized, meanFeature] = normalizefeature(data, startHandFetNDX)
+function [normalized, meanFeature] = normalizefeature(data, ...
+    startDescriptorNDX)
 % Subtracts the mean from the features.
-rawFeature = rawimgfeature(data, startHandFetNDX);
+rawFeature = rawimgfeature(data, startDescriptorNDX);
 nframe = size(rawFeature, 2);
 meanFeature = mean(rawFeature, 2);
 meanFeatureRep = repmat(meanFeature, 1, nframe);

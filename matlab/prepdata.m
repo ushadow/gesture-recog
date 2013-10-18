@@ -58,13 +58,13 @@ for p = 1 : npids
       if batchNDX > 0
         gtFile = fullfile(sessionDir, sprintf(gtFileFormat, batchNDXstr));
         logdebug('prepdatachairgest', 'batch', gtFile);
-        [featureData, nconFeat, sampleRate] = readfeature(...
+        [featureData, startDescriptorNDX, sampleRate] = readfeature(...
             fullfile(sessionDir, fileName), sensorType);
-        [gt, vocabSize] = readgtchairgest(gtFile);
+        [gt, vocabSize] = readgt(gtFile, featureData(end, 1));
 
         if ~paramInitialized
           dataParam.vocabularySize = vocabSize;
-          dataParam.startImgFeatNDX = nconFeat + 1;
+          dataParam.startDescriptorNDX = startDescriptorNDX;
           dataParam.dir = dirname;
           dataParam.subsampleFactor = sampleRate;
           dataParam.gtSensorType = gtSensorType;
@@ -79,16 +79,15 @@ for p = 1 : npids
       end
     end
   end
-  data{p}.Y = addflabel(data{p}.Y);
   data{p}.param = dataParam;
 end
 end
 
-function [Y, X, frame] = combinelabelfeature(label, feature)
-%% Combines label and feature with common frame id.
+function [Y, X, frame] = combinelabelfeature(gt, feature)
+%% Segment the features according to ground truth.
 %
 % ARGS
-% label   - matrix of all ground truth labels for a batch.
+% gt   - matrix of all ground truth labels for a batch.
 % feature - matrix of all features for a batch. Each row is an observation.
 % 
 % RETURNS
@@ -96,12 +95,28 @@ function [Y, X, frame] = combinelabelfeature(label, feature)
 % X   - cell array of feature vectors. Each cell is a d x nframe matrix. 
 % frame   - cell arrays of frame numbers. Each cell is a 1 x nframe matrix.
 
-labelFrameId = label(:, 1);
-featureFrameId = feature(:, 1);
-% Finds common frames.
-[frame, labelNDX, featureNDX] = intersect(labelFrameId, featureFrameId);
-Y = label(labelNDX, 2 : 3)';
-X = feature(featureNDX, 2 : end)';
-frame = frame(:)';
+p = 1;
+X = [];
+Y = [];
+frame = [];
+nfeatures = size(feature, 1);
+for i = 1 : size(gt, 1)
+  while feature(p, 1) <= gt(i, 2)
+    p = p + 1;
+  end
+  startNDX = p - 1;
+  
+  while p <= nfeatures && feature(p, 1) <= gt(i, 3)
+    p = p + 1;
+  end
+  endNDX = p - 1;
+  
+  X = [X feature(startNDX : endNDX, 2 : end)']; %#ok<AGROW>
+  newY = ones(2, endNDX - startNDX + 1);
+  newY(1, :) = gt(i, 1);
+  newY(2, end) = 2;
+  Y = [Y newY]; %#ok<AGROW>
+  frame = [frame feature(startNDX : endNDX, 1)']; %#ok<AGROW>
+end
 assert(size(Y, 2) == size(frame, 2));
 end

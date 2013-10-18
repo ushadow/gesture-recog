@@ -9,7 +9,7 @@ function [gt, vocabSize] = readgtchairgest(filename, startNDX, endNDX)
 % - gt: n x 3 matrix. The first column is frame ids. The seconde column is 
 %       gesture labels.
 
-[allLabel, gestureDict] = gesturelabel();
+[allLabel, gestureDict] = gesturelabelchairgest();
 vocabSize = length(allLabel);
 
 data = importdata(filename);

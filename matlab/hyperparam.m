@@ -3,22 +3,31 @@ function hyperParam = hyperparam(paramFromData, varargin)
 hyperParam.trainIter = 1; % Training iterations
 
 % Default values.
-hyperParam.startImgFeatNDX = paramFromData.startImgFeatNDX;
+hyperParam.startDescriptorNDX = paramFromData.startDescriptorNDX;
 hyperParam.dir = paramFromData.dir;
 hyperParam.vocabularySize = paramFromData.vocabularySize;
 hyperParam.subsampleFactor = paramFromData.subsampleFactor;
-hyperParam.learnedModel = []; % cell array, one model for each fold.
+hyperParam.infModel = []; % cell array, one model for each fold.
 hyperParam.dataFile = [];
 hyperParam.mce = false;
 
+% Preprocess parameters.
+hyperParam.preprocess = {@pcaimage, @standardizefeature};
+hyperParam.returnFeature = false;
+hyperParam.nprincomp = 23; % number of principal components from image.
+hyperParam.sBin = 4;
+hyperParam.oBin = 9;
+hyperParam.selectedFeature = [2 : 7, 11 : 13] + 18 * 3;
+
 % Training parameters
-hyperParam.train = @trainhmmprepost;
+hyperParam.train = @trainhmm;
 hyperParam.maxIter = 30;
 hyperParam.thresh = 0.001;
 
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
-hyperParam.nM = 3;
+hyperParam.nM = 1; % Number of mixtures.
+hyperParam.nS = 6;
 hyperParam.combineprepost = false;
 hyperParam.nRest = 1;
 
@@ -26,7 +35,6 @@ hyperParam.nRest = 1;
 hyperParam.XcovType = 'diag';
 
 % AHMM parameters
-hyperParam.nS = 45; % number of hidden states S.
 hyperParam.L = 16;
 hyperParam.resetS = true;
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
@@ -38,17 +46,9 @@ hyperParam.covPrior = 2;
 hyperParam.Fobserved = 1;
 hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 1};
 
-% Preprocess parameters.
-hyperParam.preprocess = {@standardizefeature};
-hyperParam.returnFeature = false;
-hyperParam.nprincomp = 7; % number of principal components from image.
-hyperParam.sBin = 4;
-hyperParam.oBin = 9;
-hyperParam.selectedFeature = [2 : 7, 11 : 13] + 18 * 3;
-
-hyperParam.inference = @testhmmprepost;
+hyperParam.inference = {};
 hyperParam.evalName = {'Error', 'Leven'};
-hyperParam.evalFun = {@errorperframe, @levenscore};
+hyperParam.evalFun = {};
 
 hyperParam.useGpu = false;
 hyperParam.imageWidth = 100;
@@ -64,14 +64,14 @@ hyperParam.model = cell(1, nmodel);
 for i = 1 : length(hyperParam.nS)
   for j = 1 : length(hyperParam.L)
     param.vocabularySize = hyperParam.vocabularySize;
-    param.startImgFeatNDX = hyperParam.startImgFeatNDX;
+    param.startDescriptorNDX = hyperParam.startDescriptorNDX;
     param.dir = hyperParam.dir;
     param.subsampleFactor = hyperParam.subsampleFactor;
     param.nRest = hyperParam.nRest;
     param.combineprepost = hyperParam.combineprepost;
     param.covPrior = hyperParam.covPrior;
     param.clampCov = hyperParam.clampCov;
-    param.learnedModel = hyperParam.learnedModel;
+    param.infModel = hyperParam.infModel;
     param.nSMap = hyperParam.nSMap;
     param.nM = hyperParam.nM;
     param.selectedFeature = hyperParam.selectedFeature;

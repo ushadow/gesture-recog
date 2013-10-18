@@ -49,4 +49,6 @@ for i = 1 : length(dataType)
   end
 end
 
+model.mu = single(model.mu);
+model.sigma = single(model.sigma);
 end

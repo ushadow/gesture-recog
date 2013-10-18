@@ -59,27 +59,26 @@ if param.returnFeature
 else
   
 %% Step 3: Train and test model, get prediction on all three splits
-  if isempty(param.learnedModel) && ~isempty(param.train)
+  if isempty(param.infModel) && ~isempty(param.train)
     tid = tic;
-    R.learnedModel = param.train(Y.Tr, X.Tr, param);
+    R.infModel = param.train(Y.Tr, X.Tr, param);
     if isfield(param, 'jobId')
       savevariable(fullfile(param.dir, ...
-          sprintf('learnedModel-%d.mat', param.jobId)), 'learnedModel', ...
-          R.learnedModel);
+                   sprintf('model-%d.mat', param.jobId)), 'model', R);
     end
     R.trainingTime = toc(tid);
   else 
-    model = param.learnedModel;
+    model = param.infModel;
     if iscell(model)
       model = model{foldNDX};
     end
-    R.learnedModel = model;
+    R.infModel = model;
   end
 
   if ~isempty(param.inference)
     tid = tic;
     [R.prediction, R.prob, R.path] = param.inference(Y, X, ...
-        R.learnedModel, param);
+        R.infModel, param);
     R.testingTime = toc(tid);
   end
 

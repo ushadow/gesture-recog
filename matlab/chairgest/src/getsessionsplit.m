@@ -4,6 +4,9 @@ function split = getsessionsplit(dirname, sensorType)
 % ARGS
 % dirname    - directory of processed data.
 % sensorType - the sensor type data file to use.
+%
+% RETURN
+% split   - 3 x nfold cell array.
 
 dataset = ChairgestData(dirname);
 pids = dataset.getPIDs;
