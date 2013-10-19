@@ -46,9 +46,10 @@ hyperParam.covPrior = 2;
 hyperParam.Fobserved = 1;
 hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 1};
 
-hyperParam.inference = {};
+% Inference parameters.
+hyperParam.inference = @testhmm;
 hyperParam.evalName = {'Error', 'Leven'};
-hyperParam.evalFun = {};
+hyperParam.evalFun = {@errorperframe @levenscore};
 
 hyperParam.useGpu = false;
 hyperParam.imageWidth = 100;

@@ -55,7 +55,7 @@ prob = cell(1, nseqs);
 path = cell(1, nseqs);
 
 for i = 1 : nseqs;
-  ev = X{i};
+  ev = X{i}; % one sequence
   pred1 = ones(1, size(ev, 2)) * nclass;
   path1 = ones(1, size(ev, 2)) * (sum(cell2num(values(nSMap))) + 1);
   runs = contiguous(seg{i}, 0);

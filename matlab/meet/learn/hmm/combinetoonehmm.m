@@ -12,6 +12,7 @@ function combinedModel = combinetoonehmm(prior, transmat, term, mu, Sigma, mixma
 %
 % RETURNS
 % The combined model in single precision.
+% combinedModel.mixmat is a m x nTotalStates matrix.
 
 combinedModel.prior = cat(1, prior{:});
 combinedModel.prior = single(normalise(combinedModel.prior));
