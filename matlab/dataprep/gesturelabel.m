@@ -2,7 +2,7 @@ function [label, dict] = gesturelabel()
 % RETURNS
 % label   - cell array of gesture label string.
 
-label = {'SwipeRight', 'SwipeLeft'};
+label = {'SwipeRight', 'SwipeLeft', 'Rest'};
 
 dict = containers.Map(label, 1 : length(label));
 end

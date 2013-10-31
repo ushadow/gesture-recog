@@ -19,16 +19,17 @@ combinedModel.prior = single(normalise(combinedModel.prior));
 
 nHmms = length(prior);
 
-nStates = length(prior{1});
 nTotalStates = length(combinedModel.prior);
 combinedModel.transmat = zeros(nTotalStates);
+combinedModel.term = cat(1, term{:});
+combinedTerm = repmat(combinedModel.term, 1, nTotalStates);
 
-combinedTerm = repmat(cat(1, term{:}), 1, nTotalStates);
-
-for i = 0 : nHmms - 1
-  sNDX = 1 + nStates * i;
+sNDX =1;
+for i = 1 : nHmms
+  nStates = length(prior{i});
   eNDX = sNDX + nStates - 1;
-  combinedModel.transmat(sNDX : eNDX, sNDX : eNDX) = transmat{i + 1};  
+  combinedModel.transmat(sNDX : eNDX, sNDX : eNDX) = transmat{i};  
+  sNDX = eNDX + 1;
 end
 
 combinedModel.transmat = single(combinedModel.transmat .* (1 - combinedTerm) + ... 

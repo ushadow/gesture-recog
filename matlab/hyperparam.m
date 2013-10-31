@@ -29,17 +29,13 @@ hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
 hyperParam.nM = 1; % Number of mixtures.
 hyperParam.nS = 6;
 hyperParam.combineprepost = false;
-hyperParam.nRest = 1;
+hyperParam.nRest = 1; % Number of mixtures for rest state.
 
 % Gaussian model parameters
 hyperParam.XcovType = 'diag';
 
 % AHMM parameters
-hyperParam.L = 16;
 hyperParam.resetS = true;
-% inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
-%              'viterbi', 'filtering'             
-hyperParam.inferMethod = 'fixed-interval-smoothing';
 hyperParam.Gclamp = 1;
 hyperParam.clampCov = 0;
 hyperParam.covPrior = 2;
@@ -48,13 +44,16 @@ hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 1};
 
 % Inference parameters.
 hyperParam.inference = @testhmm;
+% inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
+%              'viterbi', 'filtering'             
+hyperParam.inferMethod = 'fixed-lag-smoothing';
+hyperParam.L = 0; % Lag time.
+
+% Evaluation parameters.
 hyperParam.evalName = {'Error', 'Leven'};
 hyperParam.evalFun = {@errorperframe @levenscore};
 
 hyperParam.useGpu = false;
-hyperParam.imageWidth = 100;
-hyperParam.gSampleFactor = 1;
-hyperParam.rSampleFactor = 30;
 
 for i = 1 : 2 : length(varargin)
   hyperParam.(varargin{i}) = varargin{i + 1};
@@ -76,7 +75,6 @@ for i = 1 : length(hyperParam.nS)
     param.nSMap = hyperParam.nSMap;
     param.nM = hyperParam.nM;
     param.selectedFeature = hyperParam.selectedFeature;
-    param.imageWidth = hyperParam.imageWidth;
     param.useGpu = hyperParam.useGpu;
     param.dataFile = hyperParam.dataFile;
     param.returnFeature = hyperParam.returnFeature;

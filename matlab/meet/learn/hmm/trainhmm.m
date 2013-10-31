@@ -1,8 +1,11 @@
 function hmm = trainhmm(Y, X, param)
-%% TRAINHMM trains an HMM model for every gesture class.
+%% TRAINHMM trains an HMM model for every gesture class. Does not consider
+% pre and post strokes.
 %
 % ARGS
 % Y, X  - training labels and features.
+
+ngestures = param.vocabularySize - 1;
 
 % Cell array of sequences for each class.
 XByClass = segmentbyclass(Y, X, param.vocabularySize, param.combineprepost);
@@ -14,7 +17,14 @@ model.Sigma = cell(param.vocabularySize, 1);
 model.term = cell(param.vocabularySize, 1);
 model.mixmat = cell(param.vocabularySize, 1);
 
-for i = 1 : param.vocabularySize
+restNDX = param.vocabularySize;
+model.segment = trainsegment(Y, X, restNDX, param.nRest);
+[model.prior{restNDX}, model.transmat{restNDX}, model.mu{restNDX}, ...
+      model.Sigma{restNDX}, model.mixmat{restNDX}, ...
+      model.term{restNDX}] = getrestmodel(model.segment.restMu, ...
+      model.segment.restSigma, model.segment.restMixmat, param.nM);
+        
+for i = 1 : ngestures
   if ~isempty(XByClass{i})
     [prior0, transmat0, term0, mu0, Sigma0, mixmat0] = inithmmparam(...
         XByClass{i}, param.nS, param.nM, param.XcovType, 2);

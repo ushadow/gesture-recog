@@ -6,7 +6,8 @@ function [Y, X, frame] = alignlabelfeature(gt, feature)
 % feature - matrix of all features for a batch. Each row is an observation.
 % 
 % RETURNS
-% Y     - labels, a 2 x nframe matrix.
+% Y     - labels, a 2 x nframe matrix. The first row is gesture stroke
+%   label; the second row is the indicator of when a gesture stroke ends.
 % X     - feature vectors, a d x nframe matrix. 
 % frame - frame numbers, a 1 x nframe matrix.
 
@@ -34,4 +35,5 @@ for i = 1 : size(gt, 1)
   frame = [frame feature(startNDX : endNDX, 1)']; %#ok<AGROW>
 end
 assert(size(Y, 2) == size(frame, 2));
+[Y, X] = addrestlabel(Y, X);
 end

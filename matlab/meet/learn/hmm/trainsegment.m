@@ -1,4 +1,7 @@
 function model = trainsegment(Y, X, restNDX, nRest)
+%% TRAINSEGMENT trains a segmentation model which consists a Gaussian model
+% for the rest state and a gaussian model for the gesturing state.
+%
 % ARGS
 % Y, X  - training data.
 % nRest (optional) - number of mixtures for the rest model (default is 1).
