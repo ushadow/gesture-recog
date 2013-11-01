@@ -1,6 +1,7 @@
 function data = prepdatachairgest(dirname, varargin)
 %% PREPAREDATACHAIRGEST prepares the data from CHAIRGEST dataset into right 
-% structure for preprocessing.
+% structure for preprocessing. All session data are concatenated one after 
+% another.
 %
 % ARGS
 % dirname     - directory of the main database name, i.e. 'chairgest'.
@@ -19,7 +20,7 @@ sensorType = 'Kinect';
 gtSensorType = 'Kinect';
 dataType = 'Converted'; 
 subsampleFactor = 1; 
-featureSampleRate = 2;
+featureSampleRate = 4;
 
 for i = 1 : 2 : length(varargin)
   switch varargin{i}
