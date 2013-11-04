@@ -23,6 +23,8 @@ for i = 1 : nseqs
         if startNDX > 1
           newLabel = seq(1, startNDX - 1);
           seq(2, startNDX - 1) = 1;
+        elseif seq(1, endNDX + 1) == 13
+          seq(2, endNDX) = 1;
         end
         seq(1, startNDX : endNDX) = newLabel;
     end

@@ -3,12 +3,16 @@ function hcrf = trainhcrfwrap(Y, X, param)
 % ARGS
 % Y, X  - training data
 
-[seqs, labels] = makehcrfinput(Y, X, param.vacabularySize);
+[seqs, labels] = makehcrfinput(Y, X, param.vocabularySize);
 
 hcrfParam.nbHiddenStates = sum(cell2mat(values(param.nSMap)));
 hcrfParam.optimizer = 'lbfgs';
-hcrfParam.regularizationL2 = 10000;
+hcrfParam.regFactorL2 = 1000;
 hcrfParam.windowRecSize = 500;
+hcrfParam.windowSize = 0;
+hcrfParam.debugLevel = 1;
+hcrfParam.modelType = 'hcrf';
+hcrfParam.caption = 'HCRF';
 
 hcrf.model = trainHCRF(seqs, labels, hcrfParam);
 hcrf.param = hcrfParam;

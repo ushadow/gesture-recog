@@ -12,7 +12,7 @@ seqs = {};
 for i = 1 : ngestures
   featureSeqs = dataByClass{i};
   seqs = [seqs featureSeqs]; %#ok<AGROW>
-  newLabels = cellfun(@(x) ones(1, size(x, 2)) * i, featuresSeqs, ...
+  newLabels = cellfun(@(x) ones(1, size(x, 2)) * i, featureSeqs, ...
                       'UniformOutput', false); 
   labels = [labels newLabels]; %#ok<AGROW>
 end

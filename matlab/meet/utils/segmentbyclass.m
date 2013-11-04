@@ -1,11 +1,11 @@
-function dataByClass = segmentbyclass(Y, X, nclass, combineprepost)
+function dataByClass = segmentbyclass(Y, X, nclass, combinePrepost)
 %% SEGMENTBYCLASS segments the sequences according to class labels.
 %
 % ARGS
 % Y   - cell array of labels. Each cell is a sequence for one recording.
 % X   - cell array of observations.
 
-if combineprepost
+if combinePrepost
   Y = combineprepost(Y);
 end
 
