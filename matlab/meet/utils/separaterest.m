@@ -1,4 +1,6 @@
 function [rest, gesture] = separaterest(Y, X, restNDX)
+%% SEPARATEREST 
+
 nseqs = size(Y, 2);
 rest = cell(1, nseqs);
 gesture = cell(1, nseqs);

@@ -12,14 +12,6 @@ for i = 1 : length(dataType)
 end
 end
 
-function label = mostlikelilabel(ll)
-  label = cellfun(@(x) maxindex(x), ll, 'UniformOutput', false);
-end
-
-function index = maxindex(ll)
-[~, index] = max(ll);
-end
-
 function [pred, prob] = inference(Y, X, seg, model, nclasses)
 Y = combineprepost(Y);
 nseqs = length(X);
@@ -36,7 +28,7 @@ for i = 1 : nseqs
   nruns = size(runs, 1);
   prob1 = cell(1, nruns);
   for r = 1 : nruns
-    startNDX = runs(r, 1);
+    startNDX = runs(r, 1); 
     endNDX = runs(r, 2);
     if mode(label(startNDX : endNDX)) <= 10
       ll = testHCRF(model.model, {ev(:, startNDX : endNDX)}, ...

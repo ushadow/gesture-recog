@@ -12,7 +12,7 @@ hyperParam.dataFile = [];
 hyperParam.mce = false;
 
 % Training parameters
-hyperParam.train = @trainhcrfwrap;
+hyperParam.train = @trainldcrfwrap;
 hyperParam.maxIter = 30;
 hyperParam.thresh = 0.001;
 
@@ -46,7 +46,7 @@ hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.selectedFeature = [2 : 7, 11 : 13] + 18 * 3;
 
-hyperParam.inference = @testhcrfwrap;
+hyperParam.inference = @testldcrfwrap;
 hyperParam.evalName = {'Error', 'Leven'};
 hyperParam.evalFun = {@errorperframe, @levenscore};
 
