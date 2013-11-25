@@ -1,4 +1,6 @@
 function [realStart, realEnd] = realstartendinpath(path, nSMap, subsampleFactor)
+%% REALSTARTENDINPATH finds the actual start and end of a gesture
+
 realStart = -1;
 realEnd = -1;
 if computetransitions(path) <= 3, return; end

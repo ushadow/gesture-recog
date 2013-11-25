@@ -1,4 +1,6 @@
 function outputchairgest(data, result, algo, name, gestureLabel, dtNDX)
+% OUTPUTCHAIRGEST outputs chairgest result format.
+%
 % ARGS
 % data - struct with field: param.
 % result - cell array of struct with fields: param, prediction, split.
@@ -45,8 +47,10 @@ while i <= length(seq)
     while i <= length(seq) && seq(i) == gesture
       i = i + 1;
     end
-    fprintf(fid, '%s\t%s\t%s\t%s\t%d\t%d\n', file{1}, file{2}, ...
-        file{3}, gestureLabel{gesture}, frame(start), frame(i - 1));
+    if (i - start) >= 10
+      fprintf(fid, '%s\t%s\t%s\t%s\t%d\t%d\n', file{1}, file{2}, ...
+          file{3}, gestureLabel{gesture}, frame(start), frame(i - 1));
+    end
   else
     i = i + 1;
   end

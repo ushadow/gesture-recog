@@ -28,15 +28,16 @@ for i = 1 : nseqs
   nruns = size(runs, 1);
   prob1 = cell(1, nruns);
   for r = 1 : nruns
-    startNDX = runs(r, 1); 
-    endNDX = runs(r, 2);
-    if mode(label(startNDX : endNDX)) <= 10
-      ll = testHCRF(model.model, {ev(:, startNDX : endNDX)}, ...
-          {label(startNDX : endNDX)});  
-      newLabel = mostlikelilabel(ll);
-      pred1(startNDX : endNDX) = newLabel{1};
-      prob1{r} = ll{1};
-    end
+    startNdx = runs(r, 1); 
+    endNdx = runs(r, 2);
+    ll = testHCRF(model.model, {ev(:, startNdx : endNdx)}, ...
+         {label(startNdx : endNdx)});  
+    newLabel = mostlikelilabel(ll);
+    newLabel = newLabel{1};
+    newEndNdx = startNdx + length(newLabel) - 1;
+    pred1(startNdx : newEndNdx) = newLabel;
+    pred1(newEndNdx + 1 : endNdx) = newLabel(end);
+    prob1{r} = ll{1};
   end
   pred{i} = pred1;
   prob{i} = prob1;

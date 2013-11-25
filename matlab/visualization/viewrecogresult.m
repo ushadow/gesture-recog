@@ -1,4 +1,4 @@
-function viewrecogresult(data, result, ndx)
+function viewrecogresult(data, result, ndx, gestureLabel)
 % Visualize gesture recognition result.
 %
 % ARGS
@@ -28,7 +28,7 @@ yticklabel_rotate;
 
 h = colorbar;
 set(h, 'YTick', 1 : ngestures);
-set(h, 'YTickLabel', gesturelabel, 'FontSize', 12);
+set(h, 'YTickLabel', gestureLabel, 'FontSize', 12);
 title(data.file{seqNDX}, 'Interpreter', 'none');
 
 hiddenStates = result.path.Va{ndx};

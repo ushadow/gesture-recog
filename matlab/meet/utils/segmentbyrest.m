@@ -2,7 +2,8 @@ function [newY, newX] = segmentbyrest(Y, X, restNDX)
 %% SEGMENTBYREST segment the sequences by rest positions.
 %
 % RETURNS
-% newY  - cell array of label sequences. Each cell is a 1xn matrix.
+% newY  - cell array of label sequences. Each cell is a 1xn matrix and the
+%         labels are 1-based.
 
 nSeqs = size(Y, 2);
 newX = {};

@@ -14,6 +14,9 @@ end
 end
 
 function [pred, prob] = inference(Y, X, seg, model, nclasses)
+%%
+% ncalsses  - number of all possible classes, including rest.
+
 nSeqs = length(X);
 pred = cell(1, nSeqs);
 prob = cell(1, nSeqs);
@@ -31,7 +34,7 @@ for i = 1 : nSeqs
     ll = testLDCRF(model.model, {ev(:, startNdx : endNdx)}, ...
         {label(startNdx : endNdx)});
     newLabel = mostlikelilabel(ll);
-    pred1(startNdx : endNdx) = newLabel{1};
+    pred1(startNdx : endNdx) = filterlabel(newLabel{1});
     prob{r} = ll{1};
   end
   pred{i} = pred1;
@@ -39,3 +42,16 @@ for i = 1 : nSeqs
 end
 end
 
+function label = filterlabel(label, nClasses)
+nGestures = nClasses - 3;
+gestureLen = zero(1, nGestures);
+runs = contiguous(label);
+for i = 1 : size(runs, 1)
+  if runs{i, 1} <= nGestures
+    run = runs{i, 2};
+    gestureLen(i) = gestureLen(i) + sum(run(:, 2) - run(:, 1) + 1);
+  end
+end
+[~, gesture] = max(gestureLen);
+label(label <= nGestures) = gesture;
+end
