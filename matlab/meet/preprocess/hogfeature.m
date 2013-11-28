@@ -1,4 +1,4 @@
-function X = hogfeature(X, param)
+function [X, model] = hogfeature(X, param)
 %
 % ARGS
 % X   - Feature structure or cell array.
@@ -8,8 +8,9 @@ function X = hogfeature(X, param)
 %   - sBin
 %   - oBin
 
+startImgFeatNDX = param.startDescriptorNDX;
 imageWidth = param.imageWidth;
-startImgFeatNDX = param.startImgFeatNDX;
+model = [];
 
 if isfield(X, 'Tr')
   X.Tr = hoghand1(X.Tr, startImgFeatNDX, imageWidth, param);

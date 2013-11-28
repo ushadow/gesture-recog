@@ -3,11 +3,11 @@ function R = runexperiment(param, split, foldNDX, batchNDX, seed, data)
 % R = runexperiment(param, split, data)
 %
 % ARGS
-% param: struct, model parameters
-% foldNDX   - fold index.
-% - data: struct with fields
-%     - Y: cell array, label data.
-%     - X: cell array, feature data.
+% param   - struct, model parameters
+% split   - a column cell array of 3 cells with sequence indices for
+%           training, testing, and optional validation.
+% foldNDX - fold index.
+% data    - cell array of batch data.
 %
 % RETURNS
 % R   - if param.returnFeature is true, returns the processed feature;
@@ -22,6 +22,8 @@ if ~exist('data', 'var')
   matObj = matfile(dataFileFullPath);
   data = matObj.(param.dataFile)(1, batchNDX);
   data = data{1};
+else
+  data = data{batchNDX};
 end
 
 if isfield(data, 'userId')

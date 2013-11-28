@@ -1,6 +1,7 @@
 function data = prepdatachairgest(dirname, varargin)
 %% PREPAREDATACHAIRGEST prepares the data from CHAIRGEST dataset into right 
-% structure for preprocessing.
+% structure for preprocessing. All session data are concatenated one after 
+% another.
 %
 % ARGS
 % dirname     - directory of the main database name, i.e. 'chairgest'.
@@ -8,6 +9,7 @@ function data = prepdatachairgest(dirname, varargin)
 % OPTIONAL ARGS
 % sensorType  - string of sensor type, i.e., 'Kinect' or 'Xsens'. ['Kinect']
 % subsmapleFactor - subsampling factor. [1]
+% gtSensorType  - ground truth reference sensor. ['Kinect'] 
 %
 % RETRURN
 % data  - a cell array. Each cell is for one user and is a structure with fields:
@@ -19,7 +21,7 @@ sensorType = 'Kinect';
 gtSensorType = 'Kinect';
 dataType = 'Converted'; 
 subsampleFactor = 1; 
-featureSampleRate = 2;
+featureSampleRate = 4;
 
 for i = 1 : 2 : length(varargin)
   switch varargin{i}
@@ -62,18 +64,19 @@ for p = 1 : npids
       if batchNDX > 0
         gtFile = fullfile(sessionDir, sprintf(gtFileFormat, batchNDXstr));
         logdebug('prepdatachairgest', 'batch', gtFile);
-        [featureData, nconFeat] = readfeature(...
+        [featureData, descriptorStartNdx, imgWidth] = readfeature(...
             fullfile(sessionDir, fileName), sensorType);
         [gt, vocabSize] = readgtchairgest(gtFile, featureData(1, 1), ...
             featureData(end, 1));
 
         if ~paramInitialized
           dataParam.vocabularySize = vocabSize;
-          dataParam.startImgFeatNDX = nconFeat + 1;
+          dataParam.startImgFeatNDX = descriptorStartNdx;
           dataParam.dir = dirname;
           dataParam.subsampleFactor = subsampleFactor * featureSampleRate;
           dataParam.gtSensorType = gtSensorType;
           dataParam.dataType = dataType;
+          dataParam.imgWidth = imgWidth;
           paramInitialized = true;
         end
         [Y, X, frame] = combinelabelfeature(gt, featureData, batchNDX, ...

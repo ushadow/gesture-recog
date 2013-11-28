@@ -20,7 +20,8 @@ for model = 1 : nrow % for each model (row)
   params.jobId = job.ID;
   for fold = 1 : ncol % for each fold (col)
     if verbose, fprintf('.'); end 
-    createTask(job, @runexperiment, nargout, {params, split(:, fold), fold, batchNDX, seed});
+    createTask(job, @runexperiment, nargout, {params, split(:, fold), ...
+        fold, batchNDX, seed});
   end
 end
 if verbose
