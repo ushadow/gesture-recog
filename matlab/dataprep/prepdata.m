@@ -80,6 +80,5 @@ for p = 1 : npids
     end
   end
   data{p}.param = dataParam;
-  data{p}.Y = addflabel(data{p}.Y);
 end
 end

@@ -1,8 +1,10 @@
 function [Y, X, frame] = alignlabelfeature(gt, feature)
-%% Aligns ground truth data with feature data.
+%% ALIGNLABELFEATURE Aligns ground truth data with feature data.
 %
 % ARGS
-% gt   - matrix of all ground truth labels for a batch.
+% gt   - n x 3 matrix of all ground truth labels for a batch. The first
+%        column is the stroke id. The second column is the start frame id
+%        of the stroke and the third column is end frame id of the stroke.
 % feature - matrix of all features for a batch. Each row is an observation.
 % 
 % RETURNS

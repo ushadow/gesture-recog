@@ -4,6 +4,10 @@ function [data, startDescriptorNDX, sampleRate] = readfeature(inputFile, ...
 %
 % ARGS
 % inputFile   - input file name.
+%
+% RETURN
+% data  - n x d matrix where n is number of feature frames and d is the 
+%         dimension of the feature + 1. The first column is frame number.
 
 if strcmp(sensor, 'Kinect')
   feature = importdata(inputFile, ',', 1);

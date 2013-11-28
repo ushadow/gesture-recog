@@ -5,15 +5,19 @@ function Y = addflabel(Y)
 % ARGS
 % Y   - cell array of Y data
 
-for i = 1 : numel(Y)
-  seq = Y{i};
-  for j = 1 : size(seq, 2) - 1
-    if seq(1, j) ~= seq(1, j + 1)
-      seq(2, j) = 2;
-    else 
-      seq(2, j) = 1;
-    end
+if iscell(Y)
+  for i = 1 : numel(Y)
+    seq = Y{i};  
+    Y{i} = addflabelone(seq);
   end
-  seq(2, end) = 2;
-  Y{i} = seq;
+else
+  Y = addflabelone(Y);
+end
+end
+
+function Y = addflabelone(Y)
+shifted = [Y(1, 2 : end) Y(1, end)];
+Y(2, :) = 1;
+Y(2, (Y(1, :) - shifted) ~= 0) = 2;
+Y(2, end) = 2;
 end
