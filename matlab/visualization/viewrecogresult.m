@@ -31,10 +31,12 @@ set(h, 'YTick', 1 : ngestures);
 set(h, 'YTickLabel', gestureLabel, 'FontSize', 12);
 title(data.file{seqNDX}, 'Interpreter', 'none');
 
-hiddenStates = result.path.Va{ndx};
-ncolors = max(hiddenStates);
-yTickLabel = {'Hidden states'};
-drawimage(hiddenStates, ncolors, data.frame{seqNDX}(xtick), yTickLabel);
+if ~isempty(result.path)
+  hiddenStates = result.path.Va{ndx};
+  ncolors = max(hiddenStates);
+  yTickLabel = {'Hidden states'};
+  drawimage(hiddenStates, ncolors, data.frame{seqNDX}(xtick), yTickLabel);
+end
 end
 
 function drawimage(data, ncolors, xTickLabel, yTickLabel)

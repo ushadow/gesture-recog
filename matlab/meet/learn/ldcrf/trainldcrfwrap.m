@@ -4,7 +4,7 @@ ldcrfParam.nbHiddenStates = param.nS;
 ldcrfParam.optimizer = 'lbfgs';
 ldcrfParam.regFactorL2 = 1000;
 ldcrfParam.windowSize = 0;
-ldcrfParam.debugLevel = 1;
+ldcrfParam.debugLevel = 0;
 ldcrfParam.modelType = 'ldcrf';
 ldcrfParam.caption = 'LDCRF';
 

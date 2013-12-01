@@ -31,10 +31,10 @@ for i = 1 : nSeqs
   for r = 1 : nRuns
     startNdx = runs(r, 1);
     endNdx = runs(r, 2);
-    ll = testLDCRF(model.model, {ev(:, startNdx : endNdx)}, ...
-        {label(startNdx : endNdx)});
+    ll = test(model.model, {ev(:, startNdx : endNdx)}, ...
+              {label(startNdx : endNdx)});
     newLabel = mostlikelilabel(ll);
-    pred1(startNdx : endNdx) = filterlabel(newLabel{1});
+    pred1(startNdx : endNdx) = filterlabel(newLabel{1}, nclasses);
     prob{r} = ll{1};
   end
   pred{i} = pred1;
@@ -44,12 +44,14 @@ end
 
 function label = filterlabel(label, nClasses)
 nGestures = nClasses - 3;
-gestureLen = zero(1, nGestures);
+gestureLen = zeros(1, nGestures);
 runs = contiguous(label);
 for i = 1 : size(runs, 1)
-  if runs{i, 1} <= nGestures
+  gestureLabel = runs{i, 1};
+  if gestureLabel <= nGestures
     run = runs{i, 2};
-    gestureLen(i) = gestureLen(i) + sum(run(:, 2) - run(:, 1) + 1);
+    gestureLen(gestureLabel) = gestureLen(gestureLabel) + ...
+                               sum(run(:, 2) - run(:, 1) + 1);
   end
 end
 [~, gesture] = max(gestureLen);

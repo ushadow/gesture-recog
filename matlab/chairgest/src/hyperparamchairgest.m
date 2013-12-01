@@ -21,7 +21,7 @@ hyperParam.oBin = 9;
 hyperParam.selectedFeature = 1 : 9; %[2 : 7, 11 : 13] + 18 * 3; %Xsens
 
 % Training parameters
-hyperParam.train = @trainldcrfwrap;
+hyperParam.train = @trainldcrfmaskedwrap;
 hyperParam.maxIter = 30;
 hyperParam.thresh = 0.001;
 
@@ -30,7 +30,7 @@ hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
 hyperParam.nS = 6; % number of hidden states S.
 hyperParam.nM = 3;
 hyperParam.combineprepost = false;
-hyperParam.nRest = 1;
+hyperParam.nRest = 1; % number of mixtures for rest position
 
 % Gaussian model parameters
 hyperParam.XcovType = 'diag';
