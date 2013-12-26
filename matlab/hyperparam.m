@@ -3,7 +3,7 @@ function hyperParam = hyperparam(paramFromData, varargin)
 hyperParam.trainIter = 1; % Training iterations
 
 % Default values.
-hyperParam.startDescriptorNDX = paramFromData.startDescriptorNDX;
+hyperParam.startDescriptorNdx = paramFromData.startDescriptorNDX;
 hyperParam.dir = paramFromData.dir;
 hyperParam.vocabularySize = paramFromData.vocabularySize;
 hyperParam.subsampleFactor = paramFromData.subsampleFactor;

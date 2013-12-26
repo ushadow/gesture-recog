@@ -1,7 +1,8 @@
 function [newX, model] = pcaimage(X, param)
 %% PCAIMAGE PCA for image features.
 %
-% [eigHand handFeature rawFeature H] = eigenhand(X) 
+% [eigHand handFeature rawFeature H] = pcaimage(X, param) 
+% Reference: http://onionesquereality.wordpress.com/2009/02/11/face-recognition-using-eigenfaces-and-distance-classifiers-a-tutorial/
 % 
 % Args
 % -X: observed data or a struct with Tr, Va and Te data. Each 
@@ -25,10 +26,12 @@ else
 end
 
 % Number of principal components to use for image.
-startDescriptorNDX = param.startDescriptorNDX;
+startDescriptorNdx = param.startDescriptorNdx;
 k = param.nprincomp;
 
-[A, model.mean] = normalizefeature(train, startDescriptorNDX);
+% The purpose of subtracting the mean from each sample is to be left with
+% only the distinguishing features.
+[A, model.mean] = normalizefeature(train, startDescriptorNdx);
 
 % Let u be the eigenhand. We want to find AA' * u = lamda * u, but AA' is a 
 % large matrix because the dimension of the feature vector is probabily 
@@ -64,7 +67,7 @@ else
   end
   model.pc = getprincomp(eigVec, eigVal, k);
 end
-newFeature = updatedata(train, model.pc, startDescriptorNDX, ...
+newFeature = updatedata(train, model.pc, startDescriptorNdx, ...
                         'normalized', A);
 
 if isfield(X, 'Tr')
@@ -74,12 +77,12 @@ else
 end
 
 if isfield(X, 'Va')
-  newX.Va = updatedata(X.Va, model.pc, startDescriptorNDX, ...
+  newX.Va = updatedata(X.Va, model.pc, startDescriptorNdx, ...
                        'mean', model.mean);
 end
 
 if isfield(X, 'Te')
-  newX.Te = updatedata(X.Te, model.pc, startDescriptorNDX, ...
+  newX.Te = updatedata(X.Te, model.pc, startDescriptorNdx, ...
                        'mean', model.mean);
 end
 
@@ -95,15 +98,10 @@ sortedEigVec = eigVec(:, eigNDX(1 : k));
 sortedEigVal = sortedEigVal(1 : k);
 end
 
-function rawImgFeature = rawimgfeature(data, startImgFetNDX)
-mat = cell2mat(data);
-rawImgFeature = mat(startImgFetNDX : end, :);
-end
-
 function [normalized, meanFeature] = normalizefeature(data, ...
     startDescriptorNDX)
 % Subtracts the mean from the features.
-rawFeature = rawimgfeature(data, startDescriptorNDX);
+rawFeature = descriptorfeature(data, startDescriptorNDX);
 nframe = size(rawFeature, 2);
 meanFeature = mean(rawFeature, 2);
 meanFeatureRep = repmat(meanFeature, 1, nframe);
@@ -115,7 +113,7 @@ narg = length(varargin);
 for i = 1 : 2 : narg
   switch varargin{i}
     case 'mean' 
-      rawImgFeature = rawimgfeature(data, startImgFeatNDX);
+      rawImgFeature = descriptorfeature(data, startImgFeatNDX);
       nframe = size(rawImgFeature, 2);
       meanFeature = varargin{i + 1};
       meanFeatureRep = repmat(meanFeature, 1, nframe);
@@ -126,11 +124,11 @@ for i = 1 : 2 : narg
 end
 imgFeature = eigImg' * normImgFeature; % neigHand x nframe
 nseq = length(data);
-startNDX = 1;
+startNdx = 1;
 for i = 1 : nseq
   old = data{i};
-  endNDX = startNDX + size(old, 2) - 1;
-  data{i} = [old(1 : startImgFeatNDX - 1, :); imgFeature(:, startNDX : endNDX)];
-  startNDX = endNDX + 1;
+  endNdx = startNdx + size(old, 2) - 1;
+  data{i} = [old(1 : startImgFeatNDX - 1, :); imgFeature(:, startNdx : endNdx)];
+  startNdx = endNdx + 1;
 end
 end
