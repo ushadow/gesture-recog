@@ -83,6 +83,11 @@ else
         param);
     R.testingTime = toc(tid);
   end
+  
+  if ~isempty(param.postprocess)
+    [R.predictionFiltered, R.prob, R.path] = param.postprocess(...
+        R.prediction, param);
+  end
 
   % Step 5: Evaluate performance of prediction
   if ~isempty(param.evalFun)

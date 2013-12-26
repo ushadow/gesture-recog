@@ -2,9 +2,10 @@ function ldcrf = trainldcrfwrap(Y, X, param)
 
 ldcrfParam.nbHiddenStates = param.nS;
 ldcrfParam.optimizer = 'lbfgs';
-ldcrfParam.regFactorL2 = 1000;
+ldcrfParam.regFactorL2 = param.regFactorL2;
 ldcrfParam.windowSize = 0;
 ldcrfParam.debugLevel = 0;
+ldcrfParam.maxIterations = param.maxIter;
 ldcrfParam.modelType = 'ldcrf';
 ldcrfParam.caption = 'LDCRF';
 

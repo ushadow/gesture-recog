@@ -7,7 +7,7 @@ function viewrecogresult(data, result, ndx, gestureLabel)
 figure;
 ngestures = data.param.vocabularySize;
 seqNDX = result.split{2}(ndx);
-nS = sum(cell2mat(values(result.param.nSMap)));
+
 im = [data.Y{seqNDX}(1, :); result.prediction.Va{ndx}(1, :)];
 
 colormap(bipolar(ngestures));

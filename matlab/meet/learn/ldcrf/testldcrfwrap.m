@@ -1,6 +1,6 @@
 function [pred, prob, path] = testldcrfwrap(Y, X, model, param)
 
-nclasses = param.vocabularySize;
+nClasses = param.vocabularySize;
 dataType = {'Tr', 'Va'};
 path = [];
 
@@ -8,7 +8,7 @@ for i = 1 : length(dataType)
   dt = dataType{i};
   if isfield(X, dt)
     seg = testsegment(X.(dt), model.segment, param.subsampleFactor);
-    [pred.(dt), prob.(dt)] = inference(Y.(dt), X.(dt), seg, model, nclasses);
+    [pred.(dt), prob.(dt)] = inference(Y.(dt), X.(dt), seg, model, nClasses);
   end
 end
 end
@@ -31,29 +31,12 @@ for i = 1 : nSeqs
   for r = 1 : nRuns
     startNdx = runs(r, 1);
     endNdx = runs(r, 2);
-    ll = test(model.model, {ev(:, startNdx : endNdx)}, ...
+    [ll, predLabels] = test(model.model, {ev(:, startNdx : endNdx)}, ...
               {label(startNdx : endNdx)});
-    newLabel = mostlikelilabel(ll);
-    pred1(startNdx : endNdx) = filterlabel(newLabel{1}, nclasses);
+    pred1(startNdx : endNdx) = int32(predLabels{1}) + 1;
     prob{r} = ll{1};
   end
   pred{i} = pred1;
   prob{i} = prob1;  
 end
-end
-
-function label = filterlabel(label, nClasses)
-nGestures = nClasses - 3;
-gestureLen = zeros(1, nGestures);
-runs = contiguous(label);
-for i = 1 : size(runs, 1)
-  gestureLabel = runs{i, 1};
-  if gestureLabel <= nGestures
-    run = runs{i, 2};
-    gestureLen(gestureLabel) = gestureLen(gestureLabel) + ...
-                               sum(run(:, 2) - run(:, 1) + 1);
-  end
-end
-[~, gesture] = max(gestureLen);
-label(label <= nGestures) = gesture;
 end

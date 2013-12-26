@@ -47,11 +47,8 @@ while i <= length(seq)
     while i <= length(seq) && seq(i) == gesture
       i = i + 1;
     end
-    % Only considers sequence longer than 10 frames.
-    if (i - start) >= 10 
-      fprintf(fid, '%s\t%s\t%s\t%s\t%d\t%d\n', file{1}, file{2}, ...
-          file{3}, gestureLabel{gesture}, frame(start), frame(i - 1));
-    end
+    fprintf(fid, '%s\t%s\t%s\t%s\t%d\t%d\n', file{1}, file{2}, ...
+        file{3}, gestureLabel{gesture}, frame(start), frame(i - 1));
   else
     i = i + 1;
   end

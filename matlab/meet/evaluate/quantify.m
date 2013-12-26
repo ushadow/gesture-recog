@@ -4,6 +4,7 @@ function count = quantify(y, ystar, cat)
 % - y: true label.
 % - ystar: estimated label.
 % - cat: categories.
+
 count = zeros(1, 4); % [tp fp tn fn]
 if ystar == cat 
   if y == cat 
