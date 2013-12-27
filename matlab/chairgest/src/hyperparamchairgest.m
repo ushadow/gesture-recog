@@ -13,8 +13,8 @@ hyperParam.mce = false;
 hyperParam.imageWidth = paramFromData.imgWidth;
 
 % Preprocess parameters.
-hyperParam.preprocess = {@standardizefeature};
-hyperParam.returnFeature = false;
+hyperParam.preprocess = {@denoise @learndict}; %{@standardizefeature};
+hyperParam.returnFeature = true;
 hyperParam.nprincomp = 26; % number of principal components from image.
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;

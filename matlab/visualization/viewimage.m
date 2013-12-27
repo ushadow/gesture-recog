@@ -1,16 +1,18 @@
-function H = viewimage(data, startNDX, NDX, ncol)
+function H = viewimage(data, startNdx, indices, ncol)
 %% VIEWIMAGE displays images for one sequence.
 % 
-% H = viewhand(data, startNDX, nToDispaly)
+% H = viewimage(data, startNDX, nToDispaly)
 %
-% Args
+% ARGS
 % data - d X n matrix where d is the number of pixels in the image and n is 
 %        number of frames.
+% startNdx  - start index of descriptor
+% indices   - indices of images to be displayed
 
 d = size(data, 1);
-data = data(startNDX : d, NDX);  
-imageWidth = sqrt(d - startNDX + 1);
-nimage = length(NDX);
+data = data(startNdx : d, indices);  
+imageWidth = sqrt(d - startNdx + 1);
+nimage = length(indices);
 nrow = ceil(nimage / ncol);
 
 H = figure();
