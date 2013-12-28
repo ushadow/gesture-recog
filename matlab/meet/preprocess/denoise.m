@@ -1,12 +1,12 @@
-function X = denoise(X, param, methodName)
+function [X, se] = denoise(X, param, methodName)
 % DENOISE removes the black holes due to aliasing.
 %
 % ARGS
-% X       - the feature data or a structure of feature data.
-% param   - hyperparameters. It should have the field startHandFetNDX.
+% X     - the feature data or a structure of feature data.
+% param - hyperparameters. It should have the field startHandFetNDX.
 %
-% Return:
-% - R: the result has the same structure as the input data.
+% RETURN
+% X     - the denoised result has the same structure as the input data.
 
 FILTER_WIN_SIZE = 3;
 
@@ -25,6 +25,9 @@ switch methodName
   case 'close'
     method = {@imclose, @imopen};
     se = strel('square', FILTER_WIN_SIZE);
+  case 'scale'
+    method = {@imresize};
+    se = [16 16];
   otherwise
     error('Unknown denoise method.');
 end
@@ -33,11 +36,11 @@ if isstruct(X)
   fn = fieldnames(X);
   for i = 1 : length(fn)
     D = X.(fn{i});
-    denoised = denoiseone(D, param.startImgFeatNDX, method, se);
+    denoised = denoiseone(D, param.startDescriptorNdx, method, se);
     X.(fn{i}) = denoised;
   end
 else
-  X = denoiseone(X, param.startImgFeatNDX, method, se);
+  X = denoiseone(X, param.startDescriptorNdx, method, se);
 end
 end
 

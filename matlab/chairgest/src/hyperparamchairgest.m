@@ -13,12 +13,14 @@ hyperParam.mce = false;
 hyperParam.imageWidth = paramFromData.imgWidth;
 
 % Preprocess parameters.
-hyperParam.preprocess = {@denoise @learndict}; %{@standardizefeature};
+hyperParam.preprocess = {@denoise @remapdepth @resize @learndict}; %{@standardizefeature};
 hyperParam.returnFeature = true;
 hyperParam.nprincomp = 26; % number of principal components from image.
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
+hyperParam.resizeWidth = 16;
 hyperParam.selectedFeature = 1 : 9; %[2 : 7, 11 : 13] + 18 * 3; %Xsens
+hyperParam.K = 300; % number of dictinoary terms
 
 % Training parameters
 hyperParam.train = @trainldcrfmaskedwrap;

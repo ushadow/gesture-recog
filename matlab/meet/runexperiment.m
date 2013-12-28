@@ -44,10 +44,12 @@ X = separatedata(data.X, split);
 if isfield(param, 'preprocess')
   npreprocesses = length(param.preprocess); 
   R.preprocessModel = cell(1, npreprocesses); 
+  tid = tic;
   for i = 1 : npreprocesses
     fun = param.preprocess{i};
     [X, R.preprocessModel{i}]  = fun(X, param);
   end
+  R.preprocessTime = toc(tid);
 end
 
 if param.returnFeature

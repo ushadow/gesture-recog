@@ -6,20 +6,20 @@ else
   train = X;
 end
 
-startDescriptorNdx = param.startDescriptorNDX;
+startDescriptorNdx = param.startDescriptorNdx;
 
 % train is a d x n matrix where d is the feature dimension and n is the 
 % number of samples.
-train = descriptorfeature(train, startDescriptorNdx);
+trainMat = descriptorfeature(train, startDescriptorNdx);
 
-% Diction learning parameters.
-dlParams.K = 1000;
+% Dictionary learning parameters.
+dlParams.K = param.K;
 dlParams.lambda = 0.1;
-dlParams.iter = 10000;
+dlParams.iter = 100;
 dlParams.verbose = true;
 dlParams.approx = 0;
 
-D = mexTrainDL(train, dlParams);
+D = mexTrainDL(trainMat, dlParams);
 
 newTrain = computenewfeature(train, startDescriptorNdx, D, dlParams);
 if isfield(X, 'Tr')
