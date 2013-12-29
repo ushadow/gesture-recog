@@ -9,6 +9,12 @@ function H = viewimage(data, startNdx, indices, ncol)
 % startNdx  - start index of descriptor
 % indices   - indices of images to be displayed
 
+if nargin < 2
+  startNdx = 1; 
+  indices = 1 : size(data, 2);
+  ncol = 5;
+end
+
 d = size(data, 1);
 data = data(startNdx : d, indices);  
 imageWidth = sqrt(d - startNdx + 1);

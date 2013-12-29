@@ -1,4 +1,4 @@
-function [X, model] = remapdepth(X, ~)
+function [X, model] = remapdepth(~, X, ~)
 % REMAPDEPTH the original value is inversely proportional to depth. The 
 % smaller the depth, the larger the value.
 %

@@ -1,5 +1,8 @@
 function viewdictionary(D, alpha)
 % Visualizes a learned dictionary. 
+%
+% ARGS
+% alpha - cell array 
 
 alpha = cell2mat(alpha);
 K = size(D, 2);

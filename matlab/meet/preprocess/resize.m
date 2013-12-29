@@ -1,4 +1,4 @@
-function [X, resizeWidth] = resize(X, param)
+function [X, resizeWidth] = resize(~, X, param)
 %% RESIZE resizes the image features.
 
 if isfield(X, 'Tr')

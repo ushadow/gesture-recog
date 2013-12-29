@@ -13,8 +13,8 @@ hyperParam.mce = false;
 hyperParam.imageWidth = paramFromData.imgWidth;
 
 % Preprocess parameters.
-hyperParam.preprocess = {@denoise @remapdepth @resize @learndict}; %{@standardizefeature};
-hyperParam.returnFeature = true;
+hyperParam.preprocess = {@denoise @remapdepth @resize @learndict @standardizefeature}; %{@standardizefeature};
+hyperParam.returnFeature = false;
 hyperParam.nprincomp = 26; % number of principal components from image.
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
@@ -23,8 +23,8 @@ hyperParam.selectedFeature = 1 : 9; %[2 : 7, 11 : 13] + 18 * 3; %Xsens
 hyperParam.K = 300; % number of dictinoary terms
 
 % Training parameters
-hyperParam.train = @trainldcrfmaskedwrap;
-hyperParam.maxIter = 1000; % hmm: 30;
+hyperParam.train = @trainhmmprepost;
+hyperParam.maxIter = 30; %ldcrf: 1000; hmm: 30
 hyperParam.thresh = 0.001;
 hyperParam.regFactorL2 = 100;
 
@@ -48,7 +48,7 @@ hyperParam.Fobserved = 1;
 hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 1};
 
 % Inference, test parameters
-hyperParam.inference = @testldcrfwrap;
+hyperParam.inference = @testhmmprepost;
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
 hyperParam.inferMethod = 'viterbi';

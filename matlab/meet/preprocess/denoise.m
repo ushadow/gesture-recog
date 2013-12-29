@@ -1,4 +1,4 @@
-function [X, se] = denoise(X, param, methodName)
+function [X, se] = denoise(~, X, param, methodName)
 % DENOISE removes the black holes due to aliasing.
 %
 % ARGS
@@ -10,7 +10,7 @@ function [X, se] = denoise(X, param, methodName)
 
 FILTER_WIN_SIZE = 3;
 
-if nargin <= 2
+if nargin <= 3
   if isfield(param, 'denoiseMethod')
     methodName = param.denoiseMethod;
   else
