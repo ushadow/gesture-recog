@@ -1,14 +1,14 @@
-dirname = 'H:\yingyin\chairgest_salience'; %'H:\yingyin\chairgest_saliencexsens4';
+dirname = 'H:\yingyin\chairgest_salience_color'; %'H:\yingyin\chairgest_saliencexsens4';
 dataFile = fullfile(dirname, 'data.mat');
 
 %% Process data and save.
-%data = prepdatachairgest(dirname, 'gtSensorType', 'Kinect', 'subsampleFactor', 1);
-%combinedData = {combinedata(data)};
-%savevariable(dataFile, 'data', combinedData);
+data = prepdatachairgest(dirname, 'gtSensorType', 'Kinect', 'subsampleFactor', 1);
+combinedData = {combinedata(data)};
+savevariable(dataFile, 'data', combinedData);
 
 %% Load data.
-combinedData = load(dataFile);
-combinedData = combinedData.data;
+%combinedData = load(dataFile);
+%combinedData = combinedData.data;
 
 %split = getsessionsplit(dirname, 'Kinect');
 %split = getusersplit(data, 3);

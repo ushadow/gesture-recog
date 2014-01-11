@@ -28,17 +28,18 @@ end
 
 end
 
-function X = resizeone(X, startImgNdx, origImgWidth, newWidth)
-newD = startImgNdx - 1 + newWidth * newWidth;
+function X = resizeone(X, startNdx, origImgWidth, newWidth)
+newD = startNdx - 1 + newWidth * newWidth;
 for i = 1 : length(X)
   seq = X{i};
   seqLen = size(seq, 2);
   newSeq = zeros(newD, seqLen);
   for j = 1 : seqLen
     v = seq(:, j);
-    img = reshape(v(startImgNdx : end), origImgWidth, origImgWidth); 
+    endNdx = startNdx + origImgWidth * origImgWidth - 1;
+    img = reshape(v(startNdx : endNdx), origImgWidth, origImgWidth); 
     img = imresize(img, [newWidth newWidth]);
-    newSeq(:, j) = [v(1 : startImgNdx - 1); reshape(img, [], 1)];
+    newSeq(:, j) = [v(1 : startNdx - 1); reshape(img, [], 1)];
   end
   X{i} = newSeq;
 end

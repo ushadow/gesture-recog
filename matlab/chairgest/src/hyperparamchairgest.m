@@ -14,7 +14,8 @@ hyperParam.imageWidth = paramFromData.imgWidth;
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
-hyperParam.preprocess = {@hogfeature @pcaimage @standardizefeature}; 
+hyperParam.preprocess = {@denoise @resize @hogfeature};
+hyperParam.nChannels = 2;
 hyperParam.returnFeature = true;
 hyperParam.nprincomp = 500; % number of principal components from image.
 hyperParam.sBin = 4;

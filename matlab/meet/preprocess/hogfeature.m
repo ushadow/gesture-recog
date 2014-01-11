@@ -9,26 +9,27 @@ function [X, model] = hogfeature(~, X, param)
 %   - oBin
 
 startImgFeatNDX = param.startDescriptorNdx;
+nChannels = param.nChannels;
 imageWidth = param.imageWidth;
 model = [];
 
 if isfield(X, 'Tr')
-  X.Tr = hogdesc(X.Tr, startImgFeatNDX, imageWidth, param);
+  X.Tr = hogdesc(X.Tr, startImgFeatNDX, nChannels, imageWidth, param);
 else
-  X = hogdesc(X, startImgFeatNDX, imageWidth, param);
+  X = hogdesc(X, startImgFeatNDX, nChannels, imageWidth, param);
 end
 
 if isfield(X, 'Va')
-  X.Va = hogdesc(X.Va, startImgFeatNDX, imageWidth, param);
+  X.Va = hogdesc(X.Va, startImgFeatNDX, nChannels, imageWidth, param);
 end
 
 if isfield(X, 'Te')
-  X.Te = hogdesc(X.Te, startImgFeatNDX, imageWidth, param);
+  X.Te = hogdesc(X.Te, startImgFeatNDX, nChannels, imageWidth, param);
 end
 
 end
 
-function X = hogdesc(X, startHandFetNDX, imageWidth, param)
+function X = hogdesc(X, startHandFetNdx, nChannels, imageWidth, param)
 %
 % ARGS
 % data  - cell array of sequences.
@@ -37,19 +38,24 @@ sBin = param.sBin;
 oBin = param.oBin;
 
 newWidth = floor(imageWidth / sBin) - 2;
-newFeatureSize = newWidth * newWidth * oBin;
+newFeatureSize = newWidth * newWidth * oBin * nChannels;
 
 for i = 1 : numel(X)
   seq = X{i};
   nframe = size(seq, 2);
-  newSeq = zeros(newFeatureSize + startHandFetNDX - 1, nframe);
+  newSeq = zeros(newFeatureSize + startHandFetNdx - 1, nframe);
   for j = 1 : nframe
-    I = reshape(seq(startHandFetNDX : end, j), imageWidth, imageWidth);
-    hogFeature = hog(double(I), sBin, oBin);
-    o = size(hogFeature, 3);
-    hogFeature = hogFeature(:, :, 1 : o / 4); % Only use one normalization.
-    newSeq(:, j)= [seq(1 : startHandFetNDX - 1, j); ... 
-              reshape(hogFeature, numel(hogFeature), 1)];
+    newSeq(1 : startHandFetNdx - 1, j)= seq(1 : startHandFetNdx - 1, j); 
+    startNdx = startHandFetNdx;
+    for c = 1 : nChannels
+      endNdx = startNdx + imageWidth * imageWidth - 1;
+      I = reshape(seq(startNdx : endNdx, j), imageWidth, imageWidth);
+      hogFeature = hog(double(I), sBin, oBin);
+      o = size(hogFeature, 3);
+      hogFeature = hogFeature(:, :, 1 : o / 4); % Only use one normalization.
+      newSeq(startNdx : endNdx, j)= reshape(hogFeature, numel(hogFeature), 1);
+      startNdx = endNdx + 1;
+    end
   end
   X{i} = newSeq;
 end

@@ -23,7 +23,7 @@ switch methodName
     method = {@medfilt2};
     se = [FILTER_WIN_SIZE FILTER_WIN_SIZE];
   case 'close'
-    method = {@imclose, @imopen};
+    method = {@imclose @imopen};
     se = strel('square', FILTER_WIN_SIZE);
   case 'scale'
     method = {@imresize};
@@ -36,37 +36,44 @@ if isstruct(X)
   fn = fieldnames(X);
   for i = 1 : length(fn)
     D = X.(fn{i});
-    denoised = denoiseone(D, param.startDescriptorNdx, method, se);
+    denoised = denoiseone(D, param.descriptorRange, param.imageWidth, ...
+                          method, se);
     X.(fn{i}) = denoised;
   end
 else
-  X = denoiseone(X, param.startDescriptorNdx, method, se);
+  X = denoiseone(X, param.descriptorRange, param.imageWidth, method, se);
 end
 end
 
-function data = denoiseone(data, startImageNdx, method, se)
+function data = denoiseone(data, descriptorRange, imageWidth, method, se)
 % ARGS
 % data  - a cell array of feature sequences. Each sequence is a matrix.
+% descriptorRange   - (startNdx, endNdx), the start and end indices of the
+%     descriptor.
 
 if iscell(data)
   nseq = length(data);
   for i = 1 : nseq
     seq = data{i};   
-    data{i} = denoiseoneseq(seq, startImageNdx, method, se);
+    data{i} = denoiseoneseq(seq, descriptorRange, imageWidth, method, se);
   end  
 else
-  data = denoiseoneseq(data, startImageNdx, method, se);
+  data = denoiseoneseq(data, descriptorRange, imageWidth, method, se);
 end
 end
 
-function seq = denoiseoneseq(seq, startImageNdx, method, se)
+function seq = denoiseoneseq(seq, descriptorRange, imageWidth, method, se)
 for j = 1 : size(seq, 2)
-  image = seq(startImageNdx : end, j);
-  imageWidth = sqrt(length(image));
-  image = reshape(image, imageWidth, imageWidth);
-  for i = 1 : numel(method)
-    image = method{i}(image, se);
+  startNdx = descriptorRange(1);
+  while startNdx <= descriptorRange(2)
+    endNdx = startNdx + imageWidth * imageWidth - 1;
+    image = seq(startNdx : endNdx, j);
+    image = reshape(image, imageWidth, imageWidth);
+    for i = 1 : numel(method)
+      image = method{i}(image, se);
+    end
+    seq(startNdx : endNdx, j) = image(:);
+    startNdx = endNdx + 1;
   end
-  seq(startImageNdx : end, j) = image(:);
 end
 end

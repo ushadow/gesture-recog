@@ -57,10 +57,10 @@ for p = 1 : npids
 
     for j = 1 : length(batches)
       fileName = batches{j};
-      batchNDXstr = ndx{j};
-      batchNDX = str2double(batchNDXstr);
-      if batchNDX > 0
-        gtFile = fullfile(sessionDir, sprintf(gtFileFormat, batchNDXstr));
+      batchNdxStr = ndx{j};
+      batchNdx = str2double(batchNdxStr);
+      if batchNdx > 0
+        gtFile = fullfile(sessionDir, sprintf(gtFileFormat, batchNdxStr));
         logdebug('prepdatachairgest', 'batch', gtFile);
         [featureData, descriptorStartNdx, imgWidth, sampleRate] = ...
             readfeature(fullfile(sessionDir, fileName), sensorType);
@@ -77,17 +77,34 @@ for p = 1 : npids
           dataParam.imgWidth = imgWidth;
           paramInitialized = true;
         end
+        
+        if (batchNdx == 1)
+          featureData = filter(featureData, gtSensorType, sampleRate);
+        end
         [Y, X, frame] = combinelabelfeature(gt, featureData);
         data{p}.Y{end + 1} = Y;
         data{p}.X{end + 1} = X;
         data{p}.frame{end + 1} = frame;
-        data{p}.file{end + 1} = {pid, sessionName, batchNDXstr};
+        data{p}.file{end + 1} = {pid, sessionName, batchNdxStr};
       end
     end
   end
   data{p} = subsample(data{p}, subsampleFactor);
   data{p}.Y = addflabel(data{p}.Y);
   data{p}.param = dataParam;
+end
+end
+
+function feature = filter(feature, gtSensorType, sampleRate)
+FILTER_LEN = 400; % frames
+switch gtSensorType
+  case 'Kinect',
+    feature = feature(feature(:, 1) > FILTER_LEN, :);
+  case 'Xsens'
+    startNdx = FILTER_LEN / sampleRate;
+    feature = feature(startNdx : end, :);
+  otherwise
+    error('Invalid ground sensor type');
 end
 end
 
