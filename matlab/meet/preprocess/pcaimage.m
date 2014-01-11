@@ -1,4 +1,4 @@
-function [newX, model] = pcaimage(X, param)
+function [newX, model] = pcaimage(~, X, param)
 %% PCAIMAGE PCA for image features.
 %
 % [eigHand handFeature rawFeature H] = pcaimage(X, param) 
@@ -51,7 +51,7 @@ if D > n
     eigVec = gather(eigVec);
     eigVal = gather(eigVal);
   end
-  sortedEigVec = getprincomp(eigVec, eigVal, k);
+  [sortedEigVec, model.sortedEigVal] = getprincomp(eigVec, eigVal, k);
   model.pc = normc(A * sortedEigVec); % npixel x neigenhand
 else
   C = A * A';
@@ -65,10 +65,11 @@ else
     eigVec = gather(eigVec);
     eigVal = gather(eigVal);
   end
-  model.pc = getprincomp(eigVec, eigVal, k);
+  [model.pc, model.sortedEigVal] = getprincomp(eigVec, eigVal, k);
 end
 newFeature = updatedata(train, model.pc, startDescriptorNdx, ...
                         'normalized', A);
+model.eigVal = diag(eigVal);
 
 if isfield(X, 'Tr')
   newX.Tr = newFeature;

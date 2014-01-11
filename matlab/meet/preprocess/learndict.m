@@ -1,4 +1,4 @@
-function [newX, model] = learndict(X, param)
+function [newX, model] = learndict(~, X, param)
 
 if isfield(X, 'Tr')
   train = X.Tr;
@@ -40,13 +40,16 @@ model.D = D;
 end
 
 function data = computenewfeature(data, startDescNdx, D, dlParams)
+% ARGS
+% data  - cell array of dense matrices.
+
 descriptor = descriptorfeature(data, startDescNdx);
 alpha = mexLasso(descriptor, D, dlParams);
 startNdx = 1;
 for i = 1 : numel(data)
   old = data{i};
   endNdx = startNdx + size(old, 2) - 1;
-  data{i} = [old(1 : startDescNdx - 1, :); alpha(:, startNdx : endNdx)];
+  data{i} = full([old(1 : startDescNdx - 1, :); alpha(:, startNdx : endNdx)]);
   startNdx = endNdx + 1;
 end
 end

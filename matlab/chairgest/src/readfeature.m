@@ -1,26 +1,28 @@
-function [data, startDescriptorNDX, imgWidth, sampleRate] = readfeature(...
+function [data, startDescriptorNDX, imgWidth, xsensSampleRate] = readfeature(...
          inputFile, sensor)
 %% READFEATURE reads features from one Chairgest data set file.
 %
 % ARGS
-% inputFile   - input file name.
+% inputFile - input file name.
+% sensor    - the sensor type that the data is based on.
 %
 % RETURN
 % data  - n x d matrix where n is number of feature frames and d is the 
 %         dimension of the feature + 1. The first column is frame number.
+% xsensSampleRate  - sampling rate with respect to Xsens data frequency.
 
 imgWidth = 0;
+xenseKinectRatio = 50 / 30;
 
 if strcmp(sensor, 'Kinect')
   feature = importdata(inputFile, ',', 1);
   data  = feature.data;
   
   % Header format
-  % # frame_id, continuous_feature_size, {0}, image_width, {1}, sample_rate, {2}
-  header = textscan(feature.textdata{1}, '%s%s%d%s%d%s%d', 'delimiter', ',');
+  header = textscan(feature.textdata{1}, '%s%s%d%s%f%s%f%s%s', 'delimiter', ',');
   startDescriptorNDX = header{3} + 1;
-  imgWidth = header{5};
-  sampleRate = header{7};
+  imgWidth = sqrt(header{5} / 2);
+  xsensSampleRate = header{7} * xenseKinectRatio;
 else
   %% Xsens data format in the converted file.
   formatSpec = '%s%f'; % AbsTimeStamp FrameID

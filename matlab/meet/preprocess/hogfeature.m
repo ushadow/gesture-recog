@@ -1,4 +1,4 @@
-function [X, model] = hogfeature(X, param)
+function [X, model] = hogfeature(~, X, param)
 %
 % ARGS
 % X   - Feature structure or cell array.
@@ -8,27 +8,27 @@ function [X, model] = hogfeature(X, param)
 %   - sBin
 %   - oBin
 
-startImgFeatNDX = param.startDescriptorNDX;
+startImgFeatNDX = param.startDescriptorNdx;
 imageWidth = param.imageWidth;
 model = [];
 
 if isfield(X, 'Tr')
-  X.Tr = hoghand1(X.Tr, startImgFeatNDX, imageWidth, param);
+  X.Tr = hogdesc(X.Tr, startImgFeatNDX, imageWidth, param);
 else
-  X = hoghand1(X, startImgFeatNDX, imageWidth, param);
+  X = hogdesc(X, startImgFeatNDX, imageWidth, param);
 end
 
 if isfield(X, 'Va')
-  X.Va = hoghand1(X.Va, startImgFeatNDX, imageWidth, param);
+  X.Va = hogdesc(X.Va, startImgFeatNDX, imageWidth, param);
 end
 
 if isfield(X, 'Te')
-  X.Te = hoghand1(X.Te, startImgFeatNDX, imageWidth, param);
+  X.Te = hogdesc(X.Te, startImgFeatNDX, imageWidth, param);
 end
 
 end
 
-function X = hoghand1(X, startHandFetNDX, imageWidth, param)
+function X = hogdesc(X, startHandFetNDX, imageWidth, param)
 %
 % ARGS
 % data  - cell array of sequences.

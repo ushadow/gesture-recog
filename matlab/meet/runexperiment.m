@@ -1,4 +1,4 @@
-function R = runexperiment(param, split, foldNDX, batchNDX, seed, data)    
+function R = runexperiment(param, split, foldNdx, batchNdx, seed, data)    
 %% RUNEXPERIMENT runs the experiment for one fold.
 % R = runexperiment(param, split, data)
 %
@@ -20,10 +20,16 @@ if ~exist('data', 'var')
   % Reads data from file.
   dataFileFullPath = fullfile(param.dir, param.dataFile);
   matObj = matfile(dataFileFullPath);
-  data = matObj.(param.dataFile)(1, batchNDX);
-  data = data{1};
+  data = matObj.(param.dataFile);
+  if size(data, 1) == 1
+    data = data(1, batchNdx);
+    data = data{1};
+  else
+    data = data(foldNdx, batchNdx);
+    data = data{1}.data;
+  end
 else
-  data = data{batchNDX};
+  data = data{batchNdx};
 end
 
 if isfield(data, 'userId')
@@ -31,7 +37,7 @@ if isfield(data, 'userId')
 else
   param.userId = [];
 end
-param.fold = foldNDX;
+param.fold = foldNdx;
 R.param = param;
 
 R.split = split;
@@ -74,7 +80,7 @@ else
   else 
     model = param.infModel;
     if iscell(model)
-      model = model{foldNDX};
+      model = model{foldNdx};
     end
     R.infModel = model;
   end

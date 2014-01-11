@@ -1,4 +1,4 @@
-function H = viewimage(data, startNdx, indices, ncol)
+function H = viewimage(data, startNdx, imageWidth, indices)
 %% VIEWIMAGE displays images for one sequence.
 % 
 % H = viewimage(data, startNDX, nToDispaly)
@@ -11,22 +11,16 @@ function H = viewimage(data, startNdx, indices, ncol)
 
 if nargin < 2
   startNdx = 1; 
+  imageWidth = 64;
   indices = 1 : size(data, 2);
-  ncol = 5;
 end
 
-d = size(data, 1);
-data = data(startNdx : d, indices);  
-imageWidth = sqrt(d - startNdx + 1);
-nimage = length(indices);
-nrow = ceil(nimage / ncol);
+data = data(startNdx : startNdx + imageWidth * imageWidth - 1, indices);  
+nImages = length(indices);
 
 H = figure();
-
-for j = 1 : nimage
-  % Transposed image.
-  image = reshape(data(:, j), imageWidth, imageWidth)';
-  image = mat2gray(image);
-  subplot(nrow, ncol, j);
-  imshow(image);
+image = reshape(data, imageWidth, imageWidth, 1, nImages);
+image = permute(image, [2 1 3 4]);
+image = mat2gray(image);
+montage(image);
 end

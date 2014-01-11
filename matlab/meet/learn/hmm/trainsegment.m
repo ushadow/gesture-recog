@@ -1,4 +1,4 @@
-function model = trainsegment(Y, X, restNDX, nRest)
+function model = trainsegment(Y, X, restNdx, nRest, featureNdx)
 %% TRAINSEGMENT trains a segmentation model which consists a Gaussian model
 % for the rest state and a gaussian model for the gesturing state.
 %
@@ -7,8 +7,9 @@ function model = trainsegment(Y, X, restNDX, nRest)
 % nRest (optional) - number of mixtures for the rest model (default is 1).
 
 if nargin < 4, nRest = 1; end
+if nargin < 5 || isempty(featureNdx), featureNdx = 1 : size(X{1}, 1); end
 
-[rest, gesture] = separaterest(Y, X, restNDX);
+[rest, gesture] = separaterest(Y, X, restNdx, featureNdx);
 
 if nRest == 1
   [model.restMu, model.restSigma, model.restMixmat] = singlegauss(rest);

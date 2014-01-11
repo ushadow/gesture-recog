@@ -13,9 +13,10 @@ hyperParam.mce = false;
 hyperParam.imageWidth = paramFromData.imgWidth;
 
 % Preprocess parameters.
-hyperParam.preprocess = {@denoise @remapdepth @resize @learndict @standardizefeature}; %{@standardizefeature};
-hyperParam.returnFeature = false;
-hyperParam.nprincomp = 26; % number of principal components from image.
+% @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
+hyperParam.preprocess = {@hogfeature @pcaimage @standardizefeature}; 
+hyperParam.returnFeature = true;
+hyperParam.nprincomp = 500; % number of principal components from image.
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.resizeWidth = 16;
@@ -27,6 +28,7 @@ hyperParam.train = @trainhmmprepost;
 hyperParam.maxIter = 30; %ldcrf: 1000; hmm: 30
 hyperParam.thresh = 0.001;
 hyperParam.regFactorL2 = 100;
+hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
 
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);

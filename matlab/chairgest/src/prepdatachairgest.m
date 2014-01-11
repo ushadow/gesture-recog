@@ -15,13 +15,11 @@ function data = prepdatachairgest(dirname, varargin)
 % data  - a cell array. Each cell is for one user and is a structure with fields:
 %   Y     - a cell array of ground truth labels.
 %   X     - a cell array of features.
-%   split - a 2 x 1 cell array with one fold evalutation.
 
 sensorType = 'Kinect';
 gtSensorType = 'Kinect';
 dataType = 'Converted'; 
 subsampleFactor = 1; 
-featureSampleRate = 4;
 
 for i = 1 : 2 : length(varargin)
   switch varargin{i}
@@ -64,8 +62,8 @@ for p = 1 : npids
       if batchNDX > 0
         gtFile = fullfile(sessionDir, sprintf(gtFileFormat, batchNDXstr));
         logdebug('prepdatachairgest', 'batch', gtFile);
-        [featureData, descriptorStartNdx, imgWidth] = readfeature(...
-            fullfile(sessionDir, fileName), sensorType);
+        [featureData, descriptorStartNdx, imgWidth, sampleRate] = ...
+            readfeature(fullfile(sessionDir, fileName), sensorType);
         [gt, vocabSize] = readgtchairgest(gtFile, featureData(1, 1), ...
             featureData(end, 1));
 
@@ -73,14 +71,13 @@ for p = 1 : npids
           dataParam.vocabularySize = vocabSize;
           dataParam.startImgFeatNDX = descriptorStartNdx;
           dataParam.dir = dirname;
-          dataParam.subsampleFactor = subsampleFactor * featureSampleRate;
+          dataParam.subsampleFactor = subsampleFactor * sampleRate;
           dataParam.gtSensorType = gtSensorType;
           dataParam.dataType = dataType;
           dataParam.imgWidth = imgWidth;
           paramInitialized = true;
         end
-        [Y, X, frame] = combinelabelfeature(gt, featureData, batchNDX, ...
-                                            featureSampleRate);
+        [Y, X, frame] = combinelabelfeature(gt, featureData);
         data{p}.Y{end + 1} = Y;
         data{p}.X{end + 1} = X;
         data{p}.frame{end + 1} = frame;
@@ -94,8 +91,7 @@ for p = 1 : npids
 end
 end
 
-function [Y, X, frame] = combinelabelfeature(label, feature, batchNDX, ...
-    featureSampleRate)
+function [Y, X, frame] = combinelabelfeature(label, feature)
 %% Combines label and feature with common frame id.
 %
 % ARGS
@@ -106,12 +102,6 @@ function [Y, X, frame] = combinelabelfeature(label, feature, batchNDX, ...
 % Y   - cell array of labels. Each cell is a 2 x nframe matrix.
 % X   - cell array of feature vectors. Each cell is a d x nframe matrix. 
 % frame   - cell arrays of frame numbers. Each cell is a 1 x nframe matrix.
-
-startNDX = 400 / featureSampleRate;
-
-if batchNDX == 1
-  feature = feature(startNDX : end, :);
-end
 
 labelFrameId = label(:, 1);
 featureFrameId = feature(:, 1);
