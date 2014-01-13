@@ -47,14 +47,18 @@ for i = 1 : numel(X)
   for j = 1 : nframe
     newSeq(1 : startHandFetNdx - 1, j)= seq(1 : startHandFetNdx - 1, j); 
     startNdx = startHandFetNdx;
+    hogStart = startNdx;
     for c = 1 : nChannels
       endNdx = startNdx + imageWidth * imageWidth - 1;
       I = reshape(seq(startNdx : endNdx, j), imageWidth, imageWidth);
       hogFeature = hog(double(I), sBin, oBin);
       o = size(hogFeature, 3);
       hogFeature = hogFeature(:, :, 1 : o / 4); % Only use one normalization.
-      newSeq(startNdx : endNdx, j)= reshape(hogFeature, numel(hogFeature), 1);
+      hogLen = numel(hogFeature);
+      hogEnd = hogStart + hogLen - 1;
+      newSeq(hogStart : hogEnd, j)= reshape(hogFeature, hogLen, 1);
       startNdx = endNdx + 1;
+      hogStart = hogEnd + 1;
     end
   end
   X{i} = newSeq;

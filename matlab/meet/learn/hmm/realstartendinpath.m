@@ -1,4 +1,5 @@
-function [realStart, realEnd] = realstartendinpath(path, nSMap, subsampleFactor)
+function [realStart, realEnd] = realstartendinpath(path, nSMap, ...
+                                subsampleFactor)
 %% REALSTARTENDINPATH finds the actual start and end of a gesture
 
 realStart = -1;
@@ -6,9 +7,9 @@ realEnd = -1;
 if computetransitions(path) <= 3, return; end
   
 stageNDX = gesturestagendx(nSMap);
-gestureNDX = find(path >= stageNDX(2, 1) & path <= stageNDX(2, 2));
-if ~isempty(gestureNDX)
-  runs = contiguousindex(gestureNDX);
+gestureNdx = find(path >= stageNDX(2, 1) & path <= stageNDX(2, 2));
+if ~isempty(gestureNdx)
+  runs = contiguousindex(gestureNdx);
   nruns = size(runs, 1);
   realStart = runs(1, 1);
   realEnd = runs(1, 2);
@@ -21,10 +22,3 @@ if ~isempty(gestureNDX)
 end
 end
 
-function n = computetransitions(path)
-  runs = contiguous(path);
-  n = 0;
-  for i = 1 : size(runs, 1)
-    n = n + size(runs{i, 2}, 1);
-  end
-end

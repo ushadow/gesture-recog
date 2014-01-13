@@ -14,10 +14,11 @@ hyperParam.imageWidth = paramFromData.imgWidth;
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
-hyperParam.preprocess = {@denoise @resize @hogfeature};
-hyperParam.nChannels = 2;
-hyperParam.returnFeature = true;
-hyperParam.nprincomp = 500; % number of principal components from image.
+hyperParam.preprocess = {@denoise @hogfeature @pcaimage @motion @standardizefeature};
+hyperParam.nChannels = 1;
+hyperParam.filterWinSize = 5;
+hyperParam.returnFeature = false;
+hyperParam.nprincomp = 26; % number of principal components from image.
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.resizeWidth = 16;
@@ -26,6 +27,7 @@ hyperParam.K = 300; % number of dictinoary terms
 
 % Training parameters
 hyperParam.train = @trainhmmprepost;
+hyperParam.segment = [];
 hyperParam.maxIter = 30; %ldcrf: 1000; hmm: 30
 hyperParam.thresh = 0.001;
 hyperParam.regFactorL2 = 100;
@@ -55,9 +57,10 @@ hyperParam.inference = @testhmmprepost;
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
 hyperParam.inferMethod = 'viterbi';
+hyperParam.testsegment = @segmentbyframe;
 
 % Post process
-hyperParam.postprocess = {};
+hyperParam.postprocess = @findnucleus;
 
 hyperParam.evalName = {'Error', 'Leven'};
 hyperParam.evalFun = {@errorperframe, @levenscore};

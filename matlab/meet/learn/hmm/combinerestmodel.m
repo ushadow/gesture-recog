@@ -8,21 +8,21 @@ nSgesture = length(gTerm);
 
 cPrior = cat(1, gPrior, 0);
 
-stageNDX = gesturestagendx(nSMap);
+stageNdx = gesturestagendx(nSMap);
 
 gTransmat = gTransmat .* (1 - repmat(gTerm, 1, nSgesture)); 
 newGTerm = gTerm / 2;
 gToR = gTerm - newGTerm;
 % Allow pre-stroke to terminate.
-newGTerm(stageNDX(1, 2) - 2 : stageNDX(1, 2)) = ones(3, 1) * 0.01;
+newGTerm(stageNdx(1, 2) - 2 : stageNdx(1, 2)) = ones(3, 1) * 0.01;
 cTerm = cat(1, newGTerm, rTerm);
 
 % Allow pre-stroke to transit to post-stroke.
-gTransmat(stageNDX(1, 2) - 2 : stageNDX(1, 2), ...
-          stageNDX(3, 1) : stageNDX(3, 1) + 2) = 0.01;
+gTransmat(stageNdx(1, 2) - 2 : stageNdx(1, 2), ...
+          stageNdx(3, 1) : stageNdx(3, 1) + 2) = 0.01;
 cTransmat = blkdiag(gTransmat, rTransmat);
 totalNStates = size(cTransmat, 1);
-ndx = [1 : 3, stageNDX(3, 1) : stageNDX(3, 1) + 2, totalNStates];
+ndx = [1 : 3, stageNdx(3, 1) : stageNdx(3, 1) + 2, totalNStates];
 nRToOtherStates = length(ndx);
 cTransmat(end, ndx) = 1 / nRToOtherStates;
 

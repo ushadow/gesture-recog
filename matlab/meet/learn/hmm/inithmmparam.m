@@ -19,6 +19,8 @@ function [prior, transmat, term, mu, Sigma, mixmat] = inithmmparam(...
 % transmat = ones(nS) / nS;
 % term = ones(nS, 1) / nS;
 mixmat = ones(nS, nM) / nM;
+
+% kmeans initialization
 [mu, Sigma] = mixgauss_init(nS * nM,  cell2mat(data), cov_type);
 d = size(mu, 1);
 mu = reshape(mu, [d nS nM]);

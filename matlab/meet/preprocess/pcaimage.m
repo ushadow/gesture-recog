@@ -35,7 +35,7 @@ k = param.nprincomp;
 
 % Let u be the eigenhand. We want to find AA' * u = lamda * u, but AA' is a 
 % large matrix because the dimension of the feature vector is probabily 
-% larger than the nunmber of example. So we compute A'* A = V * Dv * V'.
+% larger than the nunmber of example. So we compute A' * A = V * Dv * V'.
 % (A * A')^2 = AV * Dv * V'A' = U * Du^2 * U'. We have A' * A * v = dv * v.
 % A * A' * (Av) = dv * (Av) = dv * u where u = A * v. 
 [D, n] = size(A);

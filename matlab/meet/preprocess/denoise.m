@@ -8,7 +8,7 @@ function [X, se] = denoise(~, X, param, methodName)
 % RETURN
 % X     - the denoised result has the same structure as the input data.
 
-FILTER_WIN_SIZE = 3;
+filterWinSize = param.filterWinSize;
 
 if nargin <= 3
   if isfield(param, 'denoiseMethod')
@@ -21,10 +21,10 @@ end
 switch methodName
   case 'med'
     method = {@medfilt2};
-    se = [FILTER_WIN_SIZE FILTER_WIN_SIZE];
+    se = [filterWinSize filterWinSize];
   case 'close'
     method = {@imclose @imopen};
-    se = strel('square', FILTER_WIN_SIZE);
+    se = strel('square', filterWinSize);
   case 'scale'
     method = {@imresize};
     se = [16 16];
@@ -32,22 +32,26 @@ switch methodName
     error('Unknown denoise method.');
 end
 
+startDescriptorNdx = param.startDescriptorNdx;
+
 if isstruct(X)
   fn = fieldnames(X);
   for i = 1 : length(fn)
     D = X.(fn{i});
-    denoised = denoiseone(D, param.descriptorRange, param.imageWidth, ...
+    denoised = denoiseone(D, startDescriptorNdx, param.nChannels, param.imageWidth, ...
                           method, se);
     X.(fn{i}) = denoised;
   end
 else
-  X = denoiseone(X, param.descriptorRange, param.imageWidth, method, se);
+  X = denoiseone(X, startDescriptorNdx, param.nChannels, param.imageWidth, method, se);
 end
 end
 
-function data = denoiseone(data, descriptorRange, imageWidth, method, se)
+function data = denoiseone(data, startDescriptorNdx, nChannels, ...
+                           imageWidth, method, se)
 % ARGS
-% data  - a cell array of feature sequences. Each sequence is a matrix.
+% data  - a cell array of feature sequences or just one sequence. 
+%         Each sequence is a matrix.
 % descriptorRange   - (startNdx, endNdx), the start and end indices of the
 %     descriptor.
 
@@ -55,17 +59,20 @@ if iscell(data)
   nseq = length(data);
   for i = 1 : nseq
     seq = data{i};   
-    data{i} = denoiseoneseq(seq, descriptorRange, imageWidth, method, se);
+    data{i} = denoiseoneseq(seq, startDescriptorNdx, nChannels, ...
+                            imageWidth, method, se);
   end  
 else
-  data = denoiseoneseq(data, descriptorRange, imageWidth, method, se);
+  data = denoiseoneseq(data, startDescriptorNdx, nChannels, imageWidth, ...
+                       method, se);
 end
 end
 
-function seq = denoiseoneseq(seq, descriptorRange, imageWidth, method, se)
+function seq = denoiseoneseq(seq, startDescriptorNdx, nChannels, ...
+                             imageWidth, method, se)
 for j = 1 : size(seq, 2)
-  startNdx = descriptorRange(1);
-  while startNdx <= descriptorRange(2)
+  startNdx = startDescriptorNdx;
+  for c = 1 : nChannels
     endNdx = startNdx + imageWidth * imageWidth - 1;
     image = seq(startNdx : endNdx, j);
     image = reshape(image, imageWidth, imageWidth);

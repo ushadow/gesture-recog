@@ -1,6 +1,6 @@
 function [combinedPrior, combinedTransmat, combinedTerm, combinedMu, ...
     combinedSigma, combinedMixmat] = combinehmmparam(prior, transmat, ...
-    term, mu, Sigma, mixmat)
+    term, mu, Sigma, mixmat, nSMap)
 %%
 % Combines pre-stroke, nucleus and post-stroke HMMs together.
 %
@@ -8,32 +8,36 @@ function [combinedPrior, combinedTransmat, combinedTerm, combinedMu, ...
 % prior   - cell array of column vectors.
 % term    - cell array of column vectors.
 
-combinedPrior = cat(1, prior{:});
-combinedPrior(length(prior{1}) + 1 : end) = 0;
+stageNdx = gesturestagendx(nSMap);
+nStages = size(stageNdx, 1);
 
-nS = cellfun(@(x) length(x), prior);
+combinedPrior = cat(1, prior{:});
+combinedPrior(stageNdx(3, 1) : stageNdx(3, 2)) = 0;
+combinedPrior = normalise(combinedPrior);
+assert(abs(sum(combinedPrior) - 1) < 1e-9);
+
 totalNumStates = length(combinedPrior);
 
 combinedTransmat = zeros(totalNumStates);
-startNDX = 1;
-for i = 1 : length(nS)
-  p = 1;
-  endNDX = startNDX + nS(i) - 1;
+for i = 1 : nStages
+  nextStage = mod(i, nStages) + 1; 
+  fromNdx = stageNdx(i, 1) : stageNdx(i, 2);
+  toNdx = stageNdx(nextStage, 1) : stageNdx(nextStage, 2);
+  combinedTransmat(fromNdx, toNdx) = term{i} * prior{nextStage}';
   
-  if i ~= length(nS)
-    combinedTransmat(startNDX : endNDX, endNDX + 1 : endNDX + nS(i + 1)) = ...
-        term{i} * prior{i + 1}';
-    p = 1 - repmat(term{i}, 1, nS(i));
-  end
-  
-  combinedTransmat(startNDX : endNDX, startNDX : endNDX) = transmat{i} .* p;
-  startNDX = startNDX + nS(i);
+  p = 1 - repmat(term{i}, 1, length(fromNdx));
+  combinedTransmat(fromNdx, fromNdx) = transmat{i} .* p;
 end
+% Allow pre-stroke to transit to post-stroke.
+combinedTransmat(stageNdx(1, 2) - 2 : stageNdx(1, 2), ...
+          stageNdx(3, 1) : stageNdx(3, 1) + 2) = 0.01;
+combinedTransmat = mk_stochastic(combinedTransmat);
 
 combinedTerm = cat(1, term{:});
-combinedTerm(1 : end - nS(end)) = 0;
-assert(abs(sum(combinedPrior) - 1) < 1e-9);
-
+combinedTerm(stageNdx(1, 1) : stageNdx(2, 2)) = 0;
+% Allow pre-stroke to terminate.
+combinedTerm(stageNdx(1, 2) - 2 : stageNdx(1, 2)) = ones(3, 1) * 0.01;
+        
 if nargout > 3
   combinedMu = cat(2, mu{:});
 end

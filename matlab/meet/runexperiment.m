@@ -44,6 +44,7 @@ R.split = split;
 
 Y = separatedata(data.Y, split);
 X = separatedata(data.X, split);
+frame = separatedata(data.frame, split);
 
 %% Step 2: Preprocess data
 %   Dimensionality reduction, standardzation, sparsification
@@ -56,6 +57,7 @@ if isfield(param, 'preprocess')
     [X, R.preprocessModel{i}]  = fun(Y, X, param);
   end
   R.preprocessTime = toc(tid);
+  display 'Done preprocess.';
 end
 
 if param.returnFeature
@@ -74,7 +76,7 @@ else
     R.infModel = param.train(Y.Tr, X.Tr, param);
     if isfield(param, 'jobId')
       savevariable(fullfile(param.dir, ...
-                   sprintf('model-%d.mat', param.jobId)), 'model', R);
+                   sprintf('model-%d-%d.mat', param.jobId, foldNdx)), 'model', R);
     end
     R.trainingTime = toc(tid);
   else 
@@ -87,14 +89,13 @@ else
 
   if ~isempty(param.inference)
     tid = tic;
-    [R.prediction, R.prob, R.path] = param.inference(Y, X, R.infModel, ...
-        param);
+    [R.predUnfiltered, R.prob, R.path, R.seg] = param.inference(Y, X, frame, ...
+                                     R.infModel, param);
     R.testingTime = toc(tid);
   end
   
   if ~isempty(param.postprocess)
-    [R.predictionFiltered, R.prob, R.path] = param.postprocess(...
-        R.prediction, param);
+    R.prediction = param.postprocess(R.predUnfiltered, R.path, R.seg, param);
   end
 
   % Step 5: Evaluate performance of prediction
