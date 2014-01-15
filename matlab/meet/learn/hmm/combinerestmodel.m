@@ -26,6 +26,7 @@ ndx = [1 : 3, stageNdx(3, 1) : stageNdx(3, 1) + 2, totalNStates];
 nRToOtherStates = length(ndx);
 cTransmat(end, ndx) = 1 / nRToOtherStates;
 
+% HACK: handle false positive rest positions in a gesture.
 cTransmat(1 : end - nSrest, end) =  gToR;
 cTransmat = mk_stochastic(cTransmat);
 

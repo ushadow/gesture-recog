@@ -15,15 +15,16 @@ hyperParam.imageWidth = paramFromData.imgWidth;
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
 hyperParam.preprocess = {@denoise @hogfeature @pcaimage @motion @standardizefeature};
-hyperParam.nChannels = 1;
+hyperParam.channels = 1;
 hyperParam.filterWinSize = 5;
 hyperParam.returnFeature = false;
-hyperParam.nprincomp = 26; % number of principal components from image.
+hyperParam.nprincomp = 52; % number of principal components from image.
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.resizeWidth = 16;
 hyperParam.selectedFeature = 1 : 9; %[2 : 7, 11 : 13] + 18 * 3; %Xsens
 hyperParam.K = 300; % number of dictinoary terms
+hyperParam.nFolds = 4;
 
 % Training parameters
 hyperParam.train = @trainhmmprepost;

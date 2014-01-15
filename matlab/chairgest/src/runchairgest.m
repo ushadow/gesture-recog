@@ -3,19 +3,15 @@ dataFile = fullfile(dirname, 'data.mat');
 combinedDataFile = fullfile(dirname, 'combinedData.mat');
 
 %% Process data and save.
-%data = prepdatachairgest(dirname, 'gtSensorType', 'Kinect', 'subsampleFactor', 1);
-%savevariable(dataFile, 'data', data);
-%combinedData = {combinedata(data)};
-%savevariable(combinedDataFile, 'combinedData', combinedData);
+% data = prepdatachairgest(dirname, 'gtSensorType', 'Kinect', 'subsampleFactor', 1);
+% savevariable(dataFile, 'data', data);
+% combinedData = {combinedata(data)};
+% savevariable(combinedDataFile, 'combinedData', combinedData);
+% split = getusersplit(data, 3);
+% savevariable(fullfile(dirname, 'usersplit.mat'), 'userSplit', split);
 
 %% Load data.
 %load(combinedDataFile);
-
-%split = getsessionsplit(dirname, 'Kinect');
-%split = getusersplit(data, 3);
-%savevariable(fullfile(dirname, 'usersplit.mat'), 'userSplit', split);
-
-%% Load user split.
 %split = load(fullfile(dirname, 'usersplit.mat')); 
 %split = split.userSplit;
 

@@ -1,4 +1,4 @@
-function [standardized, model] = standardizefeature(~, X, ~, varargin)
+function [standardized, model] = standardizefeature(~, X, ~, ~, varargin)
 % ARGS
 % data  - cell array of matrices.
 %

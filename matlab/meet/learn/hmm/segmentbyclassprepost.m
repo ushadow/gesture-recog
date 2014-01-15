@@ -23,8 +23,12 @@ for i = 1 : nseqs
     Ylabel = seqY(1, endNdx);
     switch Ylabel
       case 11
-        gestureLabel = seqY(1, endNdx + 1);
-        stage = PRE;
+        if endNdx < size(seqY, 2)
+          gestureLabel = seqY(1, endNdx + 1);
+          stage = PRE;
+        else
+          stage = REST;
+        end
       case 12 
         if j > 1
           gestureLabel = seqY(1, phaseChangeNdx(j - 1));

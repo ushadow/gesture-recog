@@ -1,4 +1,4 @@
-function [newX, model] = pcaimage(~, X, param)
+function [newX, model] = pcaimage(~, X, ~, param)
 %% PCAIMAGE PCA for image features.
 %
 % [eigHand handFeature rawFeature H] = pcaimage(X, param) 

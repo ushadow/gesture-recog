@@ -1,8 +1,8 @@
-function [X, se] = denoise(~, X, param, methodName)
+function [X, se] = denoise(~, X, ~, param)
 % DENOISE removes the black holes due to aliasing.
 %
 % ARGS
-% X     - the feature data or a structure of feature data.
+% X     - cell array of feature data or a structure of feature data.
 % param - hyperparameters. It should have the field startHandFetNDX.
 %
 % RETURN
@@ -10,12 +10,10 @@ function [X, se] = denoise(~, X, param, methodName)
 
 filterWinSize = param.filterWinSize;
 
-if nargin <= 3
-  if isfield(param, 'denoiseMethod')
-    methodName = param.denoiseMethod;
-  else
-    methodName = 'close';
-  end
+if isfield(param, 'denoiseMethod')
+  methodName = param.denoiseMethod;
+else
+  methodName = 'close';
 end
 
 switch methodName
@@ -38,16 +36,16 @@ if isstruct(X)
   fn = fieldnames(X);
   for i = 1 : length(fn)
     D = X.(fn{i});
-    denoised = denoiseone(D, startDescriptorNdx, param.nChannels, param.imageWidth, ...
+    denoised = denoiseone(D, startDescriptorNdx, param.channels, param.imageWidth, ...
                           method, se);
     X.(fn{i}) = denoised;
   end
 else
-  X = denoiseone(X, startDescriptorNdx, param.nChannels, param.imageWidth, method, se);
+  X = denoiseone(X, startDescriptorNdx, param.channels, param.imageWidth, method, se);
 end
 end
 
-function data = denoiseone(data, startDescriptorNdx, nChannels, ...
+function data = denoiseone(data, startDescriptorNdx, channels, ...
                            imageWidth, method, se)
 % ARGS
 % data  - a cell array of feature sequences or just one sequence. 
@@ -59,28 +57,28 @@ if iscell(data)
   nseq = length(data);
   for i = 1 : nseq
     seq = data{i};   
-    data{i} = denoiseoneseq(seq, startDescriptorNdx, nChannels, ...
+    data{i} = denoiseoneseq(seq, startDescriptorNdx, channels, ...
                             imageWidth, method, se);
   end  
 else
-  data = denoiseoneseq(data, startDescriptorNdx, nChannels, imageWidth, ...
+  data = denoiseoneseq(data, startDescriptorNdx, channels, imageWidth, ...
                        method, se);
 end
 end
 
-function seq = denoiseoneseq(seq, startDescriptorNdx, nChannels, ...
+function seq = denoiseoneseq(seq, startDescriptorNdx, channels, ...
                              imageWidth, method, se)
 for j = 1 : size(seq, 2)
-  startNdx = startDescriptorNdx;
-  for c = 1 : nChannels
-    endNdx = startNdx + imageWidth * imageWidth - 1;
+  pixelLen = imageWidth * imageWidth;
+  for c = channels
+    startNdx = startDescriptorNdx + pixelLen * (c - 1);
+    endNdx = startNdx + pixelLen - 1;
     image = seq(startNdx : endNdx, j);
     image = reshape(image, imageWidth, imageWidth);
     for i = 1 : numel(method)
       image = method{i}(image, se);
     end
     seq(startNdx : endNdx, j) = image(:);
-    startNdx = endNdx + 1;
   end
 end
 end

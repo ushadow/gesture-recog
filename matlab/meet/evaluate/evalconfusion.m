@@ -1,18 +1,20 @@
-function cm = evalconfusion(batchData, batchRes, nmodel, nfold)
+function cm = evalconfusion(batchData, batchRes, nModels, nFolds)
 %
 % ARGS
-% batchData - cell array of all data.
-% batchRes  - cell array of all results.
+% batchData - cell array of all data in batches.
+% batchRes  - cell array of all results from experiment run.
+% nModels   - number of hyper parameter models
+% nFolds    - number of evaluation folds. 
 
 nbatch = numel(batchData);
-batchRes = groupres(batchRes, nbatch, nmodel, nfold); 
+batchRes = groupres(batchRes, nbatch, nModels, nFolds); 
 
 cm = zeros(13, 13);
 for i = 1 : nbatch
   Y = batchData{i}.Y;
   R = batchRes{i};
-  nfold = size(R, 2);
-  for j = 1 : nfold
+  nFolds = size(R, 2);
+  for j = 1 : nFolds
     split = R{j}.split;
     Ytrue = Y(split{2});
     cm = evalOneFold(Ytrue, R{j}.prediction.Va, cm);

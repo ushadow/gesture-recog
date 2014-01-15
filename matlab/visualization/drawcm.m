@@ -3,12 +3,11 @@ function drawcm(mat, tick)
 % Matlab code for visualization of confusion matrix;
 % Parameters mat: confusion matrix;
 % tick: name of each class, e.g. 'class_1' 'class_2'...
-% num_class: number of class
 %
+% Modified from:
 % Blog: www.shamoxia.com;
 % QQ:379115886;
 % Email: peegeelee@gmail.com
-%%
 
 figure;
 nclass = length(tick);
