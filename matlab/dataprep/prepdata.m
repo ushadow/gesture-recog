@@ -58,7 +58,8 @@ for p = 1 : npids
       if batchNDX > 0
         gtFile = fullfile(sessionDir, sprintf(gtFileFormat, batchNDXstr));
         logdebug('prepdatachairgest', 'batch', gtFile);
-        [featureData, startDescriptorNDX, sampleRate] = readfeature(...
+        [featureData, startDescriptorNDX, imgWidth, sampleRate, ...
+            kinectSampleRate] = readfeature(...
             fullfile(sessionDir, fileName), sensorType);
         [gt, vocabSize] = readgt(gtFile, featureData(end, 1));
 
@@ -69,6 +70,8 @@ for p = 1 : npids
           dataParam.subsampleFactor = sampleRate;
           dataParam.gtSensorType = gtSensorType;
           dataParam.dataType = dataType;
+          dataParam.imgWidth = imgWidth;
+          dataParam.kinectSampleRate = kinectSampleRate;
           paramInitialized = true;
         end
         [Y, X, frame] = alignlabelfeature(gt, featureData);

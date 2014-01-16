@@ -34,7 +34,7 @@ methods
   function [batches, ndx] = getBatchNames(self, pid, session, sensor)
     fileData = dir(fullfile(self.dirname, pid, session));
     name = {fileData.name};
-    pat = [sensor 'Data_(\d+)\..+'];
+    pat = [sensor 'Data_(\d+)\.csv'];
     [batches, ndx] = cellfun(@(x) regexp(x, pat, 'match', 'tokens', 'once'), name, ...
           'UniformOutput', false);
     batches = batches(~cellfun('isempty', batches));

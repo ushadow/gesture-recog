@@ -7,6 +7,8 @@ hyperParam.startDescriptorNdx = paramFromData.startDescriptorNDX;
 hyperParam.dir = paramFromData.dir;
 hyperParam.vocabularySize = paramFromData.vocabularySize;
 hyperParam.subsampleFactor = paramFromData.subsampleFactor;
+hyperParam.kinectSampleRate = paramFrameData.kinectSampleRate;
+
 hyperParam.infModel = []; % cell array, one model for each fold.
 hyperParam.dataFile = [];
 hyperParam.mce = false;

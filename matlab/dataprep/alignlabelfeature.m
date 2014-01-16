@@ -37,5 +37,4 @@ for i = 1 : size(gt, 1)
   frame = [frame feature(startNDX : endNDX, 1)']; %#ok<AGROW>
 end
 assert(size(Y, 2) == size(frame, 2));
-[Y, X] = addrestlabel(Y, X);
 end

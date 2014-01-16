@@ -1,8 +1,9 @@
-function [label, dict] = gesturelabel()
+function [label, dict, type] = gesturelabel()
 % RETURNS
 % label   - cell array of gesture label string.
+% type  - gesture type: 0 is discrete, 1 is continuous, 2 is rest
 
-label = {'SwipeRight', 'SwipeLeft', 'Rest'};
-
+label = {'SwipeRight', 'SwipeLeft', 'Point', 'Rest'};
+type = [0 0 1 2];
 dict = containers.Map(label, 1 : length(label));
 end
