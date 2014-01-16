@@ -12,7 +12,9 @@ prior = zeros(nS, 1);
 prior(1 : N - 1) = 1 / (N - 1);
 transmat = diag(ones(nS, 1)) * p + diag(ones(nS - 1, 1), 1) * p + ...
            diag(ones(nS - 2, 1), 2) * p;
-transmat(nS - 1, [1, nS - 1 : nS]) = 1 / N;
+
+toNdx = [nS - 1 : nS]; %#ok<NBRAK>
+transmat(nS - 1, toNdx) = 1 / length(toNdx); 
 transmat(nS, [1 nS]) = 1 / (N - 1);
 
 term = zeros(nS, 1);

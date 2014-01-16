@@ -17,7 +17,7 @@ model.term = cell(param.vocabularySize, nstages);
 model.mixmat = cell(param.vocabularySize, nstages);
 model.segment = [];
 
-if ~isempty(param.segment)
+if param.trainSegment
   restNdx = param.vocabularySize;
   model.segment = trainsegment(Y, X, restNdx, param.nRest, ...
                                param.segmentFeatureNdx);

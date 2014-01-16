@@ -15,23 +15,9 @@ isDiag = 0;
 
 restNdx = nclass;
 for i = 1 : nclass - 3
-  [gPrior, gTransmat, gTerm, gMu, gSigma, gMixmat] = combinehmmparam( ...
-      hmm.prior(i, :), hmm.transmat(i, :), hmm.term(i, :), hmm.mu(i, :), ...
-      hmm.Sigma(i, :), hmm.mixmat(i, :), param.nSMap);
-  if ~isempty(param.segment)
-    [hmm.prior{i, 1}, hmm.transmat{i, 1}, hmm.term{i, 1}, hmm.mu{i, 1}, ...
-        hmm.Sigma{i, 1}, hmm.mixmat{i, 1}] = combinerestmodel(gPrior, gTransmat, ...
-        gTerm, hmm.transmat{restNdx, 1}, hmm.term{restNdx, 1}, param.nSMap, ...
-        gMu, hmm.mu{restNdx, 1}, gSigma, gMixmat, hmm.Sigma{restNdx, 1}, ...
-        hmm.mixmat{restNdx, 1});
-  else
-    hmm.prior{i, 1} = gPrior;
-    hmm.transmat{i, 1} = gTransmat;
-    hmm.term{i, 1} = gTerm;
-    hmm.mu{i, 1} = gMu;
-    hmm.Sigma{i, 1} = gSigma;
-    hmm.mixmat{i, 1} = gMixmat;
-  end
+  [hmm.prior{i, 1}, hmm.transmat{i, 1}, hmm.term{i, 1}, hmm.mu{i, 1}, ...
+      hmm.Sigma{i, 1}, hmm.mixmat{i, 1}] = param.combinehmmparam( ...
+      hmm, param.nSMap, i, restNdx);
 end
 
 dataTypes = {'Tr', 'Va'};

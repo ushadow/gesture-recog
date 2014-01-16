@@ -5,10 +5,9 @@ function [cPrior, cTransmat, cTerm, cMu, cSigma, cMixmat] = ...
 
 nSrest = length(rTerm); % number of hidden state for rest
 nSgesture = length(gTerm);
+stageNdx = gesturestagendx(nSMap);
 
 cPrior = cat(1, gPrior, 0);
-
-stageNdx = gesturestagendx(nSMap);
 
 gTransmat = gTransmat .* (1 - repmat(gTerm, 1, nSgesture)); 
 newGTerm = gTerm / 2;

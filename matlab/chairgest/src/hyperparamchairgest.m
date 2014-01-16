@@ -14,7 +14,7 @@ hyperParam.imageWidth = paramFromData.imgWidth;
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
-hyperParam.preprocess = {@denoise @hogfeature @pcaimage @motion @standardizefeature};
+hyperParam.preprocess = {@standardizefeature};
 hyperParam.channels = 1;
 hyperParam.filterWinSize = 5;
 hyperParam.returnFeature = false;
@@ -22,13 +22,15 @@ hyperParam.nprincomp = 52; % number of principal components from image.
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.resizeWidth = 16;
+% For kinect and xsens data, 1 : 3 is relative position, 4 : 12 is xsens
+% data
 hyperParam.selectedFeature = 1 : 9; %[2 : 7, 11 : 13] + 18 * 3; %Xsens
 hyperParam.K = 300; % number of dictinoary terms
 hyperParam.nFolds = 4;
 
 % Training parameters
 hyperParam.train = @trainhmmprepost;
-hyperParam.segment = [];
+hyperParam.trainSegment = true;
 hyperParam.maxIter = 30; %ldcrf: 1000; hmm: 30
 hyperParam.thresh = 0.001;
 hyperParam.regFactorL2 = 100;
@@ -37,7 +39,7 @@ hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
 hyperParam.nS = 6; % number of hidden states S.
-hyperParam.nM = 3;
+hyperParam.nM = 6;
 hyperParam.combineprepost = false;
 hyperParam.nRest = 1; % number of mixtures for rest position
 
@@ -58,10 +60,11 @@ hyperParam.inference = @testhmmprepost;
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
 hyperParam.inferMethod = 'viterbi';
-hyperParam.testsegment = @segmentbyframe;
+hyperParam.testsegment = @segmentbymodel;
+hyperParam.combinehmmparam = @combinehmmparamwithrest;
 
 % Post process
-hyperParam.postprocess = @findnucleus;
+hyperParam.postprocess = @findnucleusfiltershort;
 
 hyperParam.evalName = {'Error', 'Leven'};
 hyperParam.evalFun = {@errorperframe, @levenscore};
