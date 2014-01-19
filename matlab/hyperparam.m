@@ -1,42 +1,53 @@
 function hyperParam = hyperparam(paramFromData, varargin)
 
-hyperParam.trainIter = 1; % Training iterations
+% Parameters from data
+fn = fieldnames(paramFromData);
+for i = 1 : length(fn)
+  hyperParam.(fn{i}) = paramFromData.(fn{i});
+end
 
 % Default values.
-hyperParam.startDescriptorNdx = paramFromData.startDescriptorNDX;
-hyperParam.dir = paramFromData.dir;
-hyperParam.vocabularySize = paramFromData.vocabularySize;
-hyperParam.subsampleFactor = paramFromData.subsampleFactor;
-hyperParam.kinectSampleRate = paramFrameData.kinectSampleRate;
-
+hyperParam.trainIter = 1; % Training iterations
 hyperParam.infModel = []; % cell array, one model for each fold.
 hyperParam.dataFile = [];
-hyperParam.mce = false;
 
 % Preprocess parameters.
-hyperParam.preprocess = {@pcaimage, @standardizefeature};
-hyperParam.returnFeature = false;
-hyperParam.nprincomp = 23; % number of principal components from image.
+% @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
+hyperParam.preprocess = {@selectfeature @svmhandpose};
+hyperParam.channels = [1 2];
+hyperParam.filterWinSize = 5;
+hyperParam.returnFeature = true;
+hyperParam.nprincomp = 52; % number of principal components from image.
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
-hyperParam.selectedFeature = [2 : 7, 11 : 13] + 18 * 3;
+hyperParam.resizeWidth = 16;
+% For kinect and xsens data, 1 : 3 is relative position, 4 : 12 is xsens
+% data
+%[2 : 7, 11 : 13] + 18 * 3; %Xsens
+hyperParam.selectedFeature = 4 + 36 * 9 : 3 + 36 * 9 * 2; 
+hyperParam.K = 300; % number of dictinoary terms
+hyperParam.nFolds = 1; % number of folds in HOG.
 
 % Training parameters
-hyperParam.train = @trainhmm;
-hyperParam.maxIter = 30;
+hyperParam.train = @trainsvmhandpose;
+hyperParam.trainSegment = true;
+hyperParam.maxIter = 30; %ldcrf: 1000; hmm: 30
 hyperParam.thresh = 0.001;
+hyperParam.regFactorL2 = 100;
+hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
 
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
-hyperParam.nM = 1; % Number of mixtures.
-hyperParam.nS = 6;
+hyperParam.nS = 6; % number of hidden states S.
+hyperParam.nM = 6;
 hyperParam.combineprepost = false;
-hyperParam.nRest = 1; % Number of mixtures for rest state.
+hyperParam.nRest = 1; % number of mixtures for rest position
 
 % Gaussian model parameters
 hyperParam.XcovType = 'diag';
 
 % AHMM parameters
+hyperParam.L = 16;
 hyperParam.resetS = true;
 hyperParam.Gclamp = 1;
 hyperParam.clampCov = 0;
@@ -44,18 +55,23 @@ hyperParam.covPrior = 2;
 hyperParam.Fobserved = 1;
 hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 1};
 
-% Inference parameters.
-hyperParam.inference = @testhmm;
+% Inference, test parameters
+hyperParam.inference = @testhmmprepost;
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
-hyperParam.inferMethod = 'fixed-lag-smoothing';
-hyperParam.L = 0; % Lag time.
+hyperParam.inferMethod = 'viterbi';
+hyperParam.testsegment = @segmentbymodel;
+hyperParam.combinehmmparam = @combinehmmparamwithrest;
 
-% Evaluation parameters.
+% Post process
+hyperParam.postprocess = @findnucleusfiltershort;
+
 hyperParam.evalName = {'Error', 'Leven'};
-hyperParam.evalFun = {@errorperframe @levenscore};
+hyperParam.evalFun = {@errorperframe, @levenscore};
 
 hyperParam.useGpu = false;
+hyperParam.gSampleFactor = 1;
+hyperParam.rSampleFactor = 30;
 
 for i = 1 : 2 : length(varargin)
   hyperParam.(varargin{i}) = varargin{i + 1};
@@ -63,43 +79,16 @@ end
 
 nmodel = length(hyperParam.nS) * length(hyperParam.L);
 hyperParam.model = cell(1, nmodel);
-for i = 1 : length(hyperParam.nS)
-  for j = 1 : length(hyperParam.L)
-    param.vocabularySize = hyperParam.vocabularySize;
-    param.startDescriptorNDX = hyperParam.startDescriptorNDX;
-    param.dir = hyperParam.dir;
-    param.subsampleFactor = hyperParam.subsampleFactor;
-    param.nRest = hyperParam.nRest;
-    param.combineprepost = hyperParam.combineprepost;
-    param.covPrior = hyperParam.covPrior;
-    param.clampCov = hyperParam.clampCov;
-    param.infModel = hyperParam.infModel;
-    param.nSMap = hyperParam.nSMap;
-    param.nM = hyperParam.nM;
-    param.selectedFeature = hyperParam.selectedFeature;
-    param.useGpu = hyperParam.useGpu;
-    param.dataFile = hyperParam.dataFile;
-    param.returnFeature = hyperParam.returnFeature;
-    param.train = hyperParam.train;
-    param.inference = hyperParam.inference;
-    param.inferMethod = hyperParam.inferMethod;
-    param.preprocess = hyperParam.preprocess;
-    param.nS = hyperParam.nS(i);
-    param.L = hyperParam.L(j);
-    param.nprincomp = hyperParam.nprincomp;
-    param.maxIter = hyperParam.maxIter;
-    param.XcovType = hyperParam.XcovType;
-    param.resetS = hyperParam.resetS;
-    param.evalFun = hyperParam.evalFun;
-    param.evalName = hyperParam.evalName;
-    param.Gclamp = hyperParam.Gclamp;
-    param.thresh = hyperParam.thresh;
-    param.Fobserved = hyperParam.Fobserved;
-    param.sBin = hyperParam.sBin;
-    param.oBin = hyperParam.oBin;
-    param.initMeanFilePrefix = hyperParam.initMeanFilePrefix; 
-    param.mce = hyperParam.mce;
-    
+allParams = fieldnames(hyperParam);
+validateParams = {'nS', 'L'};
+diff = setdiff(allParams, validateParams);
+for i = hyperParam.nS
+  for j = hyperParam.L
+    param.nS = i;
+    param.L = j;
+    for k = 1 : length(diff)
+      param.(diff{k}) = hyperParam.(diff{k});
+    end
     ndx = (i - 1) * length(hyperParam.L) + j;
     hyperParam.model{ndx} = param;
   end
