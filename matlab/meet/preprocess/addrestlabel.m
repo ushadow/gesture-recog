@@ -24,6 +24,7 @@ function Y = addrestlabel1(Y, X, sampleRate, restLabel, gestureType)
 
 WSIZE = 15;
 pos = X(1 : 3, :);
+% smoothes row-oriented matrix, each row is a time series.
 pos = smoothts(pos, round(WSIZE / sampleRate));
 speed = computespeed(pos);
 

@@ -14,7 +14,7 @@ hyperParam.imageWidth = paramFromData.imgWidth;
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
-hyperParam.preprocess = {@selectfeature @standardizefeature};
+hyperParam.preprocess = {@temporalsmooth @standardizefeature};
 hyperParam.channels = 1;
 hyperParam.filterWinSize = 5;
 hyperParam.returnFeature = false;
