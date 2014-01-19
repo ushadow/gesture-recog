@@ -58,14 +58,14 @@ for p = 1 : npids
       if batchNDX > 0
         gtFile = fullfile(sessionDir, sprintf(gtFileFormat, batchNDXstr));
         logdebug('prepdatachairgest', 'batch', gtFile);
-        [featureData, startDescriptorNDX, imgWidth, sampleRate, ...
+        [featureData, startDescriptorNdx, imgWidth, sampleRate, ...
             kinectSampleRate] = readfeature(...
             fullfile(sessionDir, fileName), sensorType);
         [gt, vocabSize] = readgt(gtFile, featureData(end, 1));
 
         if ~paramInitialized
           dataParam.vocabularySize = vocabSize;
-          dataParam.startDescriptorNDX = startDescriptorNDX;
+          dataParam.startDescriptorNdx = startDescriptorNdx;
           dataParam.dir = dirname;
           dataParam.subsampleFactor = sampleRate;
           dataParam.gtSensorType = gtSensorType;

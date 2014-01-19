@@ -1,13 +1,27 @@
 dirname = 'G:\data\stand_point';
+combinedDataName = 'combinedDataHog';
 
-data = prepdata(dirname);
-combinedData = {combinedata(data)};
-savevariable(fullfile(dirname, 'data.mat'), 'data', data);
-savevariable(fullfile(dirname, 'combinedData.mat'), 'combinedData', ...
-             combinedData);
-%split = getalltrainsplit(combinedData{1});
-%jobParam = jobparam;
-%hyperParam = hyperparam(combinedData{1}.param, 'dataFile', 'data');
-%R = runexperiment(hyperParam, split, 1, 1, 0, combinedData{1});
+dataFile = fullfile(dirname, 'data.mat');
+combinedDataFile = fullfile(dirname, [combinedDataName '.mat']);
+combinedData = eval(combinedDataName);
+
+%% Process and save data.
+% data = prepdata(dirname);
+% combinedData = {combinedata(data)};
+% savevariable(fullfile(dirname, 'data.mat'), 'data', data);
+% savevariable(fullfile(dirname, 'combinedData.mat'), 'combinedData', ...
+%              combinedData);
+
+%% Load data.
+%load(combinedDataFile);
+
+testSplit = {1; 2; []};
+
+jobParam = jobparam;
+hyperParam = hyperparam(combinedData{1}.param, 'dataFile', 'combinedDataHog');
+
+% fold = 1, batch = 1, seed = 1
+R = runexperiment(hyperParam, testSplit, 1, 1, 1, combinedData);
+
 %runexperimentbatch(combinedData, split, hyperParam, jobParam);
 %outputchairgest(dsKinectXsens{1}, job247_output, 'hmm-nM-6-247-1session1user', 'yingyin', gesturelabel)
