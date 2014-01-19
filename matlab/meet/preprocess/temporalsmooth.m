@@ -17,7 +17,7 @@ function X = smooth1(X, sampleRate, wsize)
 
 for i = 1 : numel(X)
   seq = X{i};
-  seq = smoothts(seq, round(wsize / sampleRate));
+  seq = smoothts(seq, 'b', round(wsize / sampleRate));
   X{i} = seq;
 end
 end
