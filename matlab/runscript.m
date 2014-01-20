@@ -1,15 +1,15 @@
-dirname = 'G:\data\stand_point';
-combinedDataName = 'combinedDataHog';
+dirname = 'G:\data\stand_hog';
+combinedDataName = 'combinedData';
 
 dataFile = fullfile(dirname, 'data.mat');
 combinedDataFile = fullfile(dirname, [combinedDataName '.mat']);
-combinedData = eval(combinedDataName);
+%combinedData = eval(combinedDataName);
 
 %% Process and save data.
-% data = prepdata(dirname);
-% combinedData = {combinedata(data)};
-% savevariable(fullfile(dirname, 'data.mat'), 'data', data);
-% savevariable(fullfile(dirname, 'combinedData.mat'), 'combinedData', ...
+%data = prepdata(dirname);
+%combinedData = {combinedata(data)};
+%savevariable(fullfile(dirname, 'data.mat'), 'data', data);
+%savevariable(fullfile(dirname, 'combinedData.mat'), 'combinedData', ...
 %              combinedData);
 
 %% Load data.
@@ -18,7 +18,7 @@ combinedData = eval(combinedDataName);
 testSplit = {1; 2; []};
 
 jobParam = jobparam;
-hyperParam = hyperparam(combinedData{1}.param, 'dataFile', 'combinedDataHog');
+hyperParam = hyperparam(combinedData{1}.param, 'dataFile', combinedDataName);
 
 % fold = 1, batch = 1, seed = 1
 R = runexperiment(hyperParam, testSplit, 1, 1, 1, combinedData);

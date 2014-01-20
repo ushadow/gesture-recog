@@ -13,7 +13,7 @@ hyperParam.dataFile = [];
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
-hyperParam.preprocess = {@selectfeature @svmhandpose};
+hyperParam.preprocess = {@pcaimage @standardizefeature @svmhandpose};
 hyperParam.channels = [1 2];
 hyperParam.filterWinSize = 5;
 hyperParam.returnFeature = true;
@@ -24,7 +24,7 @@ hyperParam.resizeWidth = 16;
 % For kinect and xsens data, 1 : 3 is relative position, 4 : 12 is xsens
 % data
 %[2 : 7, 11 : 13] + 18 * 3; %Xsens
-hyperParam.selectedFeature = 4 + 36 * 9 : 3 + 36 * 9 * 2; 
+hyperParam.selectedFeature = 10 : 450; 
 hyperParam.K = 300; % number of dictinoary terms
 hyperParam.nFolds = 1; % number of folds in HOG.
 

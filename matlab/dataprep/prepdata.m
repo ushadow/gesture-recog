@@ -83,5 +83,6 @@ for p = 1 : npids
     end
   end
   data{p}.param = dataParam;
+  %data{p}.Y = addrestlabel(data{p}.Y, data{p}.X, data{p}.frame, dataParam);
 end
 end

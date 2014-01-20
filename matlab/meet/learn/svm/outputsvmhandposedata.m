@@ -9,6 +9,7 @@ scaledLen = round(REMOVE_LEN / sampleRate);
 
 Y = cell2mat(Y);
 X = cell2mat(X);
+
 [~, ~, gestureType] = gesturelabel();
 type = gestureType(Y(1, :));
 runs = contiguous(type, 1);
@@ -25,8 +26,8 @@ removeNdx = removeMask == 1;
 type(removeNdx) = [];
 X(:, removeNdx) = [];
 
-n = length(type);
-type0Pecentage = round(length(find(type == 0)) * 100 / n);
-fprintf('0 : %d, 1 : %d\n', type0Pecentage, 100 - type0Pecentage);
+count = hist(type, unique(type));
+display(count);
 libsvmwrite(fileName, type', sparse(X'));
+
 end
