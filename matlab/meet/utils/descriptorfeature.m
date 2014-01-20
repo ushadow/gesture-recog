@@ -1,9 +1,9 @@
-function descriptor = descriptorfeature(data, startDescriptorNdx)
+function descriptor = descriptorfeature(data, desRange)
 %% DESCRIPTORFEATURE
 %
 % RETURNS
 % descriptor  - a matrix and each column is a feature vector.
 
 mat = cell2mat(data);
-descriptor = mat(startDescriptorNdx : end, :);
+descriptor = mat(desRange, :);
 end

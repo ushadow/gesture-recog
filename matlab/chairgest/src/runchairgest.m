@@ -1,4 +1,4 @@
-dirname = 'H:\yingyin\chairgest_salience';
+dirname = 'H:\yingyin\chairgest_saliencexsens4';
 dataFile = fullfile(dirname, 'data.mat');
 combinedDataFile = fullfile(dirname, 'combinedData.mat');
 
@@ -6,14 +6,14 @@ combinedDataFile = fullfile(dirname, 'combinedData.mat');
 %data = prepdatachairgest(dirname, 'gtSensorType', 'Xsens', 'subsampleFactor', 1);
 %savevariable(dataFile, 'data', data);
 %combinedData = {combinedata(data)};
-savevariable(combinedDataFile, 'combinedData', combinedData);
+%savevariable(combinedDataFile, 'combinedData', combinedData);
 %split = getusersplit(data, 3);
 %savevariable(fullfile(dirname, 'usersplit.mat'), 'userSplit', split);
 
 %% Load data.
 %load(combinedDataFile);
-split = load(fullfile(dirname, 'usersplit.mat')); 
-split = split.userSplit;
+%split = load(fullfile(dirname, 'usersplit.mat')); 
+%split = split.userSplit;
 
 testSplit = {1 : 40; 2; []};
 
