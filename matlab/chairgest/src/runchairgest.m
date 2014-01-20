@@ -11,9 +11,9 @@ combinedDataFile = fullfile(dirname, 'combinedData.mat');
 %savevariable(fullfile(dirname, 'usersplit.mat'), 'userSplit', split);
 
 %% Load data.
-load(combinedDataFile);
-split = load(fullfile(dirname, 'usersplit.mat')); 
-split = split.userSplit;
+%load(combinedDataFile);
+%split = load(fullfile(dirname, 'usersplit.mat')); 
+%split = split.userSplit;
 
 testSplit = {1 : 40; 2; []};
 

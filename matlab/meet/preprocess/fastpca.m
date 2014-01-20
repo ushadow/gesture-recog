@@ -1,4 +1,4 @@
-function [newX, model] = pcaimage(~, X, ~, param)
+function [newX, model] = fastpca(~, X, ~, param)
 %% PCAIMAGE PCA for image features.
 %
 % [eigHand handFeature rawFeature H] = pcaimage(X, param) 
@@ -26,12 +26,12 @@ else
 end
 
 % Number of principal components to use for image.
-startDescriptorNdx = param.startDescriptorNdx;
+pcaRange = param.pcaRange;
 k = param.nprincomp;
 
 % The purpose of subtracting the mean from each sample is to be left with
 % only the distinguishing features.
-[A, model.mean] = normalizefeature(train, startDescriptorNdx);
+[A, model.mean] = normalizefeature(train, pcaRange);
 
 % Let u be the eigenhand. We want to find AA' * u = lamda * u, but AA' is a 
 % large matrix because the dimension of the feature vector is probabily 
@@ -67,8 +67,7 @@ else
   end
   [model.pc, model.sortedEigVal] = getprincomp(eigVec, eigVal, k);
 end
-newFeature = updatedata(train, model.pc, startDescriptorNdx, ...
-                        'normalized', A);
+newFeature = updatedata(train, model.pc, pcaRange, 'normalized', A);
 model.eigVal = diag(eigVal);
 
 if isfield(X, 'Tr')
@@ -78,13 +77,11 @@ else
 end
 
 if isfield(X, 'Va')
-  newX.Va = updatedata(X.Va, model.pc, startDescriptorNdx, ...
-                       'mean', model.mean);
+  newX.Va = updatedata(X.Va, model.pc, pcaRange, 'mean', model.mean);
 end
 
 if isfield(X, 'Te')
-  newX.Te = updatedata(X.Te, model.pc, startDescriptorNdx, ...
-                       'mean', model.mean);
+  newX.Te = updatedata(X.Te, model.pc, pcaRange, 'mean', model.mean);
 end
 
 model.mean = single(model.mean);
@@ -99,22 +96,21 @@ sortedEigVec = eigVec(:, eigNDX(1 : k));
 sortedEigVal = sortedEigVal(1 : k);
 end
 
-function [normalized, meanFeature] = normalizefeature(data, ...
-    startDescriptorNDX)
+function [normalized, meanFeature] = normalizefeature(data, pcaRange)
 % Subtracts the mean from the features.
-rawFeature = descriptorfeature(data, startDescriptorNDX);
+rawFeature = descriptorfeature(data, pcaRange);
 nframe = size(rawFeature, 2);
 meanFeature = mean(rawFeature, 2);
 meanFeatureRep = repmat(meanFeature, 1, nframe);
 normalized = rawFeature - meanFeatureRep;
 end
 
-function data = updatedata(data, eigImg, startImgFeatNDX, varargin)
+function data = updatedata(data, eigImg, pcaRange, varargin)
 narg = length(varargin);
 for i = 1 : 2 : narg
   switch varargin{i}
     case 'mean' 
-      rawImgFeature = descriptorfeature(data, startImgFeatNDX);
+      rawImgFeature = descriptorfeature(data, pcaRange);
       nframe = size(rawImgFeature, 2);
       meanFeature = varargin{i + 1};
       meanFeatureRep = repmat(meanFeature, 1, nframe);
@@ -128,8 +124,10 @@ nseq = length(data);
 startNdx = 1;
 for i = 1 : nseq
   old = data{i};
-  endNdx = startNdx + size(old, 2) - 1;
-  data{i} = [old(1 : startImgFeatNDX - 1, :); imgFeature(:, startNdx : endNdx)];
+  [d, n] = size(old);
+  endNdx = startNdx + n - 1;
+  diffNdx = setdiff(1 : d, pcaRange);
+  data{i} = [old(diffNdx, :); imgFeature(:, startNdx : endNdx)];
   startNdx = endNdx + 1;
 end
 end
