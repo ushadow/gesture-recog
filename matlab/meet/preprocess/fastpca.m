@@ -51,6 +51,7 @@ if D > n
     eigVec = gather(eigVec);
     eigVal = gather(eigVal);
   end
+  eigVal = arrayfun(@(x) sqrt(x), diag(eigVal));
   [sortedEigVec, model.sortedEigVal] = getprincomp(eigVec, eigVal, k);
   model.pc = normc(A * sortedEigVec); % npixel x neigenhand
 else
@@ -65,10 +66,10 @@ else
     eigVec = gather(eigVec);
     eigVal = gather(eigVal);
   end
-  [model.pc, model.sortedEigVal] = getprincomp(eigVec, eigVal, k);
+  [model.pc, model.sortedEigVal] = getprincomp(eigVec, diag(eigVal), k);
 end
 newFeature = updatedata(train, model.pc, pcaRange, 'normalized', A);
-model.eigVal = diag(eigVal);
+model.eigVal = diag(eigVal); % All eigen values
 
 if isfield(X, 'Tr')
   newX.Tr = newFeature;
@@ -86,12 +87,17 @@ end
 
 model.mean = single(model.mean);
 model.pc = single(model.pc');
+fprintf('variation explained by %d pc is %.2f\n', k, ...
+        sum(model.sortedEigVal) / sum(model.eigVal)); 
 end
   
 function [sortedEigVec, sortedEigVal] = getprincomp(eigVec, eigVal, k)
 %% GETPRINCOMP get k principal components
 % 
-[sortedEigVal, eigNDX] = sort(diag(eigVal), 'descend');
+% ARGS
+% eigVal - vector of eigen values;
+
+[sortedEigVal, eigNDX] = sort(eigVal, 'descend');
 sortedEigVec = eigVec(:, eigNDX(1 : k));
 sortedEigVal = sortedEigVal(1 : k);
 end

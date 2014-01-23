@@ -2,22 +2,27 @@ function hyperParam = hyperparam(paramFromData, varargin)
 
 % Parameters from data
 fn = fieldnames(paramFromData);
-for i = 1 : length(fn)
+for i = 1 : numel(fn)
   hyperParam.(fn{i}) = paramFromData.(fn{i});
 end
+
+[hyperParam.gestureLabel, hyperParam.gestureDict, ...
+    hyperParam.gestureType] = gesturelabel();
 
 % Default values.
 hyperParam.trainIter = 1; % Training iterations
 hyperParam.infModel = []; % cell array, one model for each fold.
 hyperParam.dataFile = [];
+validateParams = {'nprincomp'};
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
-hyperParam.preprocess = {@pcaimage @standardizefeature @svmhandpose};
+hyperParam.preprocess = {@fastpca @standardizefeature @svmhandpose};
 hyperParam.channels = [1 2];
 hyperParam.filterWinSize = 5;
 hyperParam.returnFeature = true;
-hyperParam.nprincomp = 52; % number of principal components from image.
+hyperParam.nprincomp = 26; % number of principal components from image.
+hyperParam.pcaRange = 10 : 450;
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
 hyperParam.resizeWidth = 16;
@@ -77,20 +82,21 @@ for i = 1 : 2 : length(varargin)
   hyperParam.(varargin{i}) = varargin{i + 1};
 end
 
-nmodel = length(hyperParam.nS) * length(hyperParam.L);
-hyperParam.model = cell(1, nmodel);
 allParams = fieldnames(hyperParam);
-validateParams = {'nS', 'L'};
 diff = setdiff(allParams, validateParams);
-for i = hyperParam.nS
-  for j = hyperParam.L
-    param.nS = i;
-    param.L = j;
-    for k = 1 : length(diff)
-      param.(diff{k}) = hyperParam.(diff{k});
-    end
-    ndx = (i - 1) * length(hyperParam.L) + j;
-    hyperParam.model{ndx} = param;
+
+v = cellfun(@(x) hyperParam.(x), validateParams, 'UniformOutput', false);
+g = cell(1, length(v));
+[g{:}] = ndgrid(v{:});
+nModels = numel(g{1});
+hyperParam.model = cell(1, nModels);
+for i = 1 : nModels
+  for k = 1 : length(validateParams)
+    param.(validateParams{k}) = g{k}(i);
   end
+  for k = 1 : length(diff)
+    param.(diff{k}) = hyperParam.(diff{k});
+  end
+  hyperParam.model{i} = param;
 end
 end
