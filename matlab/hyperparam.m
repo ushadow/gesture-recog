@@ -7,7 +7,7 @@ for i = 1 : numel(fn)
 end
 
 [hyperParam.gestureLabel, hyperParam.gestureDict, ...
-    hyperParam.gestureType] = gesturelabel();
+    hyperParam.gestureType, hyperParam.typeNames] = gesturelabel();
 
 % Default values.
 hyperParam.trainIter = 1; % Training iterations
@@ -17,10 +17,10 @@ validateParams = {'nprincomp'};
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
-hyperParam.preprocess = {@fastpca @standardizefeature @svmhandpose};
+hyperParam.preprocess = {@fastpca @svmhandpose @standardizefeature};
 hyperParam.channels = [1 2];
 hyperParam.filterWinSize = 5;
-hyperParam.returnFeature = true;
+hyperParam.returnFeature = false;
 hyperParam.nprincomp = 26; % number of principal components from image.
 hyperParam.pcaRange = 10 : 450;
 hyperParam.sBin = 4;
@@ -34,7 +34,7 @@ hyperParam.K = 300; % number of dictinoary terms
 hyperParam.nFolds = 1; % number of folds in HOG.
 
 % Training parameters
-hyperParam.train = @trainsvmhandpose;
+hyperParam.train = @trainhmm;
 hyperParam.trainSegment = true;
 hyperParam.maxIter = 30; %ldcrf: 1000; hmm: 30
 hyperParam.thresh = 0.001;
@@ -43,16 +43,14 @@ hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
 
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
-hyperParam.nS = 6; % number of hidden states S.
-hyperParam.nM = 6;
+hyperParam.nS = 4; % number of hidden states S.
+hyperParam.nM = 2;
 hyperParam.combineprepost = false;
 hyperParam.nRest = 1; % number of mixtures for rest position
-
 % Gaussian model parameters
 hyperParam.XcovType = 'diag';
 
 % AHMM parameters
-hyperParam.L = 16;
 hyperParam.resetS = true;
 hyperParam.Gclamp = 1;
 hyperParam.clampCov = 0;
@@ -61,15 +59,16 @@ hyperParam.Fobserved = 1;
 hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 1};
 
 % Inference, test parameters
-hyperParam.inference = @testhmmprepost;
+hyperParam.inference = @testhmm;
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
-hyperParam.inferMethod = 'viterbi';
+hyperParam.inferMethod = 'fixed-lag-smoothing';
+hyperParam.L = 0;
 hyperParam.testsegment = @segmentbymodel;
 hyperParam.combinehmmparam = @combinehmmparamwithrest;
 
 % Post process
-hyperParam.postprocess = @findnucleusfiltershort;
+hyperParam.postprocess = {};
 
 hyperParam.evalName = {'Error', 'Leven'};
 hyperParam.evalFun = {@errorperframe, @levenscore};

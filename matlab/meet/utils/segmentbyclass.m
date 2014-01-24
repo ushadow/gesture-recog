@@ -4,6 +4,10 @@ function dataByClass = segmentbyclass(Y, X, nclass, combinePrepost)
 % ARGS
 % Y   - cell array of labels. Each cell is a sequence for one recording.
 % X   - cell array of observations.
+%
+% RETURNS
+% dataByClass - cell array of cell arrays. One cell array for each gesture
+%   label. In each cell array, there are gesture sequences.
 
 if combinePrepost
   Y = combineprepost(Y);

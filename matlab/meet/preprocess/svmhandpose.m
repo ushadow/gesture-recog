@@ -1,20 +1,21 @@
-function [X, model] = svmhandpose(Y, X, frame, param)
+function [X, model] = svmhandpose(Y, X, ~, param)
 % ARGS
 % Y, X  - structure
 
-sampleRate = param.kinectSampleRate;
+% Standardize feature for SVM.
+stdX = standardizefeature([], X, [], []);
 
 dirname = param.dir;
 file.Tr = fullfile(dirname, 'svm_train_hand.txt');
 file.Va = fullfile(dirname, 'svm_test_hand.txt');
 modelFile = [file.Tr '.model'];
 
-model = modelFile;
+model.file = modelFile;
 
 dataTypes = fieldnames(Y);
 for i = 1 : length(dataTypes)
   dt = dataTypes{i};
-  count = outputsvmhandposedata(file.(dt), Y.(dt), X.(dt));
+  count = outputsvmhandposedata(file.(dt), Y.(dt), stdX.(dt));
   display(count);
   if strcmp(dt, 'Tr')
     [count, I] = sort(count);
@@ -26,16 +27,18 @@ for i = 1 : length(dataTypes)
   predictFile = [file.(dt) '.predict'];
   result = exesvmpredict(file.(dt), modelFile, predictFile);
   fprintf('%s result: %s', dt, result);
-  X.(dt) = readprediction(predictFile, X.(dt));
+  [X.(dt), labels] = readprediction(predictFile, X.(dt));
 end
 
+model.labels = param.typeNames(labels);
 end
 
-function X = readprediction(filename, X)
+function [X, labels] = readprediction(filename, X)
+%% READPREDICTION add the prediction probabilities to the feature vectors.
 
 prediction = importdata(filename, ' ', 1);
-display(prediction.colheaders);
-prediction = prediction.data(:, 2 : end)';
+labels = cellfun(@(x) str2double(x), prediction.colheaders(2 : end));
+prediction = prediction.data(:, 2 : end - 1)';
 
 startNdx = 1;
 for i = 1 : numel(X)

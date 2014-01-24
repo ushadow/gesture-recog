@@ -1,4 +1,5 @@
-function combinedModel = combinetoonehmm(prior, transmat, term, mu, Sigma, mixmat)
+function combinedModel = combinetoonehmm(prior, transmat, term, mu, ...
+    Sigma, mixmat, param)
 %%
 % COMBINETOONEHMM combines all HMMs to one HMM.
 %
@@ -14,16 +15,19 @@ function combinedModel = combinetoonehmm(prior, transmat, term, mu, Sigma, mixma
 % The combined model in single precision.
 % combinedModel.mixmat is a m x nTotalStates matrix.
 
+% Prior
 combinedModel.prior = cat(1, prior{:});
-combinedModel.prior = single(normalise(combinedModel.prior));
+combinedModel.prior = normalise(combinedModel.prior);
 
 nHmms = length(prior);
-
 nTotalStates = length(combinedModel.prior);
-combinedModel.transmat = zeros(nTotalStates);
+
+% Termination
 combinedModel.term = cat(1, term{:});
 combinedTerm = repmat(combinedModel.term, 1, nTotalStates);
 
+% Transition
+combinedModel.transmat = zeros(nTotalStates);
 sNDX =1;
 for i = 1 : nHmms
   nStates = length(prior{i});
@@ -32,10 +36,49 @@ for i = 1 : nHmms
   sNDX = eNDX + 1;
 end
 
-combinedModel.transmat = single(combinedModel.transmat .* (1 - combinedTerm) + ... 
-    repmat(combinedModel.prior', nTotalStates, 1) .* combinedTerm);
+combinedModel.transmat = combinedModel.transmat .* (1 - combinedTerm) + ... 
+    repmat(combinedModel.prior', nTotalStates, 1) .* combinedTerm;
+combinedModel.transmat = allowpretosingle(combinedModel.transmat, ...
+    param.gestureType, param.nS);
 
+combinedModel.map = maphiddenstatetolabel(nTotalStates, param.nS, ...
+    param.gestureType);  
 combinedModel.mu = single(cat(2, mu{:}));
 combinedModel.Sigma = single(cat(3, Sigma{:}));
-combinedModel.mixmat = single(cat(1, mixmat{:})');
+combinedModel.mixmat = single(cat(1, mixmat{:}));
+end
+
+function map = maphiddenstatetolabel(totalNStates, nS, gestureType)
+map = zeros(1, totalNStates);
+startNdx = 1;
+for i = 1 : length(gestureType)
+  switch gestureType(i)
+    case 1
+      endNdx = startNdx + nS - 1;
+    case {2, 3}
+      endNdx = startNdx;
+  end
+  map(startNdx : endNdx) = i;
+  startNdx = endNdx + 1;
+end
+map = int32(map);
+end
+
+function transmat = allowpretosingle(transmat, gestureType, nS)
+preStates = [];
+singleStates = [];
+startNdx = 1;
+for g = gestureType
+  nStates = 1;
+  switch g
+    case 1
+      preStates = [preStates startNdx];  %#ok<AGROW>
+      nStates = nS;
+    case {2, 3}
+      singleStates = [singleStates startNdx]; %#ok<AGROW>
+  end
+  startNdx = startNdx + nStates;
+end
+transmat(preStates, singleStates) = 0.01;
+transmat = mk_stochastic(transmat); 
 end

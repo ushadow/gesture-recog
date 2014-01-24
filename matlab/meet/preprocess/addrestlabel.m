@@ -6,8 +6,7 @@ function [Y, X, frame] = addrestlabel(Y, X, frame, param)
 % Y, X, frame - cell array of sequences or structure of cell arrays.
 
 restLabel = param.vocabularySize;
-sampleRate = param.kinectSampleRate;
-[~, ~, gestureType] = gesturelabel();
+
 if isstruct(X)
   fn = fieldnames(X);
   for i = 1 : length(fn)
@@ -15,14 +14,14 @@ if isstruct(X)
     Y1 = Y.(fn{i});
     frame1 = frame.(fn{i});
     [Y.(fn{i}), X.(fn{i}), frame.(fn{i})] = addrestlabel1(Y1, X1, frame1,...
-          restLabel, gestureType, sampleRate);
+          restLabel);
   end
 else
-  [Y, X, frame] = addrestlabel1(Y, X, frame, restLabel, gestureType, sampleRate);
+  [Y, X, frame] = addrestlabel1(Y, X, frame, restLabel);
 end
 end
 
-function [Y, X, frame] = addrestlabel1(Y, X, frame, restLabel, gestureType, sampleRate)
+function [Y, X, frame] = addrestlabel1(Y, X, frame, restLabel)
 % ARGS
 % Y   - 2 x n array.
 % sampleRate  - Kinect sample rate.
@@ -36,8 +35,7 @@ for n = 1 : numel(X)
 
   y = X1(2, :);
 
-  type = gestureType(Y1(1, :));
-  rest = speed < 0.009 & y < -0.55 & type == 0;
+  rest = speed < 0.009 & y < -0.55;
   if any(rest)
     runs = contiguous(rest, 1);
     runs = runs{1, 2};
@@ -49,9 +47,9 @@ for n = 1 : numel(X)
     end   
   end
   
-  [Y{n}, X{n}, frame{n}] = removestartandend(Y1, X1, frame1, ...
-        gestureType, sampleRate);
-  Y{n} = addflabel(Y{n});
+%   [Y{n}, X{n}, frame{n}] = removestartandend(Y1, X1, frame1, ...
+%         gestureType, sampleRate);
+  Y{n} = addflabel(Y1);
 end
 end
 
@@ -77,22 +75,4 @@ keepNdx = removeMask ~= 1;
 X1 = X1(:, keepNdx);
 Y1 = Y1(:, keepNdx);
 frame1 = frame1(:, keepNdx);
-end
-
-function Y = filtershort(Y, restLabel, minLen)
-
-runs = contiguous(Y(1, :));
-for l = 1 : size(runs, 1)
-  label = runs{l, 1};
-  if label < restLabel
-    run = runs{l, 2};
-    for r = 1 : size(run, 1)
-      endNdx = run(r, 2);
-      startNdx = run(r, 1);
-      if  endNdx - startNdx < 0
-        Y(startNdx : endNdx) = restLabel;
-      end
-    end
-  end
-end
 end

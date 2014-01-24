@@ -89,13 +89,13 @@ else
 
   if ~isempty(param.inference)
     tid = tic;
-    [R.predUnfiltered, R.prob, R.path, R.seg] = param.inference(Y, X, frame, ...
+    [R.prediction, R.prob, R.path, R.seg] = param.inference(Y, X, frame, ...
                                      R.infModel, param);
     R.testingTime = toc(tid);
   end
   
   if ~isempty(param.postprocess)
-    R.prediction = param.postprocess(R.predUnfiltered, R.path, R.seg, param);
+    R.prediction = param.postprocess(R.prediction, R.path, R.seg, param);
   end
 
   % Step 5: Evaluate performance of prediction

@@ -1,7 +1,8 @@
 function viewrecogresult(data, result, ndx, gestureLabel)
-% Visualize gesture recognition result.
+%% VIEWRECOGNITIONRESULT Visualize gesture recognition validation result.
 %
 % ARGS
+% data  - original data, not separated into training and validation.
 % ndx   - index in the validation data.
 
 figure;
@@ -29,7 +30,7 @@ yticklabel_rotate;
 h = colorbar;
 set(h, 'YTick', 1 : ngestures);
 set(h, 'YTickLabel', gestureLabel, 'FontSize', 12);
-title(data.file{seqNDX}, 'Interpreter', 'none');
+title(strjoin(data.file{seqNDX}), 'Interpreter', 'none');
 
 if ~isempty(result.path)
   hiddenStates = result.path.Va{ndx};
