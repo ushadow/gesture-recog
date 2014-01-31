@@ -38,44 +38,56 @@ end
 
 combinedModel.transmat = combinedModel.transmat .* (1 - combinedTerm) + ... 
     repmat(combinedModel.prior', nTotalStates, 1) .* combinedTerm;
+
 combinedModel.transmat = allowpretosingle(combinedModel.transmat, ...
     param.gestureType, param.nS);
 
-combinedModel.map = maphiddenstatetolabel(nTotalStates, param.nS, ...
-    param.gestureType);  
+[combinedModel.labelMap, combinedModel.stageMap] = ...
+    maphiddenstatetolabel(nTotalStates, param.nS, param.gestureType);  
 combinedModel.mu = single(cat(2, mu{:}));
 combinedModel.Sigma = single(cat(3, Sigma{:}));
 combinedModel.mixmat = single(cat(1, mixmat{:}));
 end
 
-function map = maphiddenstatetolabel(totalNStates, nS, gestureType)
-map = zeros(1, totalNStates);
+function [labelMap, stageMap] = maphiddenstatetolabel(totalNStates, nS, ...
+    gestureType)
+% ARGS
+% nS  - number of hidden states for gestures with dynamic paths.
+%
+% RETURNS
+% stageMap  - maps hidden states to gesture stages.
+
+labelMap = zeros(1, totalNStates);
+stageMap = cell(1, totalNStates);
 startNdx = 1;
 for i = 1 : length(gestureType)
-  switch gestureType(i)
-    case 1
-      endNdx = startNdx + nS - 1;
-    case {2, 3}
-      endNdx = startNdx;
+  if gestureType(i) == 1
+    endNdx = startNdx + nS - 1;
+    stageMap{startNdx} = 'PreStroke';
+    stageMap{endNdx} = 'PostStroke';
+    [stageMap{startNdx + 1 : endNdx - 1}] = deal('Gesture');
+  else
+    endNdx = startNdx;
+    stageMap{startNdx} = 'Gesture';
   end
-  map(startNdx : endNdx) = i;
+  labelMap(startNdx : endNdx) = i;
+  
   startNdx = endNdx + 1;
 end
-map = int32(map);
+labelMap = int32(labelMap);
 end
 
 function transmat = allowpretosingle(transmat, gestureType, nS)
 preStates = [];
 singleStates = [];
 startNdx = 1;
-for g = gestureType
+for gt = gestureType
   nStates = 1;
-  switch g
-    case 1
-      preStates = [preStates startNdx];  %#ok<AGROW>
-      nStates = nS;
-    case {2, 3}
-      singleStates = [singleStates startNdx]; %#ok<AGROW>
+  if gt == 1
+    preStates = [preStates startNdx];  %#ok<AGROW>
+    nStates = nS;
+  else
+    singleStates = [singleStates startNdx]; %#ok<AGROW>
   end
   startNdx = startNdx + nStates;
 end

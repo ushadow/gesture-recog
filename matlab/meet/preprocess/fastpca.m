@@ -1,4 +1,4 @@
-function [newX, model] = fastpca(~, X, ~, param)
+function [newX, model, param] = fastpca(~, X, ~, param)
 %% PCAIMAGE PCA for image features.
 %
 % [eigHand handFeature rawFeature H] = pcaimage(X, param) 

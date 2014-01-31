@@ -7,7 +7,8 @@ for i = 1 : numel(fn)
 end
 
 [hyperParam.gestureLabel, hyperParam.gestureDict, ...
-    hyperParam.gestureType, hyperParam.typeNames] = gesturelabel();
+    hyperParam.gestureType, hyperParam.repeat] = ...
+    gesturelabel();
 
 % Default values.
 hyperParam.trainIter = 1; % Training iterations
@@ -17,15 +18,15 @@ validateParams = {'nprincomp'};
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
-hyperParam.preprocess = {@fastpca @svmhandpose @standardizefeature};
+hyperParam.preprocess = {@fastpca @standardizefeature};
 hyperParam.channels = [1 2];
 hyperParam.filterWinSize = 5;
 hyperParam.returnFeature = false;
-hyperParam.nprincomp = 26; % number of principal components from image.
+hyperParam.nprincomp = 15; % number of principal components from image.
 hyperParam.pcaRange = 10 : 450;
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
-hyperParam.resizeWidth = 16;
+hyperParam.resizeWidth = 15;
 % For kinect and xsens data, 1 : 3 is relative position, 4 : 12 is xsens
 % data
 %[2 : 7, 11 : 13] + 18 * 3; %Xsens
@@ -63,7 +64,7 @@ hyperParam.inference = @testhmm;
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
 hyperParam.inferMethod = 'fixed-lag-smoothing';
-hyperParam.L = 0;
+hyperParam.L = 5;
 hyperParam.testsegment = @segmentbymodel;
 hyperParam.combinehmmparam = @combinehmmparamwithrest;
 

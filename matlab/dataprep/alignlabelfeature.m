@@ -1,5 +1,6 @@
 function [Y, X, frame] = alignlabelfeature(gt, feature)
-%% ALIGNLABELFEATURE Aligns ground truth data with feature data.
+%% ALIGNLABELFEATURE Aligns ground truth data with feature data. Feature
+%   data frames not in the ground truth are ignored. 
 %
 % ARGS
 % gt   - n x 3 matrix of all ground truth labels for a batch. The first

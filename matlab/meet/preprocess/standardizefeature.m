@@ -1,4 +1,4 @@
-function [standardized, model] = standardizefeature(~, X, ~, ~, varargin)
+function [standardized, model, param] = standardizefeature(~, X, ~, param, varargin)
 %% STANDARDIZEFEATURE standardize features.
 %
 % ARGS

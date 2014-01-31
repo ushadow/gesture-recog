@@ -28,15 +28,16 @@ for t = 2 : T
 end
 alpha(:, T) = alpha(:, T) .* term;
 
-for t = lag + 1 : T
+for t = 1 : T
   beta(:, t) = ones(Q, 1);
   [~, path(t)] = max(alpha(:, t));
-  for tau = t - 1 : -1 : t - lag
+  for tau = t - 1 : -1 : max(1, t - lag)
     b = beta(:, tau + 1) .* obslik(:, tau + 1);
     beta(:, tau) = transmat * b;
     if scaled
       beta(:, tau) = normalise(beta(:, tau));
     end
-    [~, path(tau)] = max(alpha(:, tau) .* beta(:, tau));
+    gamma = alpha(:, tau) .* beta(:, tau);
+    [~, path(tau)] = max(gamma);
   end
 end

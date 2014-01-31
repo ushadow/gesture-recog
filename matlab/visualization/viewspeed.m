@@ -20,5 +20,5 @@ set(h, 'YTick', 1 : ngestures);
 set(h, 'YTickLabel', gestureLabel, 'FontSize', 12);
 
 axis([1 nFrames -0.6 0.1]);
-legend('smoothed speed', 'smoothed');
+legend('smoothed speed', 'y coordinate');
 end

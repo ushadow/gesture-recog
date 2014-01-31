@@ -1,4 +1,4 @@
-function [X, model] = svmhandpose(Y, X, ~, param)
+function [X, model, param] = svmhandpose(Y, X, ~, param)
 % ARGS
 % Y, X  - structure
 
@@ -18,11 +18,10 @@ for i = 1 : length(dataTypes)
   count = outputsvmhandposedata(file.(dt), Y.(dt), stdX.(dt));
   display(count);
   if strcmp(dt, 'Tr')
-    [count, I] = sort(count);
-    I = length(count) - I + 1;
-    weight = count(I);
-    display(weight);
-    exesvmtrain(0.03, 0.007, weight, file.(dt));
+    [sorted, I] = sort(count);
+    count(I) = sorted(end : -1 : 1);
+    display(count);
+    exesvmtrain(8, 0.03, count, file.(dt));
   end
   predictFile = [file.(dt) '.predict'];
   result = exesvmpredict(file.(dt), modelFile, predictFile);
@@ -30,7 +29,10 @@ for i = 1 : length(dataTypes)
   [X.(dt), labels] = readprediction(predictFile, X.(dt));
 end
 
-model.labels = param.typeNames(labels);
+model.labels = labels;
+featureLength = size(X.Tr{1}, 1);
+param.pcaRange = 1 : featureLength;
+param.nprincomp = featureLength - 3;
 end
 
 function [X, labels] = readprediction(filename, X)

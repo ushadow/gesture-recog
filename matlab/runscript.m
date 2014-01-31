@@ -15,7 +15,7 @@ combinedDataFile = fullfile(dirname, [combinedDataName '.mat']);
 %% Load data.
 %load(combinedDataFile);
 
-testSplit = {1; 2; []};
+testSplit = {[1 : 2, 4, 6]; [3, 5, 7]; []};
 
 jobParam = jobparam;
 hyperParam = hyperparam(combinedData{1}.param, 'dataFile', combinedDataName);

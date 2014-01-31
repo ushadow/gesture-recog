@@ -47,32 +47,27 @@ for n = 1 : numel(X)
     end   
   end
   
-%   [Y{n}, X{n}, frame{n}] = removestartandend(Y1, X1, frame1, ...
-%         gestureType, sampleRate);
+  Y1 = removeshort(Y1, restLabel);
   Y{n} = addflabel(Y1);
 end
 end
 
-function [Y1, X1, frame1] = removestartandend(Y1, X1, frame1, ...
-      gestureType, sampleRate)
+function Y1 = removeshort(Y1, restLabel)
+
 % Each gesture is about 3s.
-REMOVE_LEN = 15; % 1s at 30Hz
-scaledLen = round(REMOVE_LEN / sampleRate);
+REMOVE_LEN = 5;
 
-type1 = gestureType(Y1(1, :));
-runs = contiguous(type1, 1);
-runs = runs{1, 2};
-removeMask = zeros(size(type1));
-for i = 1 : size(runs)
-  startNdx = runs(i, 1);
-  endNdx = runs(i, 2);
-  removeMask(startNdx : min(startNdx + scaledLen, endNdx)) = 1;
-  removeMask(max(endNdx - scaledLen, startNdx) : endNdx) = 1;
+runs = contiguous(Y1(1, :));
+for i = 1 : size(runs, 1)
+  if runs{i, 1} ~= restLabel
+    r = runs{i, 2};
+    for j = 1 : size(r, 1)
+      startNdx = r(j, 1);
+      endNdx = r(j, 2);
+      if endNdx - startNdx + 1 < REMOVE_LEN 
+        Y1(1, startNdx : endNdx) = restLabel;
+      end
+    end
+  end 
 end
-
-% Remove uncertain labels
-keepNdx = removeMask ~= 1;
-X1 = X1(:, keepNdx);
-Y1 = Y1(:, keepNdx);
-frame1 = frame1(:, keepNdx);
 end
