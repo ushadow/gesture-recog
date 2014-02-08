@@ -42,7 +42,7 @@ end
 combinedModel.transmat = combinedModel.transmat .* (1 - combinedTerm) + ... 
     repmat(combinedModel.prior', nTotalStates, 1) .* combinedTerm;
 
-combinedModel.transmat = allowpretosingle(combinedModel.transmat, ...
+combinedModel.transmat = addprepost(combinedModel.transmat, ...
     param.gestureType, combinedModel.stageMap, combinedModel.labelMap);
  
 combinedModel.mu = single(cat(2, mu{:}));
@@ -79,15 +79,24 @@ end
 labelMap = int32(labelMap);
 end
 
-function transmat = allowpretosingle(transmat, gestureType, stageMap, labelMap)
+function transmat = addprepost(transmat, gestureType, stageMap, labelMap)
+%% ADDPREPOST add pre- and post-stage transitions
+
 nStates = length(stageMap);
 for i = 1 : nStates
-  if strcmp(stageMap{i}, 'PreStroke')
-    for j = 1 : nStates
-      if j ~= i && (strcmp(stageMap{j}, 'PreStroke') || gestureType(labelMap(j)) ~= 1)
-        transmat(i, j) = 0.01;
+  switch stageMap{i}
+    case 'PreStroke'
+      for j = 1 : nStates
+        if j ~= i && (strcmp(stageMap{j}, 'PreStroke') || gestureType(labelMap(j)) ~= 1)
+          transmat(i, j) = 0.01;
+        end
       end
-    end
+    case 'PostStroke'
+      for j = 1 : nStates
+        if j ~= i && gestureType(labelMap(j)) ~= 1
+          transmat(j, i) = 0.01;
+        end
+      end
   end
 end
 transmat = mk_stochastic(transmat); 
