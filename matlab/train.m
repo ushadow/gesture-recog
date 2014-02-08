@@ -1,28 +1,22 @@
 dirname = 'G:\data\stand_hog1';
 combinedDataName = 'combinedData';
-dataOption = 0;
+processData = true;
 
 dataFile = fullfile(dirname, 'data.mat');
 combinedDataFile = fullfile(dirname, [combinedDataName '.mat']);
 
 %% Process and save data.
-switch dataOption
-  case 1
-    if exist(dataFile, 'file')
-      load(dataFile);
-    else 
-      data = [];
-    end
-    data = prepdata(dirname, 'prevData', data);
-    combinedData = {combinedata(data)};
-    savevariable(dataFile, 'data', data);
-    savevariable(combinedDataFile, 'combinedData', combinedData);
-  case 2
-    % Load data.
-    load(combinedDataFile); 
+if processData
+  data = prepdata(dirname);
+  combinedData = {combinedata(data)};
+  savevariable(dataFile, 'data', data);
+  savevariable(combinedDataFile, 'combinedData', combinedData);
+else
+  % Load data.
+  load(combinedDataFile); %#ok<UNRCH>
 end
 
-testSplit = {[1 : 2, 4, 6, 8, 10, 11]; [3, 5, 7, 9]; []};
+testSplit = {1 : length(combinedData{1}.Y); []; []};
 
 jobParam = jobparam;
 hyperParam = hyperparam(combinedData{1}.param, 'dataFile', combinedDataName);
@@ -35,4 +29,4 @@ for i = 1 : nModels
 end
 
 fprintf('Training error = %f\n', R{1}.stat('TrError'));
-fprintf('Testing error = %f\n', R{1}.stat('VaError'));
+savevariable(fullfile('G:\workspace\handinput\GesturesViewer\bin\x64', 'model.mat'), 'model', R{1})

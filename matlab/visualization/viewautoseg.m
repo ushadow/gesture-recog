@@ -1,9 +1,15 @@
-function viewspeed(Y, X, frame, param)
-%%
+function viewautoseg(data, index)
+%% VIEWAUTOSEG view automatic segmentation of training data.
+% 
 % ARGS
 % X - a sequence
 
 figure;
+
+X = data.X{index};
+Y = data.Y{index};
+frame = data.frame{index};
+param = data.param;
 
 nFrames = size(X, 2);
 pos = X(1 : 3, :);

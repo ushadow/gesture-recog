@@ -26,6 +26,9 @@ nTotalStates = length(combinedModel.prior);
 combinedModel.term = cat(1, term{:});
 combinedTerm = repmat(combinedModel.term, 1, nTotalStates);
 
+[combinedModel.labelMap, combinedModel.stageMap] = ...
+    maphiddenstatetolabel(nTotalStates, param.nS, param.gestureType); 
+
 % Transition
 combinedModel.transmat = zeros(nTotalStates);
 sNDX =1;
@@ -40,10 +43,8 @@ combinedModel.transmat = combinedModel.transmat .* (1 - combinedTerm) + ...
     repmat(combinedModel.prior', nTotalStates, 1) .* combinedTerm;
 
 combinedModel.transmat = allowpretosingle(combinedModel.transmat, ...
-    param.gestureType, param.nS);
-
-[combinedModel.labelMap, combinedModel.stageMap] = ...
-    maphiddenstatetolabel(nTotalStates, param.nS, param.gestureType);  
+    param.gestureType, combinedModel.stageMap, combinedModel.labelMap);
+ 
 combinedModel.mu = single(cat(2, mu{:}));
 combinedModel.Sigma = single(cat(3, Sigma{:}));
 combinedModel.mixmat = single(cat(1, mixmat{:}));
@@ -55,6 +56,7 @@ function [labelMap, stageMap] = maphiddenstatetolabel(totalNStates, nS, ...
 % nS  - number of hidden states for gestures with dynamic paths.
 %
 % RETURNS
+% labelMap  - 1-based indices of gesture labels.
 % stageMap  - maps hidden states to gesture stages.
 
 labelMap = zeros(1, totalNStates);
@@ -64,8 +66,8 @@ for i = 1 : length(gestureType)
   if gestureType(i) == 1
     endNdx = startNdx + nS - 1;
     stageMap{startNdx} = 'PreStroke';
-    stageMap{endNdx} = 'PostStroke';
-    [stageMap{startNdx + 1 : endNdx - 1}] = deal('Gesture');
+    [stageMap{endNdx - 1 : endNdx}] = deal('PostStroke');
+    [stageMap{startNdx + 1 : endNdx - 2}] = deal('Gesture');
   else
     endNdx = startNdx;
     stageMap{startNdx} = 'Gesture';
@@ -77,20 +79,16 @@ end
 labelMap = int32(labelMap);
 end
 
-function transmat = allowpretosingle(transmat, gestureType, nS)
-preStates = [];
-singleStates = [];
-startNdx = 1;
-for gt = gestureType
-  nStates = 1;
-  if gt == 1
-    preStates = [preStates startNdx];  %#ok<AGROW>
-    nStates = nS;
-  else
-    singleStates = [singleStates startNdx]; %#ok<AGROW>
+function transmat = allowpretosingle(transmat, gestureType, stageMap, labelMap)
+nStates = length(stageMap);
+for i = 1 : nStates
+  if strcmp(stageMap{i}, 'PreStroke')
+    for j = 1 : nStates
+      if j ~= i && (strcmp(stageMap{j}, 'PreStroke') || gestureType(labelMap(j)) ~= 1)
+        transmat(i, j) = 0.01;
+      end
+    end
   end
-  startNdx = startNdx + nStates;
 end
-transmat(preStates, singleStates) = 0.01;
 transmat = mk_stochastic(transmat); 
 end

@@ -24,7 +24,6 @@ end
 function [Y, X, frame] = addrestlabel1(Y, X, frame, restLabel)
 % ARGS
 % Y   - 2 x n array.
-% sampleRate  - Kinect sample rate.
 
 for n = 1 : numel(X)
   X1 = X{n};

@@ -6,18 +6,21 @@ function data = prepdata(dirname, varargin)
 % dirname     - directory of the main database name, i.e. 'chairgest'.
 %
 % OPTIONAL ARGS
-% sensorType  - string of sensor type, i.e., 'Kinect' or 'Xsens'. ['Kinect']
-% subsmapleFactor - subsampling factor. [1]
+% sensorType  - string of sensor type, i.e., 'Kinect' or 'Xsens'. Specifies
+%   which processed sensor data file to read. ['Kinect']
+% gtSensorType - ground truth sensor type. Specifies which ground truth
+%   data file to read. ['Kinect']
+% prevData  - previous saved data. [[]]
 %
 % RETRURN
 % data  - a cell array. Each cell is for one user and is a structure with fields:
 %   Y     - a cell array of ground truth labels.
 %   X     - a cell array of features.
-%   split - a 2 x 1 cell array with one fold evalutation.
 
 sensorType = 'Kinect';
 gtSensorType = 'Kinect';
 dataType = 'Converted';
+prevData = [];
 
 for i = 1 : 2 : length(varargin)
   switch varargin{i}
@@ -25,6 +28,8 @@ for i = 1 : 2 : length(varargin)
       sensorType = varargin{i + 1};
     case 'gtSensorType'
       gtSensorType = varargin{i + 1};
+    case 'prevData'
+      prevData = varargin{i + 1};
     otherwise
       error(['Unrecognized option: ' varargin{i}]);
   end
@@ -44,10 +49,27 @@ for p = 1 : npids
   data{p}.X = {};
   data{p}.frame = {};
   data{p}.file = {};
-
+  
   paramInitialized = false;
+  
+  if ~isempty(prevData) && p <= length(prevData)
+    data{p}.Y = prevData{p}.Y;
+    data{p}.X = prevData{p}.X;
+    data{p}.frame = prevData{p}.frame;
+    data{p}.file = prevData{p}.file;
+    dataParam = prevData{p}.param;
+    paramInitialized = true;
+  end
+
+  prevFiles = data{p}.file;
+  prevFileSet = java.util.HashSet;
+  for i = 1 : length(prevFiles)
+    prevFileSet.add(prevFiles{i}{2});
+  end
+  
   for i = 1 : length(sessionNames)
     sessionName = sessionNames{i};
+    if prevFileSet.contains(sessionName), continue; end
     sessionDir = fullfile(dirname, pid, sessionName);
     [batches, ndx] = dataSet.getBatchNames(pid, sessionName, sensorType);
 
