@@ -54,6 +54,7 @@ function [labelMap, stageMap] = maphiddenstatetolabel(totalNStates, nS, ...
     gestureType)
 % ARGS
 % nS  - number of hidden states for gestures with dynamic paths.
+% gestureType   - array of gesture type for each gesture.
 %
 % RETURNS
 % labelMap  - 1-based indices of gesture labels.
@@ -64,10 +65,10 @@ stageMap = cell(1, totalNStates);
 startNdx = 1;
 for i = 1 : length(gestureType)
   if gestureType(i) == 1
-    endNdx = startNdx + nS - 1;
+    endNdx = startNdx + nS(i) - 1;
     stageMap{startNdx} = 'PreStroke';
-    [stageMap{endNdx - 1 : endNdx}] = deal('PostStroke');
-    [stageMap{startNdx + 1 : endNdx - 2}] = deal('Gesture');
+    [stageMap{endNdx}] = deal('PostStroke');
+    [stageMap{startNdx + 1 : endNdx - 1}] = deal('Gesture');
   else
     endNdx = startNdx;
     stageMap{startNdx} = 'Gesture';
@@ -76,6 +77,7 @@ for i = 1 : length(gestureType)
   
   startNdx = endNdx + 1;
 end
+stageMap{end} = 'Rest';
 labelMap = int32(labelMap);
 end
 
@@ -86,6 +88,8 @@ nStates = length(stageMap);
 for i = 1 : nStates
   switch stageMap{i}
     case 'PreStroke'
+      % PreStroke can go to a single state gesture or another PreStroke
+      % state.
       for j = 1 : nStates
         if j ~= i && (strcmp(stageMap{j}, 'PreStroke') || gestureType(labelMap(j)) ~= 1)
           transmat(i, j) = 0.01;
@@ -93,7 +97,7 @@ for i = 1 : nStates
       end
     case 'PostStroke'
       for j = 1 : nStates
-        if j ~= i && gestureType(labelMap(j)) ~= 1
+        if j ~= i && (strcmp(stageMap{j}, 'PostStroke') || gestureType(labelMap(j)) ~= 1)
           transmat(j, i) = 0.01;
         end
       end

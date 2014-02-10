@@ -1,5 +1,6 @@
 dirname = 'G:\data\stand_hog1';
 combinedDataName = 'combinedData';
+% 0: don't load data
 dataOption = 0;
 
 dataFile = fullfile(dirname, 'data.mat');
@@ -22,7 +23,7 @@ switch dataOption
     load(combinedDataFile); 
 end
 
-testSplit = {[1 : 2, 4, 6, 8, 10, 11]; [3, 5, 7, 9]; []};
+testSplit = {[1 : 2, 4, 6, 8, 10, 11, 12]; [3, 5, 7, 9]; []};
 
 jobParam = jobparam;
 hyperParam = hyperparam(combinedData{1}.param, 'dataFile', combinedDataName);
@@ -34,5 +35,7 @@ for i = 1 : nModels
   R{i} = runexperiment(hyperParam.model{i}, testSplit, 1, 1, 1, combinedData);
 end
 
-fprintf('Training error = %f\n', R{1}.stat('TrError'));
-fprintf('Testing error = %f\n', R{1}.stat('VaError'));
+fprintf('Training F1 = %f\n', R{1}.stat('TrF1').f1);
+fprintf('Training FrameError = %f\n', R{1}.stat('TrFrameError'));
+fprintf('Testing F1 = %f\n', R{1}.stat('VaF1').f1);
+fprintf('Testing FrameError = %f\n', R{1}.stat('VaFrameError'));

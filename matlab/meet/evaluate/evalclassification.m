@@ -1,10 +1,11 @@
-function stat = evalclassification(Y, R, evalName, evalFun, verbose)
+function stat = evalclassification(Y, R, param)
 % ARGS
 % R   - cell array or struct.
 % - evalName: cell array of evaluation names.
 % - evalFun: cell array of evaluation functions.
 
-if nargin < 5, verbose = false; end
+evalFun = param.evalFun;
+evalName = param.evalName;
 
 if ~iscell(evalFun), evalFun = {evalFun}; end
 if ~iscell(evalName), evalName = {evalName}; end
@@ -20,24 +21,23 @@ if iscell(R)
                           verbose);
   end
 else
-  stat = evalOneFold(Y, R, evalName, evalFun, verbose);
+  stat = evalOneFold(Y, R, evalName, evalFun, param);
 end
 end
 
-function stat = evalOneFold(Y, R, evalName, evalFun, verbose)
+function stat = evalOneFold(Y, R, evalName, evalFun, param)
 stat = containers.Map();
 datatype = fields(Y);
 for i = 1 : length(datatype)
   datatype1 = datatype{i};
-  if verbose, logdebug('evalclassification', 'datatype', datatype1); end
   [key, value] = evaluate(Y.(datatype1), R.(datatype1), evalName, ...
-                          evalFun, datatype1, verbose);
+                          evalFun, datatype1, param);
   for j = 1 : length(key), stat(key{j}) = value{j}; end
 end
 end
 
 function [resKey, resValue] = evaluate(Ytrue, Ystar, evalName, ...
-                                       evalFun, datatype, verbose)
+                                       evalFun, datatype, param)
 %%
 % Args:
 % - Ytrue: cell array of sequences.
@@ -47,17 +47,8 @@ nKey = length(evalName);
 resKey = cell(1, nKey);
 resValue = cell(1, nKey);
 for k = 1 : nKey
-  sum = 0;
-  nseq = size(Ytrue, 2);
-  for i = 1 : nseq
-    fun = evalFun{k};
-    score = fun(Ytrue{i}, Ystar{i}, verbose);
-    sum = sum + score;
-  end
+  fun = evalFun{k};
   resKey{k} = [datatype evalName{k}];
-  if verbose
-    logdebug('evalclassification', 'sum', sum); 
-  end
-  resValue{k} = sum / nseq; % computes average
+  resValue{k} = fun(Ytrue, Ystar, param);
 end
 end

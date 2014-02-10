@@ -18,7 +18,9 @@ function [pred, path, stat] = testdatagroup(X, hmm, param)
 nseqs = length(X);
 pred = cell(1, nseqs);
 path = cell(1, nseqs);
-map = hmm.labelMap;
+labelMap = hmm.labelMap;
+stageMap = hmm.stageMap;
+restLabel = param.vocabularySize;
 minGamma = 1;
 for i = 1 : nseqs
   ev = X{i};
@@ -31,8 +33,34 @@ for i = 1 : nseqs
           'lag', param.L);
       minGamma = min(minGamma, stat.minGamma);
   end
-  pred{i} = map(path{i});
+  pred{i} = computenucleuslabel(path{i}, labelMap, stageMap, restLabel);
 end
 stat.minGamma = minGamma;
 end
 
+function pred = computenucleuslabel(path, labelMap, stageMap, restLabel)
+label = labelMap(path);
+stage = stageMap(path);
+n = size(label, 2);
+pred = ones(1, n) * restLabel;
+startNdx = 0;
+for i = 2 : n
+  currentStage = stage{i};
+  if path(i) ~= path(i - 1)
+    switch currentStage
+      case {'PreStroke', 'Gesture'}
+        startNdx = i;
+      case 'PostStroke'
+        if startNdx ~= 0
+          pred(startNdx : i) = label(startNdx);
+          startNdx = 0;
+        end
+    end
+    if path(i) == restLabel && startNdx ~= 0
+      pred(startNdx : i - 1) = label(startNdx);
+    end
+  elseif i == n && startNdx ~= 0
+    pred(startNdx : i - 1) = label(startNdx);
+  end
+end
+end

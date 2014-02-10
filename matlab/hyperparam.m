@@ -7,7 +7,7 @@ for i = 1 : numel(fn)
 end
 
 [hyperParam.gestureLabel, hyperParam.gestureDict, ...
-    hyperParam.gestureType, hyperParam.repeat] = ...
+    hyperParam.gestureType, hyperParam.repeat, hyperParam.nS] = ...
     gesturelabel();
 
 % Default values.
@@ -44,7 +44,6 @@ hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
 
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
-hyperParam.nS = 4; % number of hidden states S.
 hyperParam.nM = 2;
 hyperParam.combineprepost = false;
 hyperParam.nRest = 1; % number of mixtures for rest position
@@ -71,8 +70,8 @@ hyperParam.combinehmmparam = @combinehmmparamwithrest;
 % Post process
 hyperParam.postprocess = {};
 
-hyperParam.evalName = {'Error', 'Leven'};
-hyperParam.evalFun = {@errorperframe, @levenscore};
+hyperParam.evalName = {'F1', 'FrameError'};
+hyperParam.evalFun = {@f1, @frameerror};
 
 hyperParam.useGpu = false;
 hyperParam.gSampleFactor = 1;

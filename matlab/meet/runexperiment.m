@@ -100,8 +100,7 @@ else
 
   % Step 5: Evaluate performance of prediction
   if ~isempty(param.evalFun)
-    R.stat = evalclassification(Y, R.prediction, param.evalName, ...
-                                param.evalFun);
+    R.stat = evalclassification(Y, R.prediction, param);
   end
 end
 end

@@ -1,4 +1,4 @@
-function viewrecogresult(data, result, ndx, gestureLabel)
+function viewrecogresult(data, result, dataType, ndx, gestureLabel)
 %% VIEWRECOGNITIONRESULT Visualize gesture recognition validation result.
 %
 % ARGS
@@ -7,9 +7,17 @@ function viewrecogresult(data, result, ndx, gestureLabel)
 
 figure;
 ngestures = data.param.vocabularySize;
-seqNDX = result.split{2}(ndx);
 
-im = [data.Y{seqNDX}(1, :); result.prediction.Va{ndx}(1, :)];
+switch dataType
+  case 'Tr'
+    splitNdx = 1;
+  case 'Va'
+    splitNdx = 2;
+end
+
+seqNDX = result.split{splitNdx}(ndx);
+
+im = [data.Y{seqNDX}(1, :); result.prediction.(dataType){ndx}(1, :)];
 
 colormap(bipolar(ngestures));
 image(im);
@@ -33,7 +41,7 @@ set(h, 'YTickLabel', gestureLabel, 'FontSize', 12);
 title(strjoin(data.file{seqNDX}), 'Interpreter', 'none');
 
 if ~isempty(result.path)
-  hiddenStates = result.path.Va{ndx};
+  hiddenStates = result.path.(dataType){ndx};
   ncolors = max(hiddenStates);
   yTickLabel = {'Hidden states'};
   drawimage(hiddenStates, ncolors, data.frame{seqNDX}(xtick), yTickLabel);

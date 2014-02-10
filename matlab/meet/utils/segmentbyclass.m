@@ -21,9 +21,9 @@ for i = 1 : nseqs
   ndx = find(seqY(2, :) == 2);
   startNDX = 1;
   for j = 1 : length(ndx)
-    endNDX = ndx(j);
-    dataByClass{seqY(1, endNDX)}{end + 1} = seqX(:, startNDX : endNDX);
-    startNDX = endNDX + 1;
+    endNdx = ndx(j);
+    dataByClass{seqY(1, endNdx)}{end + 1} = seqX(:, startNDX : endNdx);
+    startNDX = endNdx + 1;
   end
 end
 end
