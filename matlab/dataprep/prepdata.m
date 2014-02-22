@@ -22,6 +22,8 @@ gtSensorType = 'Kinect';
 dataType = 'Converted';
 prevData = [];
 
+pidToProcess = [];
+
 for i = 1 : 2 : length(varargin)
   switch varargin{i}
     case 'sensorType'
@@ -30,6 +32,8 @@ for i = 1 : 2 : length(varargin)
       gtSensorType = varargin{i + 1};
     case 'prevData'
       prevData = varargin{i + 1};
+    case 'pid'
+      pidToProcess = varargin{i + 1};
     otherwise
       error(['Unrecognized option: ' varargin{i}]);
   end
@@ -43,6 +47,9 @@ npids = length(pids);
 data = cell(1, npids);
 for p = 1 : npids
   pid = pids{p};
+  if ~isempty(pidToProcess) && ~ismember(pid, pidToProcess)
+    continue;
+  end
   sessionNames = dataSet.getSessionNames(pid);
   data{p}.userId = pid;
   data{p}.Y = {};
@@ -105,7 +112,7 @@ for p = 1 : npids
     end
   end
   data{p}.param = dataParam;
-  [data{p}.Y, data{p}.X, data{p}.frame] = addrestlabel(data{p}.Y, ...
-      data{p}.X, data{p}.frame, dataParam);
+%   [data{p}.Y, data{p}.X, data{p}.frame] = addrestlabel(data{p}.Y, ...
+%       data{p}.X, data{p}.frame, dataParam);
 end
 end

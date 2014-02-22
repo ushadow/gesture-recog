@@ -3,7 +3,7 @@ function viewrecogresult(data, result, dataType, ndx, gestureLabel)
 %
 % ARGS
 % data  - original data, not separated into training and validation.
-% ndx   - index in the validation data.
+% ndx   - index in the data type, e.g. Tr, Va.
 
 figure;
 ngestures = data.param.vocabularySize;

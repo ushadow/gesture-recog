@@ -11,15 +11,26 @@ nTotalHit = 0;
 nTotalEvents = 0;
 nTotalGtEvents = 0;
 for i = 1 : numel(Ytrue)
-  [hit, nGtEvents, nEvents] = computestats(Ytrue{i}, Ystar{i}, restLabel);
+  [hit, nGtEvents, nEvents] = computediscretestats(Ytrue{i}, Ystar{i}, restLabel, ...
+      param.gestureType);
   nTotalHit = nTotalHit + hit;
   nTotalEvents = nTotalEvents + nEvents;
   nTotalGtEvents = nTotalGtEvents + nGtEvents;
 end
 
-res.precision = nTotalHit / nTotalEvents;
-res.recall = nTotalHit / nTotalGtEvents;
-res.f1 = 2 * res.precision * res.recall / (res.precision + res.recall);
+res.precisionD = nTotalHit / nTotalEvents;
+res.recallD = nTotalHit / nTotalGtEvents;
+res.f1D = 2 * res.precisionD * res.recallD / (res.precisionD + res.recallD);
+end
+
+function [hit, nGtEvents, nTotalEvents] = computediscretestats(Ytrue, ...
+  Ystar, restLabel, gestureType)
+I = ~strcmp(gestureType(Ytrue(1, :)), 'D');
+Ytrue(1, I) = restLabel;
+
+I = ~strcmp(gestureType(Ystar(1, :)), 'D');
+Ystar(1, I) = restLabel;
+[hit, nGtEvents, nTotalEvents] = computestats(Ytrue, Ystar, restLabel);
 end
 
 function [hit, nGtEvents, nTotalEvents] = computestats(Ytrue, Ystar, ...
@@ -66,5 +77,5 @@ end
 
 function res = timeissimilar(gtRange, range)
 timeDiff = (gtRange(2) - gtRange(1) + 1) / 2;
-res = range(1) > gtRange(1) - timeDiff && range(2) < gtRange(2) + timeDiff;
+res = range(2) >= gtRange(1) && range(2) < gtRange(2) + timeDiff;
 end

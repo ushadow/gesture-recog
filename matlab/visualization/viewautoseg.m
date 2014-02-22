@@ -20,7 +20,7 @@ plot(1 : nFrames, speed, 1 : nFrames, X(2, :), 'r');
 ngestures = param.vocabularySize;
 gestureLabel = gesturelabel();
 colormap(bipolar(ngestures));
-image('XData', [1, nFrames], 'YData', [0.1, 0.08], 'CData', Y(1, :));
+image('XData', [1, nFrames], 'YData', [0.1, 0.08], 'CData', Y);
 h = colorbar;
 set(h, 'YTick', 1 : ngestures);
 set(h, 'YTickLabel', gestureLabel, 'FontSize', 12);

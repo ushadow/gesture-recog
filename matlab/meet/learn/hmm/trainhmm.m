@@ -20,7 +20,7 @@ for i = 1 : param.vocabularySize;
     type = param.gestureType(i);
     rep = param.repeat(i);
     
-    if type == 1
+    if strcmp(type, 'D')
       [prior0, transmat0, term0, mu0, Sigma0, mixmat0] = inithmmparam(...
           XByClass{i}, param.nS(i), param.nM, param.XcovType, 2, rep);
       [~, model.prior{i}, model.transmat{i}, model.mu{i}, model.Sigma{i}, ...

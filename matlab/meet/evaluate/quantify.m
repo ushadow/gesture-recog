@@ -1,4 +1,5 @@
 function count = quantify(y, ystar, cat)
+% QUANTIFY quantify each frame
 %
 % Args:
 % - y: true label.

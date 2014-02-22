@@ -33,6 +33,7 @@ for i = 1 : size(gt, 1)
   X = [X feature(startNDX : endNDX, 2 : end)']; %#ok<AGROW>
   newY = ones(2, endNDX - startNDX + 1);
   newY(1, :) = gt(i, 1);
+  %% Helps to distinguish consecutive gestures with the same label.
   newY(2, end) = 2;
   Y = [Y newY]; %#ok<AGROW>
   frame = [frame feature(startNDX : endNDX, 1)']; %#ok<AGROW>

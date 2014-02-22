@@ -63,8 +63,8 @@ function [labelMap, stageMap] = maphiddenstatetolabel(totalNStates, nS, ...
 labelMap = zeros(1, totalNStates);
 stageMap = cell(1, totalNStates);
 startNdx = 1;
-for i = 1 : length(gestureType)
-  if gestureType(i) == 1
+for i = 1 : length(gestureType) - 1
+  if strcmp(gestureType(i), 'D')
     endNdx = startNdx + nS(i) - 1;
     stageMap{startNdx} = 'PreStroke';
     [stageMap{endNdx}] = deal('PostStroke');
@@ -91,13 +91,13 @@ for i = 1 : nStates
       % PreStroke can go to a single state gesture or another PreStroke
       % state.
       for j = 1 : nStates
-        if j ~= i && (strcmp(stageMap{j}, 'PreStroke') || gestureType(labelMap(j)) ~= 1)
+        if j ~= i && (strcmp(stageMap{j}, 'PreStroke') || ~strcmp(gestureType(labelMap(j)), 'D'))
           transmat(i, j) = 0.01;
         end
       end
     case 'PostStroke'
       for j = 1 : nStates
-        if j ~= i && (strcmp(stageMap{j}, 'PostStroke') || gestureType(labelMap(j)) ~= 1)
+        if j ~= i && (strcmp(stageMap{j}, 'PostStroke') || ~strcmp(gestureType(labelMap(j)), 'D'))
           transmat(j, i) = 0.01;
         end
       end

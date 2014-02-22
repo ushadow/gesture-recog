@@ -33,34 +33,52 @@ for i = 1 : nseqs
           'lag', param.L);
       minGamma = min(minGamma, stat.minGamma);
   end
-  pred{i} = computenucleuslabel(path{i}, labelMap, stageMap, restLabel);
+  pred{i} = computenucleuslabel(path{i}, labelMap, stageMap, param.gestureType, ...
+                                restLabel);
 end
 stat.minGamma = minGamma;
 end
 
-function pred = computenucleuslabel(path, labelMap, stageMap, restLabel)
+function pred = computenucleuslabel(path, labelMap, stageMap, gestureType,...
+                                    restLabel)
 label = labelMap(path);
 stage = stageMap(path);
 n = size(label, 2);
 pred = ones(1, n) * restLabel;
-startNdx = 0;
-for i = 2 : n
+prevStage = '';
+prevEvent = '';
+for i = 1 : n
   currentStage = stage{i};
-  if path(i) ~= path(i - 1)
+  nucleus = label(i);
+  gestureEvent = '';
+  if ~strcmp(prevStage, currentStage)
     switch currentStage
-      case {'PreStroke', 'Gesture'}
-        startNdx = i;
+      case 'PreStroke'
+        gestureEvent = 'StartPreStroke';
+      case 'Gesture'
+        gestureEvent = 'StartGesture';
+      case 'Rest'
+        if strcmp(prevEvent, 'StartGesture')
+          nucleus = prevGesture;
+          startNdx = max(1, i - 10);
+          pred(startNdx : i) = nucleus;
+        end
       case 'PostStroke'
-        if startNdx ~= 0
-          pred(startNdx : i) = label(startNdx);
-          startNdx = 0;
+        if strcmp(prevEvent, 'StartGesture')
+          gestureEvent = 'StartPostStroke';
+          nucleus = prevGesture;
+          startNdx = max(1, i - 10);
+          pred(startNdx : i) = nucleus;
         end
     end
-    if path(i) == restLabel && startNdx ~= 0
-      pred(startNdx : i - 1) = label(startNdx);
-    end
-  elseif i == n && startNdx ~= 0
-    pred(startNdx : i - 1) = label(startNdx);
+  end
+  if strcmp(currentStage, 'Gesture') && strcmp(gestureType(nucleus), 'S') 
+     pred(i) = nucleus;
+  end
+  prevStage = currentStage;
+  prevGesture = nucleus;
+  if ~isempty(gestureEvent) 
+    prevEvent = gestureEvent;
   end
 end
 end

@@ -25,16 +25,20 @@ function [Y, X, frame] = addrestlabel1(Y, X, frame, restLabel)
 % ARGS
 % Y   - 2 x n array.
 
+minLen = [46, 44];
+
 for n = 1 : numel(X)
   X1 = X{n};
   Y1 = Y{n};
+  termLabel = Y1(2, :);
   frame1 = frame{n};
   pos = X1(1 : 3, :);
   speed = computespeed(pos, frame1);
 
   y = X1(2, :);
 
-  rest = speed < 0.009 & y < -0.55;
+  % Add rest labels
+  rest = speed < 0.012 & y < -0.55;
   if any(rest)
     runs = contiguous(rest, 1);
     runs = runs{1, 2};
@@ -46,16 +50,19 @@ for n = 1 : numel(X)
     end   
   end
   
-  Y1 = removeshort(Y1, restLabel);
-  Y{n} = addflabel(Y1);
+  Y1 = removeshort(Y1, restLabel, minLen(floor((n - 1) / 2) + 1)); 
+  Y1 = addflabel(Y1);
+  Y{n} = addbacktermlabel(Y1, restLabel, termLabel);
 end
 end
 
-function Y1 = removeshort(Y1, restLabel)
+function Y1 = removeshort(Y1, restLabel, minLen)
+%% Removes short segment of non-rest labels and change them to rest labels.
 
 % Each gesture is about 3s.
-REMOVE_LEN = 5;
+REMOVE_LEN = 25;
 
+len = size(Y1, 2);
 runs = contiguous(Y1(1, :));
 for i = 1 : size(runs, 1)
   if runs{i, 1} ~= restLabel
@@ -63,10 +70,35 @@ for i = 1 : size(runs, 1)
     for j = 1 : size(r, 1)
       startNdx = r(j, 1);
       endNdx = r(j, 2);
-      if endNdx - startNdx + 1 < REMOVE_LEN 
+      segLen = endNdx - startNdx + 1;
+      if  segLen < REMOVE_LEN 
         Y1(1, startNdx : endNdx) = restLabel;
+      elseif startNdx > 1 && Y1(1, startNdx - 1) ~= restLabel && ...
+             endNdx < len && Y1(1, endNdx + 1) == restLabel && ...
+             segLen < minLen
+        Y1(1, startNdx : endNdx) = Y1(1, startNdx - 1);       
       end
     end
   end 
+end
+end
+
+function Y1 = addbacktermlabel(Y1, restLabel, oldTermLabel)
+runs = contiguous(Y1(1, :));
+for i = 1 : size(runs, 1)
+  if runs{i, 1} ~= restLabel
+    r = runs{i, 2};
+    for j = 1 : size(r, 1)
+      startNdx = r(j, 1);
+      endNdx = r(j, 2);
+      segLen = endNdx - startNdx + 1;
+      if segLen > 160
+        I = oldTermLabel(startNdx : endNdx) == 2;
+        subY = Y1(2, startNdx : endNdx);
+        subY(I) = 2;
+        Y1(2, startNdx : endNdx) = subY;
+      end
+    end
+  end
 end
 end
