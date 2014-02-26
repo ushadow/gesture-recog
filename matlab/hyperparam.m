@@ -14,7 +14,7 @@ end
 hyperParam.trainIter = 1; % Training iterations
 hyperParam.infModel = []; % cell array, one model for each fold.
 hyperParam.dataFile = [];
-validateParams = {'nprincomp'};
+validateParams = {};
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
@@ -44,7 +44,7 @@ hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
 
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
-hyperParam.nM = 2;
+hyperParam.nM = [3 6];
 hyperParam.combineprepost = false;
 hyperParam.nRest = 1; % number of mixtures for rest position
 % Gaussian model parameters
@@ -70,8 +70,8 @@ hyperParam.combinehmmparam = @combinehmmparamwithrest;
 % Post process
 hyperParam.postprocess = {};
 
-hyperParam.evalName = {'F1', 'FrameError'};
-hyperParam.evalFun = {@f1, @frameerror};
+hyperParam.evalName = {'F1'};
+hyperParam.evalFun = {@f1};
 
 hyperParam.useGpu = false;
 hyperParam.gSampleFactor = 1;
@@ -84,10 +84,14 @@ end
 allParams = fieldnames(hyperParam);
 diff = setdiff(allParams, validateParams);
 
-v = cellfun(@(x) hyperParam.(x), validateParams, 'UniformOutput', false);
-g = cell(1, length(v));
-[g{:}] = ndgrid(v{:});
-nModels = numel(g{1});
+if ~isempty(validateParams)
+  v = cellfun(@(x) hyperParam.(x), validateParams, 'UniformOutput', false);
+  g = cell(1, length(v));
+  [g{:}] = ndgrid(v{:});
+  nModels = numel(g{1});
+else
+  nModels = 1;
+end
 hyperParam.model = cell(1, nModels);
 for i = 1 : nModels
   for k = 1 : length(validateParams)

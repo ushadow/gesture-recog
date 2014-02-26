@@ -12,8 +12,11 @@ function [label, dict, type, repeat, nS] = gesturelabel()
 data = importdata('G:\workspace\handinput\GesturesViewer\Data\Gestures.txt', ...
                   ',', 1);
 label = data.textdata(2 : end, 1);
+label{end + 1} = 'Other';
+label{end + 1} = 'OtherPose';
 type = data.textdata(2 : end, 2);
 type{end + 1} = 'O'; % Other
+type{end + 1} = 'OP';
 repeat = data.data(:, 1);
 nS = data.data(:, 2);
 dict = containers.Map(label, 1 : length(label));

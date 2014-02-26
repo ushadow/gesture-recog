@@ -19,11 +19,15 @@ cvstat = containers.Map();
 for i = 1 : length(key)
   resname = key{i};
   quantity = memo(resname);
-  aggrname = [resname 'Mean'];
-  cvstat(aggrname) = ignoreNaN(quantity, @mean, 2);
-
-  aggrname = [resname 'Std'];
-  cvstat(aggrname) = ignoreNaN(quantity, @std, 2);
+  fieldNames = fieldnames(quantity{1});
+  for j = 1 : length(fieldNames)
+    fn = fieldNames{j};
+    aggrname = [resname fn 'Mean'];
+    q = cellfun(@(x) x.(fn), quantity);
+    cvstat(aggrname) = ignoreNaN(q, @mean, 2);
+    aggrname = [resname fn 'Std'];
+    cvstat(aggrname) = ignoreNaN(q, @std, 2);
+  end
 end
 end
 
@@ -50,10 +54,10 @@ if ~isempty(r)
     if isKey(memo, resname)
       quantity = memo(resname);
     else
-      quantity = zeros(nvar, nfold);
+      quantity = cell(nvar, nfold);
     end
 
-    quantity(:, index) = resvalue;
+    quantity{:, index} = resvalue;
     memo(resname) = quantity;
   end
 end

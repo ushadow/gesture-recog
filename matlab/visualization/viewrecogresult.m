@@ -35,9 +35,10 @@ set(gca, 'YTick', ytick);
 set(gca, 'YTickLabel', {'Ground truth', 'Prediction'}, 'FontSize', 14);
 yticklabel_rotate;
 
-h = colorbar;
-set(h, 'YTick', 1 : ngestures);
-set(h, 'YTickLabel', gestureLabel, 'FontSize', 12);
+h = colorbar('NorthOutside');
+set(h, 'XTick', 1 : ngestures);
+set(h, 'XTickLabel', gestureLabel, 'FontSize', 13);
+
 title(strjoin(data.file{seqNDX}), 'Interpreter', 'none');
 
 if ~isempty(result.path)

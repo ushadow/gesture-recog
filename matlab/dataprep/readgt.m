@@ -11,7 +11,7 @@ function [gt, vocabSize] = readgt(filename, endNDX)
 %     end frame id of the stroke.
 
 [allLabel, gestureDict] = gesturelabel();
-vocabSize = length(allLabel);
+vocabSize = length(allLabel) - 2;
 
 data = importdata(filename);
 frameIndices = data.data;

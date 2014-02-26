@@ -27,7 +27,7 @@ combinedModel.term = cat(1, term{:});
 combinedTerm = repmat(combinedModel.term, 1, nTotalStates);
 
 [combinedModel.labelMap, combinedModel.stageMap] = ...
-    maphiddenstatetolabel(nTotalStates, param.nS, param.gestureType); 
+    maphiddenstatetolabel(nTotalStates, param.nS, param.vocabularySize); 
 
 % Transition
 combinedModel.transmat = zeros(nTotalStates);
@@ -44,14 +44,19 @@ combinedModel.transmat = combinedModel.transmat .* (1 - combinedTerm) + ...
 
 combinedModel.transmat = addprepost(combinedModel.transmat, ...
     param.gestureType, combinedModel.stageMap, combinedModel.labelMap);
- 
+
+maxM = max(param.nM);
+d = size(mu{1}, 1);
+mu = adddefaultmat(mu, zeros(d, 1), 3, maxM);
+Sigma = adddefaultmat(Sigma, eye(d), 4, maxM);
+mixmat = adddefaultmat(mixmat, 0, 2, maxM);
+
 combinedModel.mu = single(cat(2, mu{:}));
 combinedModel.Sigma = single(cat(3, Sigma{:}));
 combinedModel.mixmat = single(cat(1, mixmat{:}));
 end
 
-function [labelMap, stageMap] = maphiddenstatetolabel(totalNStates, nS, ...
-    gestureType)
+function [labelMap, stageMap] = maphiddenstatetolabel(totalNStates, nS, vocabSize)
 % ARGS
 % nS  - number of hidden states for gestures with dynamic paths.
 % gestureType   - array of gesture type for each gesture.
@@ -63,9 +68,10 @@ function [labelMap, stageMap] = maphiddenstatetolabel(totalNStates, nS, ...
 labelMap = zeros(1, totalNStates);
 stageMap = cell(1, totalNStates);
 startNdx = 1;
-for i = 1 : length(gestureType) - 1
-  if strcmp(gestureType(i), 'D')
-    endNdx = startNdx + nS(i) - 1;
+for i = 1 : vocabSize
+  nStates = nS(i);
+  if nStates > 1
+    endNdx = startNdx + nStates - 1;
     stageMap{startNdx} = 'PreStroke';
     [stageMap{endNdx}] = deal('PostStroke');
     [stageMap{startNdx + 1 : endNdx - 1}] = deal('Gesture');

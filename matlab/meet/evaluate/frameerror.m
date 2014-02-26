@@ -1,4 +1,4 @@
-function error = frameerror(Ytrue, Ystar, ~)
+function res = frameerror(Ytrue, Ystar, ~)
 % ERRORPERFRAME total number of gesture label errors for all the frame for 
 %               each variable.
 % 
@@ -16,7 +16,7 @@ for i = 1 : nseq
   score = frameerror1(Ytrue{i}, Ystar{i});
   sum = sum + score;
 end
-error = sum / nseq;
+res.error = sum / nseq;
 end
 
 function error = frameerror1(Ytrue, Ystar)

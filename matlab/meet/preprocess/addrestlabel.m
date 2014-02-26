@@ -25,7 +25,7 @@ function [Y, X, frame] = addrestlabel1(Y, X, frame, restLabel)
 % ARGS
 % Y   - 2 x n array.
 
-minLen = [46, 44];
+minLen = [46, 35];
 
 for n = 1 : numel(X)
   X1 = X{n};

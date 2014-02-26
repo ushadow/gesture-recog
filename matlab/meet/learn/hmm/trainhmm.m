@@ -6,7 +6,14 @@ function hmm = trainhmm(Y, X, param)
 % Y, X  - training labels and features.
 
 % Cell array of sequences for each class.
-XByClass = segmentbyclass(Y, X, param.vocabularySize, param.combineprepost);
+XByClass = segmentbyclass(Y, X, param);
+
+for i = 1 : param.vocabularySize
+  if ~isempty(XByClass{i})
+    d = size(XByClass{i}{1}, 1);
+    break;
+  end
+end
 
 model.prior = cell(param.vocabularySize, 1);
 model.transmat = cell(param.vocabularySize, 1);
@@ -15,14 +22,14 @@ model.Sigma = cell(param.vocabularySize, 1);
 model.term = cell(param.vocabularySize, 1);
 model.mixmat = cell(param.vocabularySize, 1);
         
-for i = 1 : param.vocabularySize;
+for i = 1 : param.vocabularySize
+  nS = param.nS(i);
   if ~isempty(XByClass{i})
-    type = param.gestureType(i);
     rep = param.repeat(i);
     
-    if strcmp(type, 'D')
+    if nS > 1
       [prior0, transmat0, term0, mu0, Sigma0, mixmat0] = inithmmparam(...
-          XByClass{i}, param.nS(i), param.nM, param.XcovType, 2, rep);
+          XByClass{i}, nS, param.nM(1), param.XcovType, 2, rep);
       [~, model.prior{i}, model.transmat{i}, model.mu{i}, model.Sigma{i}, ...
           model.mixmat{i}, model.term{i}] = mhmm_em(XByClass{i}, prior0, ...
           transmat0, mu0, Sigma0, mixmat0, 'adj_prior', 1, ...
@@ -32,8 +39,16 @@ for i = 1 : param.vocabularySize;
       [model.prior{i}, model.transmat{i}, model.mu{i}, ...
           model.Sigma{i}, model.mixmat{i}, ...
           model.term{i}] = makesimplehmmmodel(XByClass{i}, ...
-          param.kinectSampleRate, param.nM);
+          param.kinectSampleRate, param.nM, param.XcovType);
     end
+  else
+    nM = param.nM(2);
+    model.prior{i} = zeros(nS, 1);
+    model.transmat{i} = zeros(nS, nS);
+    model.mu{i} = zeros(d, nS, nM);
+    model.Sigma{i} = repmat(eye(d, d), 1, 1, nS, nM);
+    model.mixmat{i} = zeros(nS, nM);
+    model.term{i} = zeros(nS, 1);
   end
 end
 

@@ -1,5 +1,5 @@
 function [prior, transmat, term, mu, Sigma, mixmat] = inithmmparam(...
-    data, nS, nM, cov_type, stage, rep)
+    data, nS, nM, covType, stage, rep)
 %% INITHMMPARAM initializes HMM parameters
 %
 % ARGS
@@ -21,7 +21,7 @@ function [prior, transmat, term, mu, Sigma, mixmat] = inithmmparam(...
 mixmat = ones(nS, nM) / nM;
 
 % kmeans initialization
-[mu, Sigma] = mixgauss_init(nS * nM,  cell2mat(data), cov_type);
+mu = mixgauss_init(nS * nM,  cell2mat(data), covType);
 d = size(mu, 1);
 mu = reshape(mu, [d nS nM]);
 %Sigma = reshape(Sigma, [d d nS nM]);

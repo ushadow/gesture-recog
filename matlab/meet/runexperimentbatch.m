@@ -57,7 +57,7 @@ for iter = 1 : hyperParam.trainIter
       % Report results.
       fprintf('\n==========================================\n'); 
 
-      res = batchresult(job, batch, hyperParam);
+      res = batchresult(job, ntask);
 
       fprintf('Time(s) used\t');
       fprintf('%5.2f\n', toc(tid)); 
