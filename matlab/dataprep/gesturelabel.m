@@ -12,8 +12,8 @@ function [label, dict, type, repeat, nS] = gesturelabel()
 data = importdata('G:\workspace\handinput\GesturesViewer\Data\Gestures.txt', ...
                   ',', 1);
 label = data.textdata(2 : end, 1);
-label{end + 1} = 'Other';
-label{end + 1} = 'OtherPose';
+label{end + 1} = 'Other'; % small movement without nucleus
+label{end + 1} = 'OtherPose'; % wrong gesture should be ignored
 type = data.textdata(2 : end, 2);
 type{end + 1} = 'O'; % Other
 type{end + 1} = 'OP';

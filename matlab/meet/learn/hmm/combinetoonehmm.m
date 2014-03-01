@@ -45,7 +45,8 @@ combinedModel.transmat = combinedModel.transmat .* (1 - combinedTerm) + ...
 combinedModel.transmat = addprepost(combinedModel.transmat, ...
     param.gestureType, combinedModel.stageMap, combinedModel.labelMap);
 
-maxM = max(param.nM);
+combinedModel.nM = cellfun(@(x) size(x, 3), mu);
+maxM = max(combinedModel.nM);
 d = size(mu{1}, 1);
 mu = adddefaultmat(mu, zeros(d, 1), 3, maxM);
 Sigma = adddefaultmat(Sigma, eye(d), 4, maxM);

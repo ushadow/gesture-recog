@@ -74,10 +74,6 @@ else
   if isempty(param.infModel) && ~isempty(param.train)
     tid = tic;
     R.infModel = param.train(Y.Tr, X.Tr, param);
-    if isfield(param, 'jobId')
-      savevariable(fullfile(param.dir, ...
-                   sprintf('model-%d-%d.mat', param.jobId, foldNdx)), 'model', R);
-    end
     R.trainingTime = toc(tid);
   else 
     model = param.infModel;

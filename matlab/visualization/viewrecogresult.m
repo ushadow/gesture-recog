@@ -17,7 +17,10 @@ end
 
 seqNDX = result.split{splitNdx}(ndx);
 
-im = [data.Y{seqNDX}(1, :); result.prediction.(dataType){ndx}(1, :)];
+gt = data.Y{seqNDX}(1, :);
+pred = result.prediction.(dataType){ndx}(1, :);
+pred(gt == ngestures + 2) = ngestures + 2;
+im = [gt; pred];
 
 colormap(bipolar(ngestures));
 image(im);

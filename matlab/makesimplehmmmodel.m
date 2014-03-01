@@ -14,20 +14,48 @@ term = 1 * sampleRate / MIN_LEN;
 % Emission parameters
 X = cell2mat(X);
 X = X';
+
 [mu, Sigma, mixmat] = gmmfitbic(X, nM(1), nM(2), covType);
+end
+
+function [mix, ll] = gmmkpm() %#ok<DEFNU>
+  mix = gmm(d, m, covType);
+  options = foptions;
+  options(1) = -1;
+  options(14) = 10;
+  % Initialization
+  mix = gmminit(mix, X, options);
+  [mix, ~, ll] = gmmem_kpm(mix, X, 'max_iter', 100);
+end
+
+function [mix, ll] = gmmkpmmultirestart(M, X, covType)
+d = size(X, 2);
+nRestarts = 3;
+mix = gmm(d, M, covType);
+options = foptions;
+options(1) = -1;
+options(14) = 5;
+% Initialization
+initMeans = zeros(M, d, nRestarts);
+initSigma = zeros(M, d, nRestarts);
+for i = 1 : nRestarts
+  mix = gmminit(mix, X, options);
+  initMeans(:, :, i) = mix.centres;
+  initSigma(:, :, i) = mix.covars;
+end
+
+[mix.centres, mix.covars, mix.priors, ll] = gmmem_multi_restart(M, X, ...
+    'nrestarts', 3, 'cov_type', covType, 'max_iter', 100, ...
+    'init_means', initMeans, 'init_cov', initSigma);
+mix.ncentres = M;
 end
 
 function [mu, Sigma, mixmat] = gmmfitbic(X, minM, maxM, covType) 
 [n, d] = size(X);
 bestBIC = -inf;
+
 for m = minM : maxM
-  mix = gmm(d, m, covType);
-  options = foptions;
-  options(1) = -1;
-  options(14) = 5;
-  % Initialization
-  mix = gmminit(mix, X, options);
-  [mix, ~, ll] = gmmem_kpm(mix, X, 'max_iter', 100);
+  [mix, ll] = gmmkpmmultirestart(m, X, covType);
   nParams = (mix.ncentres - 1) + (d + d) * mix.ncentres;
   bic = 2 * ll - log(n) * nParams;
   if bic > bestBIC
@@ -35,7 +63,7 @@ for m = minM : maxM
     bestModel = mix;
   end
 end
-nM = bestModel.ncentres
+nM = bestModel.ncentres;
 mu = reshape(bestModel.centres', [d 1 nM]);
 Sigma = zeros(d, d, 1, nM);
 for i = 1 : nM

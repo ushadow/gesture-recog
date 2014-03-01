@@ -25,8 +25,9 @@ else
   train = X;
 end
 
-% Number of principal components to use for image.
+% The range of features to apply pca.
 pcaRange = param.pcaRange;
+% Number of principal components to use for image.
 k = param.nprincomp;
 
 % The purpose of subtracting the mean from each sample is to be left with
@@ -45,13 +46,12 @@ if D > n
     C = gpuArray(C);
   end
   tic;
-  [eigVec, eigVal] = eig(C);
+  [eigVec, eigVal] = svd(C);
   toc;
   if param.useGpu
     eigVec = gather(eigVec);
     eigVal = gather(eigVal);
   end
-  eigVal = arrayfun(@(x) sqrt(x), diag(eigVal));
   [sortedEigVec, model.sortedEigVal] = getprincomp(eigVec, eigVal, k);
   model.pc = normc(A * sortedEigVec); % npixel x neigenhand
 else
@@ -60,7 +60,7 @@ else
     C = gpuArray(C);
   end
   tic;
-  [eigVec, eigVal] = eig(C);
+  [eigVec, eigVal] = svd(C);
   toc;
   if param.useGpu
     eigVec = gather(eigVec);

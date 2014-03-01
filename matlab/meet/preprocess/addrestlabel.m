@@ -84,6 +84,9 @@ end
 end
 
 function Y1 = addbacktermlabel(Y1, restLabel, oldTermLabel)
+%% ADDBACKTERMLABEL adds back termination label for consecutive gestures
+%     with the same label which are removed by previous operations.
+
 runs = contiguous(Y1(1, :));
 for i = 1 : size(runs, 1)
   if runs{i, 1} ~= restLabel
@@ -92,6 +95,8 @@ for i = 1 : size(runs, 1)
       startNdx = r(j, 1);
       endNdx = r(j, 2);
       segLen = endNdx - startNdx + 1;
+      % Only checks for segments that are long which are potentially two
+      % gestures. Might miss segments with short gestures.
       if segLen > 160
         I = oldTermLabel(startNdx : endNdx) == 2;
         subY = Y1(2, startNdx : endNdx);

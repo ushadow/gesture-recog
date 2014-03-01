@@ -47,6 +47,7 @@ n = size(label, 2);
 pred = ones(1, n) * restLabel;
 prevStage = '';
 prevEvent = '';
+segLen = 1;
 for i = 1 : n
   currentStage = stage{i};
   nucleus = label(i);
@@ -60,14 +61,14 @@ for i = 1 : n
       case 'Rest'
         if strcmp(prevEvent, 'StartGesture')
           nucleus = prevGesture;
-          startNdx = max(1, i - 10);
+          startNdx = max(1, i - segLen);
           pred(startNdx : i) = nucleus;
         end
       case 'PostStroke'
         if strcmp(prevEvent, 'StartGesture')
           gestureEvent = 'StartPostStroke';
           nucleus = prevGesture;
-          startNdx = max(1, i - 10);
+          startNdx = max(1, i - segLen);
           pred(startNdx : i) = nucleus;
         end
     end
