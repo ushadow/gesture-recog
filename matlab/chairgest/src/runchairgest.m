@@ -21,7 +21,7 @@ hyperParam = hyperparamchairgest(combinedData{1}.param, 'dataFile', 'combinedDat
 jobParam = jobparam;
 
 % Test.
-%R = runexperiment(hyperParam, testSplit(:, 1), 1, 1, 1, combinedData);
+% R = runexperiment(hyperParam, testSplit(:, 1), 1, 1, 1, combinedData);
 
 % Parallel run.
 runexperimentbatch(combinedData, split, hyperParam, jobParam);
