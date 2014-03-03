@@ -1,16 +1,17 @@
-function count = outputsvmhandposedata(fileName, Y, X)
+function count = outputsvmhandposedata(fileName, Y, X, gestureType)
 %% OUTPUTSVMDATA output data in libsvm format.
 %
 % ARGS
-% data  - d x n matrix, each colum is a data point.
-
-% gestureType is a row vector.
-[~, ~, gestureType] = gesturelabel();
+% Y  - cell array.
 
 Y = cell2mat(Y);
 X = cell2mat(X);
-type = gestureType(Y(1, :));
+
+gestureTypeNum = zeros(size(gestureType));
+I = find(strcmp(gestureType, 'S'));
+gestureTypeNum(I) = 1 : length(I);
+type = gestureTypeNum(Y(1, :));
 
 count = hist(type, unique(type));
-libsvmwrite(fileName, type', sparse(X'));
+libsvmwrite(fileName, type, sparse(X'));
 end
