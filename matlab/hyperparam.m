@@ -18,7 +18,7 @@ validateParams = {};
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
-hyperParam.preprocess = {@standardizefeature};
+hyperParam.preprocess = {@fastpca @standardizefeature};
 hyperParam.channels = [1 2];
 hyperParam.filterWinSize = 5;
 hyperParam.returnFeature = false;

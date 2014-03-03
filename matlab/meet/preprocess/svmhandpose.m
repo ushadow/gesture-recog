@@ -6,6 +6,7 @@ function [X, model, param] = svmhandpose(Y, X, ~, param)
 stdX = standardizefeature([], X, [], []);
 
 dirname = param.dir;
+gestureType = param.gestureType;
 file.Tr = fullfile(dirname, 'svm_train_hand.txt');
 file.Va = fullfile(dirname, 'svm_test_hand.txt');
 modelFile = [file.Tr '.model'];
@@ -15,7 +16,7 @@ model.file = modelFile;
 dataTypes = fieldnames(Y);
 for i = 1 : length(dataTypes)
   dt = dataTypes{i};
-  count = outputsvmhandposedata(file.(dt), Y.(dt), stdX.(dt));
+  count = outputsvmhandposedata(file.(dt), Y.(dt), stdX.(dt), gestureType);
   display(count);
   if strcmp(dt, 'Tr')
     [sorted, I] = sort(count);
