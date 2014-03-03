@@ -1,4 +1,4 @@
-function [label, dict, type, repeat, nS] = gesturelabel()
+function [label, dict, type, repeat, nS] = gesturelabel(gestureDefDir)
 % RETURNS
 % label   - cell array of gesture label string.
 % type  - column vector of gesture types
@@ -9,7 +9,7 @@ function [label, dict, type, repeat, nS] = gesturelabel()
 % type = [1 1 1 1 2 3 4];
 % nS = [4, 3, 4, 4, 1, 1, 1];
 
-data = importdata('G:\workspace\handinput\GesturesViewer\Data\Gestures.txt', ...
+data = importdata(fullfile(gestureDefDir, 'workspace\handinput\GesturesViewer\Data\Gestures.txt'), ...
                   ',', 1);
 label = data.textdata(2 : end, 1);
 label{end + 1} = 'Other'; % small movement without nucleus
