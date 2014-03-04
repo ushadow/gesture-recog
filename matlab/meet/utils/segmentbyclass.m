@@ -26,7 +26,9 @@ for i = 1 : nseqs
   for j = 1 : length(ndx)
     endNdx = ndx(j);
     class = seqY(1, endNdx);
-     if class <= nClasses
+    if class <= nClasses
+      % Removes the start and end parts because they are pre- and
+      % post-strokes.
       if strcmp(param.gestureType(class), 'S') && class < nClasses
         startNdx = min(endNdx, startNdx + 15);
         endNdx = max(startNdx, endNdx - 15);
