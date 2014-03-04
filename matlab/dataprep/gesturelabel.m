@@ -2,12 +2,8 @@ function [label, dict, type, repeat, nS] = gesturelabel(gestureDefDir)
 % RETURNS
 % label   - cell array of gesture label string.
 % type  - column vector of gesture types
-
-% label = {'SwipeRight', 'SwipeLeft', 'Circle', 'ShakeHand', 'Point', ...
-%          'PalmUp', 'Rest'};
-% repeat = [0 0 0 1 0 0 0];
-% type = [1 1 1 1 2 3 4];
-% nS = [4, 3, 4, 4, 1, 1, 1];
+% nS - a vector of number of hidden states for each gesture excluding 'Other'
+%   and 'OtherPose'.
 
 data = importdata(fullfile(gestureDefDir, 'workspace\handinput\GesturesViewer\Data\Gestures.txt'), ...
                   ',', 1);

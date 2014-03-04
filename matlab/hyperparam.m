@@ -6,7 +6,7 @@ for i = 1 : numel(fn)
   hyperParam.(fn{i}) = paramFromData.(fn{i});
 end
 
-gestureDefDir = 'C:\Users\yingyin';
+gestureDefDir = 'G:';
 [hyperParam.gestureLabel, hyperParam.gestureDict, ...
     hyperParam.gestureType, hyperParam.repeat, hyperParam.nS] = ...
     gesturelabel(gestureDefDir);
@@ -15,7 +15,7 @@ gestureDefDir = 'C:\Users\yingyin';
 hyperParam.trainIter = 1; % Training iterations
 hyperParam.infModel = []; % cell array, one model for each fold.
 hyperParam.dataFile = [];
-validateParams = {'nprincomp'};
+validateParams = {};
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
@@ -23,7 +23,7 @@ hyperParam.preprocess = {@fastpca @standardizefeature};
 hyperParam.channels = [1 2];
 hyperParam.filterWinSize = 5;
 hyperParam.returnFeature = false;
-hyperParam.nprincomp = [12 14 16 18 30]; % number of principal components from image.
+hyperParam.nprincomp = 15; % number of principal components from image.
 hyperParam.pcaRange = 10 : 450;
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
