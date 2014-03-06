@@ -32,7 +32,7 @@ switch stage
     [prior, transmat, term] = makepretrans(nS);
     Sigma = Sigma(:, :, :, 1); % Tied covariance across mixtures
   case 2
-    [prior, transmat, term] = makebakistrans(nS, rep);
+    [prior, transmat, term] = makeembedtrans(nS, rep);
   case 3
     [prior, transmat, term] = makeposttrans(nS);
     Sigma = Sigma(:, :, :, 1);
