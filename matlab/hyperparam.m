@@ -15,7 +15,7 @@ gestureDefDir = 'C:\Users\yingyin';
 hyperParam.trainIter = 1; % Training iterations
 hyperParam.infModel = []; % cell array, one model for each fold.
 hyperParam.dataFile = [];
-validateParams = {'nprincomp'};
+validateParams = {};
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
@@ -23,7 +23,7 @@ hyperParam.preprocess = {@fastpca @standardizefeature};
 hyperParam.channels = [1 2];
 hyperParam.filterWinSize = 5;
 hyperParam.returnFeature = false;
-hyperParam.nprincomp = [12 14 16 18 30]; % number of principal components from image.
+hyperParam.nprincomp = 15; % number of principal components from image.
 hyperParam.pcaRange = 10 : 450;
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
@@ -45,7 +45,7 @@ hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
 
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
-hyperParam.nM = [3 6];
+hyperParam.nM = [6 12];
 hyperParam.combineprepost = false;
 hyperParam.nRest = 1; % number of mixtures for rest position
 % Gaussian model parameters
@@ -64,7 +64,7 @@ hyperParam.inference = @testhmm;
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
 hyperParam.inferMethod = 'fixed-lag-smoothing';
-hyperParam.L = 5;
+hyperParam.L = 8;
 hyperParam.testsegment = @segmentbymodel;
 hyperParam.combinehmmparam = @combinehmmparamwithrest;
 

@@ -10,6 +10,7 @@ combined.X = [X{:}];
 combined.frame = [frame{:}];
 combined.file = [file{:}];
 combined.param = data{1}.param;
+combined = {combined};
 end
 
 function [Y, X, frame, file] = getfields(data)
