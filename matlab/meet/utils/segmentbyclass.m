@@ -18,6 +18,7 @@ end
 
 nseqs = size(Y, 2);
 dataByClass = cell(1, nClasses);
+prePostMargin = param.prePostMargin;
 for i = 1 : nseqs
   seqY = Y{i};
   seqX = X{i};
@@ -26,10 +27,12 @@ for i = 1 : nseqs
   for j = 1 : length(ndx)
     endNdx = ndx(j);
     class = seqY(1, endNdx);
-     if class <= nClasses
+    if class <= nClasses
+      % Removes the start and end parts because they are pre- and
+      % post-strokes.
       if strcmp(param.gestureType(class), 'S') && class < nClasses
-        startNdx = min(endNdx, startNdx + 15);
-        endNdx = max(startNdx, endNdx - 15);
+        startNdx = min(endNdx, startNdx + prePostMargin);
+        endNdx = max(startNdx, endNdx - prePostMargin);
       end
       dataByClass{class}{end + 1} = seqX(:, startNdx : endNdx);     
     end

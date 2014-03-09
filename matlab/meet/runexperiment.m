@@ -54,6 +54,7 @@ if isfield(param, 'preprocess')
   tid = tic;
   for i = 1 : npreprocesses
     fun = param.preprocess{i};
+    % param can by modified and passed to the next function.
     [X, R.preprocessModel{i}, param]  = fun(Y, X, frame, param);
   end
   R.preprocessTime = toc(tid);

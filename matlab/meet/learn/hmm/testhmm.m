@@ -22,9 +22,13 @@ labelMap = hmm.labelMap;
 stageMap = hmm.stageMap;
 restLabel = param.vocabularySize;
 minGamma = 1;
+featureNdx = param.featureNdx;
 for i = 1 : nseqs
   ev = X{i};
-  obslik = mixgauss_prob(ev, hmm.mu, hmm.Sigma, hmm.mixmat);
+  obslik = mixgauss_prob(ev(featureNdx, :), hmm.mu, hmm.Sigma, hmm.mixmat);
+  if param.hasDiscrete
+    obslik = obslik .* multinomial_prob(ev(end, :), hmm.obsmat);
+  end
   switch param.inferMethod 
     case 'viterbi'
       path{i} = viterbi_path(hmm.prior, hmm.transmat, obslik, hmm.term);
@@ -41,40 +45,45 @@ end
 
 function pred = computenucleuslabel(path, labelMap, stageMap, gestureType,...
                                     restLabel)
-label = labelMap(path);
+label = labelMap(path); % Gesture label indices
 stage = stageMap(path);
 n = size(label, 2);
 pred = ones(1, n) * restLabel;
 prevStage = '';
 prevEvent = '';
+prevGesture = 0;
 segLen = 1;
 for i = 1 : n
   currentStage = stage{i};
   nucleus = label(i);
   gestureEvent = '';
-  if ~strcmp(prevStage, currentStage)
+  % When gesture stage changes.
+  if ~strcmp(prevStage, currentStage) 
     switch currentStage
       case 'PreStroke'
         gestureEvent = 'StartPreStroke';
+        startGestureTime = i;
       case 'Gesture'
         gestureEvent = 'StartGesture';
+        startGestureTime = i;
       case 'Rest'
-        if strcmp(prevEvent, 'StartGesture')
-          nucleus = prevGesture;
+        if strcmp(prevEvent, 'StartGesture') && i - startGestureTime > 5
           startNdx = max(1, i - segLen);
-          pred(startNdx : i) = nucleus;
+          pred(startNdx : i) = prevGesture;
         end
       case 'PostStroke'
         if strcmp(prevEvent, 'StartGesture')
           gestureEvent = 'StartPostStroke';
           nucleus = prevGesture;
-          startNdx = max(1, i - segLen);
-          pred(startNdx : i) = nucleus;
+          if i - startGestureTime > 5
+            startNdx = max(1, i - segLen);
+            pred(startNdx : i) = nucleus;
+          end
         end
     end
   end
   if strcmp(currentStage, 'Gesture') && strcmp(gestureType(nucleus), 'S') 
-     pred(i) = nucleus;
+    pred(i) = nucleus;
   end
   prevStage = currentStage;
   prevGesture = nucleus;
