@@ -1,5 +1,5 @@
 function combinedModel = combinetoonehmm(prior, transmat, term, mu, ...
-    Sigma, mixmat, param)
+    Sigma, mixmat, obsmat, param)
 %%
 % COMBINETOONEHMM combines all HMMs to one HMM.
 %
@@ -14,6 +14,10 @@ function combinedModel = combinetoonehmm(prior, transmat, term, mu, ...
 % RETURNS
 % The combined model in single precision.
 % combinedModel.mixmat is a m x nTotalStates matrix.
+
+if param.hasDiscrete
+  combinedModel.obsmat = cat(1, obsmat{:});
+end
 
 % Prior
 combinedModel.prior = cat(1, prior{:});

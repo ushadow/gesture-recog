@@ -7,9 +7,10 @@ function count = outputsvmhandposedata(fileName, Y, X, gestureType)
 Y = cell2mat(Y);
 X = cell2mat(X);
 
-gestureTypeNum = zeros(size(gestureType));
+% gesture type number is 1-based
+gestureTypeNum = ones(size(gestureType));
 I = find(strcmp(gestureType, 'S'));
-gestureTypeNum(I) = 1 : length(I);
+gestureTypeNum(I) = (1 : length(I)) + 1;
 type = gestureTypeNum(Y(1, :));
 
 count = hist(type, unique(type));

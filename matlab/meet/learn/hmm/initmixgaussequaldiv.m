@@ -1,11 +1,11 @@
-function [mu, Sigma, mixmat] = inithmmparamviterbi(data, nS, nM, covType)
+function [mu, Sigma, mixmat] = initmixgaussequaldiv(data, nS, nM, covType, featureNdx)
 
 mixmat = ones(nS, nM) / nM;
 
-d = size(data{1}, 1);
+d = length(featureNdx);
 newX = cell(nS, 1);
 for i = 1 : length(data)
-  X = data{i};
+  X = data{i}(featureNdx, :);
   m = size(X, 2);
   segLen = floor(m / nS);
   startNdx = 1;

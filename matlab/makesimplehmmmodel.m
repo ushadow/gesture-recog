@@ -1,5 +1,5 @@
 function [prior, transmat, mu, Sigma, mixmat, term] = makesimplehmmmodel(X, ...
-          sampleRate, nM, covType)
+          sampleRate, nM, covType, featureNdx)
 %% MAKESIMPLEHMMMODEL Creates a simple one state HMM model.
 % ARGS
 % nM  - 1-by-2 vector
@@ -13,7 +13,7 @@ term = 1 * sampleRate / MIN_LEN;
         
 % Emission parameters
 X = cell2mat(X);
-X = X';
+X = X(featureNdx, :)';
 
 [mu, Sigma, mixmat] = gmmfitbic(X, nM(1), nM(2), covType);
 end

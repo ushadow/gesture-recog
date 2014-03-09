@@ -1,21 +1,25 @@
 function res = f1(Ytrue, Ystar, param)
-%% LEVENEVENT event based Levenshtein distance
+%% F1 F1 score
 %
 % ARGS
-% labels  - estimated labels
+% Ytrue  - cell array 2-by-T sequences.
 % gtLabels  - groud truth labels
 
 restLabel = param.vocabularySize;
-
+prePostMargin = param.prePostMargin;
 
 [res.precisionD, res.recallD, res.f1D, res.timeScore] = computestats(Ytrue, Ystar, restLabel, ...
-      param.gestureType, 'D');
+      param.gestureType, 'D', prePostMargin);
 [res.precisionS, res.recallS, res.f1S] = computestats(Ytrue, Ystar, restLabel, ...
-      param.gestureType, 'S');
+      param.gestureType, 'S', prePostMargin);
 end
 
 function [precision, recall, f1, timeScore] = computestats(YtrueAll, ...
-    YstarAll, restLabel, gestureType, type)
+    YstarAll, restLabel, gestureType, type, prePostMargin)
+ %
+ % ARGS
+ % YtrueAll   - cell array of 2-by-T sequences.
+ 
 nTotalHit = 0;
 nTotalEvents = 0;
 nTotalGtEvents = 0;
@@ -34,7 +38,7 @@ for i = 1 : numel(YtrueAll)
       [hit, nGtEvents, nEvents, timeScore] = computeeventstats(Ytrue, Ystar, restLabel);
       totalTimeScore = totalTimeScore + timeScore;
     case 'S'
-      [hit, nGtEvents, nEvents] = computeframestats(Ytrue, Ystar, restLabel);
+      [hit, nGtEvents, nEvents] = computeframestats(Ytrue, Ystar, restLabel, prePostMargin);
   end
   nTotalHit = nTotalHit + hit;
   nTotalEvents = nTotalEvents + nEvents;
@@ -48,7 +52,7 @@ timeScore = totalTimeScore / nTotalHit;
 end
 
 function [hit, nGtEvents, nDetectedEvents] = computeframestats(Ytrue, ...
-    Ystar, restLabel)
+    Ystar, restLabel, prePostMargin)
 % ground truth events
 events = computegtsegments(Ytrue, restLabel);
 for i = 1 : length(events)
@@ -59,10 +63,10 @@ for i = 1 : length(events)
       endNdx = runs(j, 2);
       % Remove the first 15 frames and last 15 frames because they may be
       % pre and post strokes
-      Ytrue(1, startNdx : min(endNdx, startNdx + 15)) = restLabel;
-      Ystar(1, startNdx : min(endNdx, startNdx + 15)) = restLabel;
-      Ytrue(1, max(startNdx, endNdx - 15 : endNdx)) = restLabel;
-      Ystar(1, max(startNdx, endNdx - 15 : endNdx)) = restLabel;
+      Ytrue(1, startNdx : min(endNdx, startNdx + prePostMargin)) = restLabel;
+      Ystar(1, startNdx : min(endNdx, startNdx + prePostMargin)) = restLabel;
+      Ytrue(1, max(startNdx, endNdx - prePostMargin : endNdx)) = restLabel;
+      Ystar(1, max(startNdx, endNdx - prePostMargin : endNdx)) = restLabel;
     end
   end
 end

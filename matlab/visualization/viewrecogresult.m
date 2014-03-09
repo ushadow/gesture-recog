@@ -6,7 +6,7 @@ function viewrecogresult(data, result, dataType, ndx, param)
 % ndx   - index in the data type, e.g. Tr, Va.
 
 figure;
-ngestures = data.param.vocabularySize;
+nGesture = data.param.vocabularySize;
 gestureLabel = param.gestureLabel;
 
 switch dataType
@@ -20,10 +20,11 @@ seqNDX = result.split{splitNdx}(ndx);
 
 gt = data.Y{seqNDX}(1, :);
 pred = result.prediction.(dataType){ndx}(1, :);
-pred(gt == ngestures + 2) = ngestures + 2;
+% Ignore the OtherPose in both ground truth and prediction.
+pred(gt == nGesture + 2) = nGesture + 2;
 im = [gt; pred];
 
-colormap(bipolar(ngestures));
+colormap(bipolar(nGesture));
 image(im);
 
 xtick = get(gca, 'XTick');
@@ -40,7 +41,7 @@ set(gca, 'YTickLabel', {'Ground truth', 'Prediction'}, 'FontSize', 14);
 yticklabel_rotate;
 
 h = colorbar('NorthOutside');
-set(h, 'XTick', 1 : ngestures);
+set(h, 'XTick', 1 : nGesture);
 set(h, 'XTickLabel', gestureLabel, 'FontSize', 13);
 
 title(strjoin(data.file{seqNDX}), 'Interpreter', 'none');

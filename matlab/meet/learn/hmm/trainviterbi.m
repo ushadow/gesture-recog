@@ -1,20 +1,23 @@
 function [prior, transmat, mu, Sigma, mixmat, term] = trainviterbi(data, ...
-    prior, transmat, mu, Sigma, mixmat, varargin)
+    prior, transmat, nM, varargin)
 %
 % ARGS
 % data{ex}(:,t)
+% nM - number of mixtures.
 
 Q = length(prior);
-
-[maxIter, covType,  adjPrior, adjTrans, term, adjTerm] = ...
+d = size(data{1}, 1);
+[maxIter, covType,  adjPrior, adjTrans, term, adjTerm, featureNdx] = ...
     process_options(varargin, 'max_iter', 10, ...
 		    'cov_type', 'full', 'adj_prior', 1, 'adj_trans', 1, ...
-        'term', ones(Q, 1), 'adj_term', 1);
+        'term', ones(Q, 1), 'adj_term', 1, 'feature_ndx', 1 : d);
+
+[mu, Sigma, mixmat] = initmixgaussequaldiv(data, Q, nM, covType, featureNdx);
 
 nIter = 1;      
 while (nIter <= maxIter)
   [nTrans, nVisit1, nVisitT, mixmat, mu, Sigma] = essmhmm(prior, transmat, ...
-      mixmat, mu, Sigma, data, term, covType);
+      mixmat, mu, Sigma, data, term, covType, featureNdx);
   
   if adjPrior
     prior = normalise(nVisit1);
@@ -31,7 +34,7 @@ end
 end
 
 function [nTrans, nVisit1, nVisitT, mixmat, mu, Sigma] = ...
-    essmhmm(prior, transmat, mixmat, mu, Sigma, data, term, covType)
+    essmhmm(prior, transmat, mixmat, mu, Sigma, data, term, covType, featureNdx)
 
 numex = length(data);
 Q = length(prior);
@@ -42,7 +45,7 @@ nVisitT = zeros(Q, 1);
 segX = cell(Q, 1);
 
 for ex = 1 : numex
-  obs = data{ex};
+  obs = data{ex}(featureNdx, :);
   T = size(obs, 2);
   B = mixgauss_prob(obs, mu, Sigma, mixmat);
   path = viterbi_path(prior, transmat, B, term);

@@ -27,7 +27,7 @@ for i = 1 : length(dataTypes)
   predictFile = [file.(dt) '.predict'];
   result = exesvmpredict(file.(dt), modelFile, predictFile);
   fprintf('%s result: %s', dt, result);
-  [X.(dt), labels] = readprediction(predictFile, X.(dt));
+  [X.(dt), labels] = readprediction(predictFile, X.(dt), param.hasDiscrete);
 end
 
 model.labels = labels;
@@ -36,13 +36,21 @@ param.pcaRange = 1 : featureLength;
 param.nprincomp = featureLength - 3;
 end
 
-function [X, labels] = readprediction(filename, X)
+function [X, labels] = readprediction(filename, X, hasDiscreate)
 %% READPREDICTION add the prediction probabilities to the feature vectors.
 
 prediction = importdata(filename, ' ', 1);
 labels = cellfun(@(x) str2double(x), prediction.colheaders(2 : end));
-prediction = prediction.data(:, 2 : end - 1)';
 
+nLabel = size(prediction.data, 2);
+if hasDiscreate
+  ndx = 1;
+else
+  ndx = 2 : nLabel - 1;
+end
+
+prediction = prediction.data(:, ndx)'; % transposed
+ 
 startNdx = 1;
 for i = 1 : numel(X)
   seq = X{i};

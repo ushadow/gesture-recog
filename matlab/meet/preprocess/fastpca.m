@@ -70,6 +70,7 @@ else
 end
 newFeature = updatedata(train, model.pc, pcaRange, 'normalized', A);
 model.eigVal = diag(eigVal); % All eigen values
+param.featureNdx = 1 : size(newFeature{1}, 1);
 
 if isfield(X, 'Tr')
   newX.Tr = newFeature;
@@ -112,6 +113,13 @@ normalized = rawFeature - meanFeatureRep;
 end
 
 function data = updatedata(data, eigImg, pcaRange, varargin)
+%
+% ARGS
+% data  - cell array of sequences
+%
+% RETURN
+% data  - cell array of sequences
+
 narg = length(varargin);
 for i = 1 : 2 : narg
   switch varargin{i}

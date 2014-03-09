@@ -8,7 +8,7 @@ end
 
 gestureDefDir = 'G:';
 [hyperParam.gestureLabel, hyperParam.gestureDict, ...
-    hyperParam.gestureType, hyperParam.repeat, hyperParam.nS] = ...
+    hyperParam.gestureType, hyperParam.repeat, hyperParam.nS, hyperParam.nHandPoseType] = ...
     gesturelabel(gestureDefDir);
 
 % Default values.
@@ -20,6 +20,7 @@ validateParams = {};
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
 hyperParam.preprocess = {@fastpca @standardizefeature};
+hyperParam.hasDiscrete = false;
 hyperParam.channels = [1 2];
 hyperParam.filterWinSize = 5;
 hyperParam.returnFeature = false;
@@ -42,6 +43,7 @@ hyperParam.maxIter = 30; %ldcrf: 1000; hmm: 30
 hyperParam.thresh = 0.001;
 hyperParam.regFactorL2 = 100;
 hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
+hyperParam.prePostMargin = 15; % frames
 
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
