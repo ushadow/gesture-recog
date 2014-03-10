@@ -1,4 +1,6 @@
-function n = computetransitions(path)
+function n = ncontiguoussegment(path)
+%% NCONTIGUOUSSEGMENT computes the number of contiguous segments.
+
   runs = contiguous(path);
   n = 0;
   for i = 1 : size(runs, 1)

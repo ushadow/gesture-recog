@@ -1,5 +1,5 @@
 function [rest, gesture] = separaterest(Y, X, restNdx, featureNdx)
-%% SEPARATEREST 
+%% SEPARATEREST separates rest vs. non-rest frames according to ground truth.
 
 if nargin < 4, featureNdx = 1 : size(X{1}); end
 

@@ -14,7 +14,7 @@ hyperParam.imageWidth = paramFromData.imgWidth;
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
-hyperParam.preprocess = {@fastpca @standardizefeature};
+hyperParam.preprocess = {@standardizefeature};
 hyperParam.channels = 1;
 hyperParam.filterWinSize = 5;
 hyperParam.returnFeature = false;
@@ -30,9 +30,9 @@ hyperParam.K = 300; % number of dictinoary terms
 hyperParam.nFolds = 4;
 
 % Training parameters
-hyperParam.train = @trainhmmprepost;
+hyperParam.train = @trainldcrfwrap;
 hyperParam.trainSegment = true;
-hyperParam.maxIter = 30; %ldcrf: 1000; hmm: 30
+hyperParam.maxIter = 1000; %hmm: 30
 hyperParam.thresh = 0.001;
 hyperParam.regFactorL2 = 100;
 hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
@@ -57,7 +57,7 @@ hyperParam.Fobserved = 1;
 hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 1};
 
 % Inference, test parameters
-hyperParam.inference = @testhmmprepost;
+hyperParam.inference = @testldcrfwrap;
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
 hyperParam.inferMethod = 'viterbi';
@@ -65,10 +65,10 @@ hyperParam.testsegment = @segmentbymodel;
 hyperParam.combinehmmparam = @combinehmmparamwithrest;
 
 % Post process
-hyperParam.postprocess = @findnucleusfiltershort;
+hyperParam.postprocess = {};
 
-hyperParam.evalName = {'Error', 'Leven'};
-hyperParam.evalFun = {@errorperframe, @levenscore};
+hyperParam.evalName = {};
+hyperParam.evalFun = {};
 
 hyperParam.useGpu = false;
 hyperParam.gSampleFactor = 1;

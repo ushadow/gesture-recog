@@ -5,8 +5,7 @@ function seg = segmentbymodel(X, ~, model, subsampleFactor)
 % X  - cell arrays
 %
 % RETURNS
-% seg - cell array of sequences. Each sequence contains 0 or 1. 1 means
-% rest position.
+% seg - n-by-2 matrix of start and end indices of segments.
 
 nseqs = size(X, 2);
 seg = cell(1, nseqs);
@@ -20,6 +19,8 @@ end
 end
 
 function isRest = findrest(x, model)
+%% FINDREST find rest frames using the rest model.
+
   d = size(model.restMu, 1);
   x = x(1 : d, :);
   if size(model.restMu, 3) == 1
@@ -35,6 +36,8 @@ function isRest = findrest(x, model)
 end
 
 function seg = removeshortseg(seg, subsampleFactor)
+%% REMOVESHORTSEG removes both rest and non-rest short segments.
+%
 % ARGS
 % seg   - segment of rest and gestures. 1 is rest, 0 is gesture.
 
