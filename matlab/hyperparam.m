@@ -47,7 +47,7 @@ hyperParam.prePostMargin = 15; % frames
 
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
-hyperParam.nM = [6 12];
+hyperParam.nM = [3 6];
 hyperParam.combineprepost = false;
 hyperParam.nRest = 1; % number of mixtures for rest position
 % Gaussian model parameters

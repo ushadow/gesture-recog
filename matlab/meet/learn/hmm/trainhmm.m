@@ -29,10 +29,11 @@ for i = 1 : param.vocabularySize
     rep = param.repeat(i);
     
     if nS > 1
-      [prior0, transmat0, term0] = makebakistrans(nS, rep);
-      [prior0, transmat0, mu0, Sigma0, mixmat0, term0] = trainviterbi(XByClass{i}, ...
+      [prior0, transmat0, term0] = makeembedtrans(nS, rep);
+      [~, ~, mu0, Sigma0, mixmat0] = trainviterbi(XByClass{i}, ...
           prior0, transmat0, param.nM(1), 'term', term0, 'cov_type', param.XcovType, ...
           'max_iter', 2, 'feature_ndx', param.featureNdx);
+      [prior0, transmat0, term0] = makebakistrans(nS, rep);
       if param.hasDiscrete
         obsmat0 = initobsmat(nS, param.nHandPoseType);
         [~, model.prior{i}, model.transmat{i}, model.mu{i}, model.Sigma{i}, ...
@@ -69,6 +70,7 @@ end
 hmm.type = 'hmm';
 hmm.model = combinetoonehmm(model.prior, model.transmat, model.term, ...
     model.mu, model.Sigma, model.mixmat, model.obsmat, param);
+%hmm.model = trainembedded(X, hmm.model, param);
 end
 
 function path = align(X, mu, Sigma, mixmat, prior, transmat, term) %#ok<DEFNU>
@@ -77,4 +79,11 @@ for i = 1 : numel(X)
   obslik = mixgauss_prob(ev, mu, Sigma, mixmat);
   path = viterbi_path(prior, transmat, obslik, term);
 end
+end
+
+function model = trainembedded(X, model, param)
+  [~, model.prior, model.transmat, model.mu, model.Sigma, ...
+            model.mixmat, model.term] = mhmm_em(X,model.prior, ...
+            model.transmat, model.mu, model.Sigma, model.mixmat, 'max_iter', 1, ...
+            'cov_type', param.XcovType, 'term', model.term);
 end
