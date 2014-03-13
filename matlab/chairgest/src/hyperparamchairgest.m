@@ -12,6 +12,8 @@ hyperParam.dataFile = [];
 hyperParam.mce = false;
 hyperParam.imageWidth = paramFromData.imgWidth;
 
+hyperParam.gestureLabel = gesturelabelchairgest();
+
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
 hyperParam.preprocess = {@standardizefeature};
@@ -37,9 +39,9 @@ hyperParam.thresh = 0.001;
 hyperParam.regFactorL2 = 100;
 hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
 
-% HMM parameters
+% HMM or CRF parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
-hyperParam.nS = 6; % number of hidden states S.
+hyperParam.nS = 3; % number of hidden states S.
 hyperParam.nM = 6;
 hyperParam.combineprepost = false;
 hyperParam.nRest = 1; % number of mixtures for rest position
