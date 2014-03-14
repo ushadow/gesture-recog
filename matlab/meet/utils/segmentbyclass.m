@@ -18,7 +18,7 @@ if param.combineprepost
 end
 
 nseqs = size(Y, 2);
-dataByClass = cell(1, nClass);
+dataByClass = cell(nClass, param.nHmmMixture);
 prePostMargin = param.prePostMargin;
 for i = 1 : nseqs
   seqY = Y{i};
@@ -35,22 +35,22 @@ for i = 1 : nseqs
         startNdx = min(endNdx, startNdx + prePostMargin);
         endNdx = max(startNdx, endNdx - prePostMargin);
       end
-      dataByClass{class}{end + 1} = seqX(:, startNdx : endNdx);     
+      dataByClass{class, 1}{end + 1} = seqX(:, startNdx : endNdx);     
     end
     startNdx = endNdx + 1;
   end
 end
 
 if param.nHmmMixture > 1
-  for i = 1 : length(dataByClass)
+  for i = 1 : size(dataByClass, 1)
     if strcmp(param.gestureType(i), 'D')
-      dist = distdtw(dataByClass{i});
+      data = dataByClass{i, 1};
+      dist = distdtw(data);
       clusters = agglomerativeclusterseq(dist, param.nHmmMixture, ...
                                          'average');
       for j = 1 : length(clusters)
-        clusters{j} = dataByClass{i}(clusters{j});
+        dataByClass{i, j} = data(clusters{j});
       end
-      dataByClass{i} = clusters;
     end
   end
 end
