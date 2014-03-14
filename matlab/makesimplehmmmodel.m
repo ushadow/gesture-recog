@@ -51,6 +51,9 @@ mix.ncentres = M;
 end
 
 function [mu, Sigma, mixmat] = gmmfitbic(X, minM, maxM, covType) 
+%% GMMFITBIC Fit a Gaussian mixture model and choose the number of mixtures
+%   according to BIC.
+
 [n, d] = size(X);
 bestBIC = -inf;
 

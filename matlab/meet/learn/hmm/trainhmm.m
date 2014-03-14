@@ -16,57 +16,57 @@ for i = 1 : param.vocabularySize
 end
 
 nHmmMixture = param.nHmmMixture;
-model.prior = cell(param.vocabularySize, nHmmMixture);
-model.transmat = cell(param.vocabularySize, nHmmMixture);
-model.mu = cell(param.vocabularySize, nHmmMixture); % d x nS x nM matrix
-model.Sigma = cell(param.vocabularySize, nHmmMixture);
-model.term = cell(param.vocabularySize, nHmmMixture);
-model.mixmat = cell(param.vocabularySize, nHmmMixture);
-model.obsmat = cell(param.vocabularySize, nHmmMixture);
+model.prior = cell(nHmmMixture, param.vocabularySize);
+model.transmat = cell(nHmmMixture, param.vocabularySize);
+model.mu = cell(nHmmMixture, param.vocabularySize); % d x nS x nM matrix
+model.Sigma = cell(nHmmMixture, param.vocabularySize);
+model.term = cell(nHmmMixture, param.vocabularySize);
+model.mixmat = cell(nHmmMixture, param.vocabularySize);
+model.obsmat = cell(nHmmMixture, param.vocabularySize);
         
 for i = 1 : param.vocabularySize
   nS = param.nS(i);
-  if ~isempty(XByClass{i})
+  if ~isempty(XByClass{1, i})
     rep = param.repeat(i);
     
     if nS > 1
       for j = 1 : nHmmMixture
         [prior0, transmat0, term0] = makeembedtrans(nS, rep);
-        [~, ~, mu0, Sigma0, mixmat0] = trainviterbi(XByClass{i, j}, ...
+        [~, ~, mu0, Sigma0, mixmat0] = trainviterbi(XByClass{j, i}, ...
             prior0, transmat0, param.nM(1), 'term', term0, 'cov_type', param.XcovType, ...
             'max_iter', 2, 'feature_ndx', param.featureNdx);
         [prior0, transmat0, term0] = makebakistrans(nS, rep);
         if param.hasDiscrete
           obsmat0 = initobsmat(nS, param.nHandPoseType);
-          [~, model.prior{i}, model.transmat{i}, model.mu{i}, model.Sigma{i}, ...
-              model.mixmat{i}, model.term{i}, model.obsmat{i}] = dmhmmem(XByClass{i, j}, prior0, ...
+          [~, model.prior{j, i}, model.transmat{j, i}, model.mu{j, i}, model.Sigma{j, i}, ...
+              model.mixmat{j, i}, model.term{j, i}, model.obsmat{j, i}] = dmhmmem(XByClass{j, i}, prior0, ...
               transmat0, mu0, Sigma0, mixmat0, obsmat0, ...
               'max_iter', param.maxIter, 'cov_type', param.XcovType, ...
               'term', term0);
         else
-          [~, model.prior{i}, model.transmat{i}, model.mu{i}, model.Sigma{i}, ...
-              model.mixmat{i}, model.term{i}] = mhmm_em(XByClass{i, j}, prior0, ...
+          [~, model.prior{j, i}, model.transmat{j, i}, model.mu{j, i}, model.Sigma{j, i}, ...
+              model.mixmat{j, i}, model.term{j, i}] = mhmm_em(XByClass{j, i}, prior0, ...
               transmat0, mu0, Sigma0, mixmat0, 'max_iter', param.maxIter, ...
               'cov_type', param.XcovType, 'term', term0);
         end
       end
     else
-      [model.prior{i}, model.transmat{i}, model.mu{i}, ...
-          model.Sigma{i}, model.mixmat{i}, ...
-          model.term{i}] = makesimplehmmmodel(XByClass{i}, ...
+      [model.prior{1, i}, model.transmat{1, i}, model.mu{1, i}, ...
+          model.Sigma{1, i}, model.mixmat{1, i}, ...
+          model.term{1, i}] = makesimplehmmmodel(XByClass{1, i}, ...
           param.kinectSampleRate, param.nM, param.XcovType, param.featureNdx);
       if param.hasDiscrete
-        model.obsmat{i} = singledhmm(XByClass{i}, param.nHandPoseType);
+        model.obsmat{1, i} = singledhmm(XByClass{1, i}, param.nHandPoseType);
       end
     end
   else
     nM = param.nM(2);
-    model.prior{i} = zeros(nS, 1);
-    model.transmat{i} = zeros(nS, nS);
-    model.mu{i} = zeros(d, nS, nM);
-    model.Sigma{i} = repmat(eye(d, d), 1, 1, nS, nM);
-    model.mixmat{i} = zeros(nS, nM);
-    model.term{i} = zeros(nS, 1);
+    model.prior{1, i} = zeros(nS, 1);
+    model.transmat{1, i} = zeros(nS, nS);
+    model.mu{1, i} = zeros(d, nS, nM);
+    model.Sigma{1, i} = repmat(eye(d, d), 1, 1, nS, nM);
+    model.mixmat{1, i} = zeros(nS, nM);
+    model.term{1, i} = zeros(nS, 1);
   end
 end
 
@@ -84,7 +84,7 @@ for i = 1 : numel(X)
 end
 end
 
-function model = trainembedded(X, model, param)
+function model = trainembedded(X, model, param) %#ok<DEFNU>
   [~, model.prior, model.transmat, model.mu, model.Sigma, ...
             model.mixmat, model.term] = mhmm_em(X,model.prior, ...
             model.transmat, model.mu, model.Sigma, model.mixmat, 'max_iter', 1, ...

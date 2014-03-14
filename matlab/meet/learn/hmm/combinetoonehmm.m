@@ -23,7 +23,7 @@ end
 combinedModel.prior = cat(1, prior{:});
 combinedModel.prior = normalise(combinedModel.prior);
 
-nHmms = length(prior);
+
 nTotalStates = length(combinedModel.prior);
 
 % Termination
@@ -31,16 +31,21 @@ combinedModel.term = cat(1, term{:});
 combinedTerm = repmat(combinedModel.term, 1, nTotalStates);
 
 [combinedModel.labelMap, combinedModel.stageMap] = ...
-    maphiddenstatetolabel(nTotalStates, param.nS, param.vocabularySize); 
+    maphiddenstatetolabel(nTotalStates, param.nS, param.vocabularySize, param.nHmmMixture); 
 
 % Transition
 combinedModel.transmat = zeros(nTotalStates);
 sNDX =1;
-for i = 1 : nHmms
-  nStates = length(prior{i});
-  eNDX = sNDX + nStates - 1;
-  combinedModel.transmat(sNDX : eNDX, sNDX : eNDX) = transmat{i};  
-  sNDX = eNDX + 1;
+[r, c] = size(transmat);
+for i = 1 : c
+  for j = 1 : r
+    if ~isempty(transmat{j, i})
+      nStates = size(transmat{j, i}, 1);
+      eNDX = sNDX + nStates - 1;
+      combinedModel.transmat(sNDX : eNDX, sNDX : eNDX) = transmat{j, i};  
+      sNDX = eNDX + 1;
+    end
+  end
 end
 
 combinedModel.transmat = combinedModel.transmat .* (1 - combinedTerm) + ... 
@@ -50,7 +55,7 @@ combinedModel.transmat = addprepost(combinedModel.transmat, ...
     param.gestureType, combinedModel.stageMap, combinedModel.labelMap);
 
 combinedModel.nM = cellfun(@(x) size(x, 3), mu);
-maxM = max(combinedModel.nM);
+maxM = max(combinedModel.nM(:));
 d = size(mu{1}, 1);
 mu = adddefaultmat(mu, zeros(d, 1), 3, maxM);
 Sigma = adddefaultmat(Sigma, eye(d), 4, maxM);
@@ -61,7 +66,8 @@ combinedModel.Sigma = single(cat(3, Sigma{:}));
 combinedModel.mixmat = single(cat(1, mixmat{:}));
 end
 
-function [labelMap, stageMap] = maphiddenstatetolabel(totalNStates, nS, vocabSize)
+function [labelMap, stageMap] = maphiddenstatetolabel(totalNStates, nS, ...
+    vocabSize, nHmmMixture)
 % ARGS
 % nS  - number of hidden states for gestures with dynamic paths.
 % gestureType   - array of gesture type for each gesture.
@@ -76,17 +82,20 @@ startNdx = 1;
 for i = 1 : vocabSize
   nStates = nS(i);
   if nStates > 1
-    endNdx = startNdx + nStates - 1;
-    stageMap{startNdx} = 'PreStroke';
-    [stageMap{endNdx}] = deal('PostStroke');
-    [stageMap{startNdx + 1 : endNdx - 1}] = deal('Gesture');
+    for j = 1 : nHmmMixture
+      endNdx = startNdx + nStates - 1;
+      stageMap{startNdx} = 'PreStroke';
+      [stageMap{endNdx}] = deal('PostStroke');
+      [stageMap{startNdx + 1 : endNdx - 1}] = deal('Gesture');
+      labelMap(startNdx : endNdx) = i;
+      startNdx = endNdx + 1;
+    end
   else
     endNdx = startNdx;
     stageMap{startNdx} = 'Gesture';
+    labelMap(startNdx : endNdx) = i;
+    startNdx = endNdx + 1;
   end
-  labelMap(startNdx : endNdx) = i;
-  
-  startNdx = endNdx + 1;
 end
 stageMap{end} = 'Rest';
 labelMap = int32(labelMap);
