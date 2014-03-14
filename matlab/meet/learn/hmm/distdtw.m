@@ -1,23 +1,25 @@
-function d = distdtw(x, c)
+function d = distdtw(x)
+% DISTDTW pairwise distance between sequence data in x using dynamic time
+%   warping.
 %
 % ARGS
 % x   - cell array of D-by-M matrices
-% c   - cell array of D-by-N matrices
 %
 % RETURN
-% d   - M-by-N matrix
+% d   - M-by-M matrix
 
 nData = numel(x);
- 
-nCenter = numel(c);
+d = zeros(nData);
 
-d = zeros(nData, nCenter);
 for i = 1 : nData
-  for j = 1 : nCenter
-    frameDist = dist2(x{i}', c{j}');
-    d(i, j) = dtw_scores(frameDist);
+  for j = 1 : nData
+    if j <= i
+      d(i, j) = d(j, i);
+    else
+      frameDist = dist2(x{i}', x{j}');
+      scores = dtw_scores(frameDist);
+      d(i, j) = scores(end);
+    end
   end
 end
-
-s = 1 ./ (d + eps);
 end

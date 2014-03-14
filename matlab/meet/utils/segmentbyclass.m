@@ -10,14 +10,15 @@ function dataByClass = segmentbyclass(Y, X, param)
 % dataByClass - cell array of cell arrays. One cell array for each gesture
 %   label. In each cell array, there are gesture sequences.
 
-nClasses = param.vocabularySize;
+nClass = param.vocabularySize;
 
 if param.combineprepost
+  % Combines the pre- and post-stroke labels into the gesture label.
   Y = combineprepost(Y);
 end
 
 nseqs = size(Y, 2);
-dataByClass = cell(1, nClasses);
+dataByClass = cell(1, nClass);
 prePostMargin = param.prePostMargin;
 for i = 1 : nseqs
   seqY = Y{i};
@@ -27,16 +28,28 @@ for i = 1 : nseqs
   for j = 1 : length(ndx)
     endNdx = ndx(j);
     class = seqY(1, endNdx);
-    if class <= nClasses
+    if class <= nClass
       % Removes the start and end parts because they are pre- and
       % post-strokes.
-      if strcmp(param.gestureType(class), 'S') && class < nClasses
+      if strcmp(param.gestureType(class), 'S') && class < nClass
         startNdx = min(endNdx, startNdx + prePostMargin);
         endNdx = max(startNdx, endNdx - prePostMargin);
       end
       dataByClass{class}{end + 1} = seqX(:, startNdx : endNdx);     
     end
     startNdx = endNdx + 1;
+  end
+end
+
+if param.nHmmMixture > 1
+  for i = 1 : length(dataByClass)
+    dist = distdtw(dataByClass{i});
+    clusters = agglomerativeclusterseq(dist, param.nHmmMixture, ...
+                                       'average');
+    for j = 1 : length(clusters)
+      clusters{j} = dataByClass{i}(clusters{j});
+    end
+    dataByClass{i} = clusters;
   end
 end
 end

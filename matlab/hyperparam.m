@@ -6,11 +6,6 @@ for i = 1 : numel(fn)
   hyperParam.(fn{i}) = paramFromData.(fn{i});
 end
 
-gestureDefDir = 'G:';
-[hyperParam.gestureLabel, hyperParam.gestureDict, ...
-    hyperParam.gestureType, hyperParam.repeat, hyperParam.nS, hyperParam.nHandPoseType] = ...
-    gesturelabel(gestureDefDir);
-
 % Default values.
 hyperParam.trainIter = 1; % Training iterations
 hyperParam.infModel = []; % cell array, one model for each fold.
@@ -44,6 +39,7 @@ hyperParam.thresh = 0.001;
 hyperParam.regFactorL2 = 100;
 hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
 hyperParam.prePostMargin = 15; % frames
+hyperParam.nHmmMixture = 3;
 
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
@@ -80,9 +76,16 @@ hyperParam.useGpu = false;
 hyperParam.gSampleFactor = 1;
 hyperParam.rSampleFactor = 30;
 
+hyperParam.gestureDefDir = 'G:';
+
 for i = 1 : 2 : length(varargin)
   hyperParam.(varargin{i}) = varargin{i + 1};
 end
+
+[hyperParam.gestureLabel, hyperParam.gestureDict, ...
+    hyperParam.gestureType, hyperParam.repeat, hyperParam.nS, hyperParam.nHandPoseType] = ...
+    gesturelabel(hyperParam.gestureDefDir);
+
 
 allParams = fieldnames(hyperParam);
 diff = setdiff(allParams, validateParams);
