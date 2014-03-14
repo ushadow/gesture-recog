@@ -43,13 +43,15 @@ end
 
 if param.nHmmMixture > 1
   for i = 1 : length(dataByClass)
-    dist = distdtw(dataByClass{i});
-    clusters = agglomerativeclusterseq(dist, param.nHmmMixture, ...
-                                       'average');
-    for j = 1 : length(clusters)
-      clusters{j} = dataByClass{i}(clusters{j});
+    if strcmp(param.gestureType(i), 'D')
+      dist = distdtw(dataByClass{i});
+      clusters = agglomerativeclusterseq(dist, param.nHmmMixture, ...
+                                         'average');
+      for j = 1 : length(clusters)
+        clusters{j} = dataByClass{i}(clusters{j});
+      end
+      dataByClass{i} = clusters;
     end
-    dataByClass{i} = clusters;
   end
 end
 end
