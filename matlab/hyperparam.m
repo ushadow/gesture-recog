@@ -39,7 +39,7 @@ hyperParam.thresh = 0.001;
 hyperParam.regFactorL2 = 100;
 hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
 hyperParam.prePostMargin = 15; % frames
-hyperParam.nHmmMixture = 3;
+hyperParam.nHmmMixture = 1;
 
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);

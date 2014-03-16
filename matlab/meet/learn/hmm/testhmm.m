@@ -26,9 +26,6 @@ featureNdx = param.featureNdx;
 for i = 1 : nseqs
   ev = X{i};
   obslik = mixgauss_prob(ev(featureNdx, :), hmm.mu, hmm.Sigma, hmm.mixmat);
-  if param.hasDiscrete
-    obslik = obslik .* multinomial_prob(ev(end, :), hmm.obsmat);
-  end
   switch param.inferMethod 
     case 'viterbi'
       path{i} = viterbi_path(hmm.prior, hmm.transmat, obslik, hmm.term);

@@ -1,5 +1,5 @@
 function data = prepdata(dirname, varargin)
-%% PREPAREDATACHAIRGEST prepares the data from CHAIRGEST dataset into right 
+%% PREPAREDATA prepares the data from YANG dataset into right 
 % structure for preprocessing.
 %
 % ARGS
@@ -20,20 +20,24 @@ function data = prepdata(dirname, varargin)
 sensorType = 'Kinect';
 gtSensorType = 'Kinect';
 dataType = 'Converted';
+gestureDefDir = 'G:';
 prevData = [];
 
 pidToProcess = [];
 
 for i = 1 : 2 : length(varargin)
+  value = varargin{i + 1};
   switch varargin{i}
     case 'sensorType'
-      sensorType = varargin{i + 1};
+      sensorType = value;
     case 'gtSensorType'
-      gtSensorType = varargin{i + 1};
+      gtSensorType = value;
     case 'prevData'
-      prevData = varargin{i + 1};
+      prevData = value;
     case 'pid'
-      pidToProcess = varargin{i + 1};
+      pidToProcess = value;
+    case 'gestureDefDir'
+      gestureDefDir = value;
     otherwise
       error(['Unrecognized option: ' varargin{i}]);
   end
@@ -90,7 +94,7 @@ for p = 1 : npids
         [featureData, startDescriptorNdx, imgWidth, sampleRate, ...
             kinectSampleRate] = readfeature(...
             fullfile(sessionDir, fileName), sensorType);
-        [gt, vocabSize] = readgt(gtFile, featureData(end, 1));
+        [gt, vocabSize] = readgt(gtFile, featureData(end, 1), gestureDefDir);
 
         if ~paramInitialized
           dataParam.vocabularySize = vocabSize;

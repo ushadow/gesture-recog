@@ -1,8 +1,8 @@
 function [label, dict, type, repeat, nS, nHandPoseType] = gesturelabel(gestureDefDir)
 % RETURNS
 % label   - cell array of gesture label string.
-% type  - column vector of gesture form types, 'D' (dynamic path) or 'S'
-%     (static hand pose). There are another additional types: 'O' for
+% type  - column vector of gesture form types, 'D' (dynamic path), 'S'
+%     (static hand pose), and 'R' (rest). There are another additional types: 'O' for
 %     'Other' which are nongestures, and 'OP' for 'OtherPose' which are
 %     user errors.
 % nS - a vector of number of hidden states for each gesture excluding 'Other'

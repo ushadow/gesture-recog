@@ -1,4 +1,4 @@
-function exesvmtrain(c, g, w, trainFile)
+function exesvmtrain(c, g, w, label, trainFile)
 %%
 % ARGS
 % w   - vector of weight parameters for label i.
@@ -10,7 +10,7 @@ trainExeFile = fullfile(svmDir, 'svm-train.exe');
 
 weightParam = [];
 for i = 1 : length(w)
-  weightParam = [weightParam sprintf('-w%d %d ', i, w(i))]; %#ok<AGROW>
+  weightParam = [weightParam sprintf('-w%d %d ', label(i), w(i))]; %#ok<AGROW>
 end
 
 command = sprintf('%s -c %f -g %f -b 1 %s %s', trainExeFile, c, g, ...

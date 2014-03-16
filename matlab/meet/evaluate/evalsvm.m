@@ -3,7 +3,7 @@ dataNdx = 3 : 4;
 Ytrue = data.Y(dataNdx);
 Ytrue = cellfun(@(x) mask(x), Ytrue, 'UniformOutput', false);
 
-Ystar = cellfun(@(x) x(end, :) + 3, data.X(dataNdx), 'UniformOutput', false);
+Ystar = cellfun(@(x) x(end, :), data.X(dataNdx), 'UniformOutput', false);
 res = f1(Ytrue, Ystar, param);
 end
 
