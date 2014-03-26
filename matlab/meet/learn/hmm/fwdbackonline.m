@@ -1,4 +1,4 @@
-function [path, stat] = fwdbackonline(prior, transmat, obslik, varargin)
+function [path, gamma] = fwdbackonline(prior, transmat, obslik, varargin)
 
 scaled = 1;
 
@@ -42,5 +42,3 @@ for t = 1 : T
     [~, path(tau)] = max(gamma(:, tau));
   end
 end
-
-stat.minGamma = min(max(gamma(:, 1 : end - 1)));

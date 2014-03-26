@@ -86,8 +86,8 @@ else
 
   if ~isempty(param.inference)
     tid = tic;
-    [R.prediction, R.prob, R.path, R.seg] = param.inference(Y, X, frame, ...
-                                     R.infModel, param);
+    [R.prediction, R.prob, R.path, R.seg, R.testStat] = param.inference(...
+        Y, X, frame, R.infModel, param);
     R.testingTime = toc(tid);
   end
   
