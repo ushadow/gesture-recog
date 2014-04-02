@@ -1,4 +1,4 @@
-function [standardized, model] = standardizefeature(~, X, ~, ~, varargin)
+function [standardized, model, param] = standardizefeature(~, X, ~, param, varargin)
 %% STANDARDIZEFEATURE standardize features.
 %
 % ARGS
@@ -6,7 +6,8 @@ function [standardized, model] = standardizefeature(~, X, ~, ~, varargin)
 %
 % RETURN
 % - standardized: if reMat is true, returns a matrix, otherwise returns a 
-%                 cell array.
+%                 cell array or a structure depending on the data type of
+%                 the input X.
 
 retMat = false;
 model = [];

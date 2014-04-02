@@ -1,6 +1,7 @@
-function [pred, prob, path, seg] = testhmmprepost(~, X, frame, hmm, param)
+function [pred, prob, path, seg, testStat] = testhmmprepost(~, X, frame, hmm, param)
 %% TESTHMMPREPOST tests HMM model with pre- and post-stroke models. 
 
+testStat = [];
 nclass =  param.vocabularySize;
 hmm = hmm.model;
 
