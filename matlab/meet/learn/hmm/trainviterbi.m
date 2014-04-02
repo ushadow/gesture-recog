@@ -62,6 +62,7 @@ end
 
 for i = 1 : Q
   if size(segX{i}, 2) >= M
+    % Use K-means to initialize the centers of mixture of Gaussians.
     [mu(:, i, :), Sigma(:, :, i, :), mixmat(i, :)] = mixgauss_init(M, ...
         segX{i}, covType);
   else

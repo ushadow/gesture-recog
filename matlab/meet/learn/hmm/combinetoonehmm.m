@@ -23,10 +23,9 @@ end
 combinedModel.prior = cat(1, prior{:});
 combinedModel.prior = normalise(combinedModel.prior);
 
-
 nTotalStates = length(combinedModel.prior);
 
-% Termination
+% Concatenate termination probabilities.
 combinedModel.term = cat(1, term{:});
 combinedTerm = repmat(combinedModel.term, 1, nTotalStates);
 
@@ -37,6 +36,7 @@ combinedTerm = repmat(combinedModel.term, 1, nTotalStates);
 combinedModel.transmat = zeros(nTotalStates);
 sNDX =1;
 [r, c] = size(transmat);
+% Concatenate transition matrices.
 for i = 1 : c
   for j = 1 : r
     if ~isempty(transmat{j, i})
@@ -48,6 +48,7 @@ for i = 1 : c
   end
 end
 
+% Add additional transition probabilities.
 combinedModel.transmat = combinedModel.transmat .* (1 - combinedTerm) + ... 
     repmat(combinedModel.prior', nTotalStates, 1) .* combinedTerm;
 
@@ -116,6 +117,8 @@ for i = 1 : nStates
         end
       end
     case 'PostStroke'
+      % A single state gesture or another PostStroke state can got to a
+      % PostStroke state.
       for j = 1 : nStates
         if j ~= i && (strcmp(stageMap{j}, 'PostStroke') || ~strcmp(gestureType(labelMap(j)), 'D'))
           transmat(j, i) = 0.01;
