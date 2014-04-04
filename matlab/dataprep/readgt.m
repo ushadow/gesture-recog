@@ -1,4 +1,4 @@
-function [gt, vocabSize] = readgt(filename, endNDX)
+function [gt, vocabSize] = readgt(filename, endNDX, gestureDefDir)
 %% READGTCHAIRGEST reads ground truth from the data set.
 %
 % ARGS
@@ -10,8 +10,8 @@ function [gt, vocabSize] = readgt(filename, endNDX)
 %     column is the start frame id of the stroke and the third column is
 %     end frame id of the stroke.
 
-[allLabel, gestureDict] = gesturelabel();
-vocabSize = length(allLabel);
+[allLabel, gestureDict] = gesturelabel(gestureDefDir);
+vocabSize = length(allLabel) - 2;
 
 data = importdata(filename);
 frameIndices = data.data;

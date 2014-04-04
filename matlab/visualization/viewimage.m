@@ -1,7 +1,5 @@
 function H = viewimage(data, startNdx, imageWidth, indices)
 %% VIEWIMAGE displays images for one sequence.
-% 
-% H = viewimage(data, startNDX, nToDispaly)
 %
 % ARGS
 % data - d X n matrix where d is the number of pixels in the image and n is 

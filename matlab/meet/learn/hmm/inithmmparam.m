@@ -1,5 +1,5 @@
 function [prior, transmat, term, mu, Sigma, mixmat] = inithmmparam(...
-    data, nS, nM, cov_type, stage)
+    data, nS, nM, covType, stage, rep)
 %% INITHMMPARAM initializes HMM parameters
 %
 % ARGS
@@ -21,17 +21,18 @@ function [prior, transmat, term, mu, Sigma, mixmat] = inithmmparam(...
 mixmat = ones(nS, nM) / nM;
 
 % kmeans initialization
-[mu, Sigma] = mixgauss_init(nS * nM,  cell2mat(data), cov_type);
+mu = mixgauss_init(nS * nM,  cell2mat(data), covType);
 d = size(mu, 1);
 mu = reshape(mu, [d nS nM]);
-Sigma = reshape(Sigma, [d d nS nM]);
+%Sigma = reshape(Sigma, [d d nS nM]);
+Sigma = repmat(eye(d, d), 1, 1, nS, nM);
 
 switch stage
   case 1
     [prior, transmat, term] = makepretrans(nS);
     Sigma = Sigma(:, :, :, 1); % Tied covariance across mixtures
   case 2
-    [prior, transmat, term] = makebakistrans(nS);
+    [prior, transmat, term] = makeembedtrans(nS, rep);
   case 3
     [prior, transmat, term] = makeposttrans(nS);
     Sigma = Sigma(:, :, :, 1);

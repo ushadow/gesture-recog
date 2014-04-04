@@ -1,10 +1,26 @@
-function [label, dict, type, typeNames] = gesturelabel()
+function [label, dict, type, repeat, nS, nHandPoseType] = gesturelabel(gestureDefDir)
 % RETURNS
 % label   - cell array of gesture label string.
-% type  - column vector of gesture types: 0 is discrete, 1 is continuous, 2 is rest
+% type  - column vector of gesture form types, 'D' (dynamic path), 'S'
+%     (static hand pose), and 'R' (rest). There are another additional types: 'O' for
+%     'Other' which are nongestures, and 'OP' for 'OtherPose' which are
+%     user errors.
+% nS - a vector of number of hidden states for each gesture excluding 'Other'
+%   and 'OtherPose'.
 
-label = {'SwipeRight', 'SwipeLeft', 'Point', 'Rest'};
-typeNames = {'Unknown', 'Point', 'Rest'};
-type = [1 1 2 3];
+data = importdata(fullfile(gestureDefDir, 'workspace\handinput\GesturesViewer\Data\Gestures.txt'), ...
+                  ',', 1);
+label = data.textdata(2 : end, 1);
+label{end + 1} = 'Other'; % small movement without nucleus
+label{end + 1} = 'OtherPose'; % wrong gesture should be ignored
+
+type = data.textdata(2 : end, 2);
+type{end + 1} = 'O'; % Other
+type{end + 1} = 'OP'; % OtherPose
+
+repeat = data.data(:, 1);
+nS = data.data(:, 2);
 dict = containers.Map(label, 1 : length(label));
+
+nHandPoseType = sum(strcmp(type, 'S')) + 1;
 end

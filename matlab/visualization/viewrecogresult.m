@@ -1,17 +1,30 @@
-function viewrecogresult(data, result, ndx, gestureLabel)
+function viewrecogresult(data, result, dataType, ndx, param)
 %% VIEWRECOGNITIONRESULT Visualize gesture recognition validation result.
 %
 % ARGS
 % data  - original data, not separated into training and validation.
-% ndx   - index in the validation data.
+% ndx   - index in the data type, e.g. Tr, Va.
 
 figure;
-ngestures = data.param.vocabularySize;
-seqNDX = result.split{2}(ndx);
+nGesture = data.param.vocabularySize;
+gestureLabel = param.gestureLabel;
 
-im = [data.Y{seqNDX}(1, :); result.prediction.Va{ndx}(1, :)];
+switch dataType
+  case 'Tr'
+    splitNdx = 1;
+  case 'Va'
+    splitNdx = 2;
+end
 
-colormap(bipolar(ngestures));
+seqNDX = result.split{splitNdx}(ndx);
+
+gt = data.Y{seqNDX}(1, :);
+pred = result.prediction.(dataType){ndx}(1, :);
+% Ignore the OtherPose in both ground truth and prediction.
+pred(gt == nGesture + 2) = nGesture + 2;
+im = [gt; pred];
+
+colormap(bipolar(nGesture));
 image(im);
 
 xtick = get(gca, 'XTick');
@@ -27,22 +40,37 @@ set(gca, 'YTick', ytick);
 set(gca, 'YTickLabel', {'Ground truth', 'Prediction'}, 'FontSize', 14);
 yticklabel_rotate;
 
-h = colorbar;
-set(h, 'YTick', 1 : ngestures);
-set(h, 'YTickLabel', gestureLabel, 'FontSize', 12);
+h = colorbar('NorthOutside');
+set(h, 'XTick', 1 : nGesture);
+set(h, 'XTickLabel', gestureLabel, 'FontSize', 13);
+
 title(strjoin(data.file{seqNDX}), 'Interpreter', 'none');
 
 if ~isempty(result.path)
-  hiddenStates = result.path.Va{ndx};
-  ncolors = max(hiddenStates);
+  hiddenStates = result.path.(dataType){ndx};
+  labels = hiddenstatelabel(param.nS, gestureLabel);
   yTickLabel = {'Hidden states'};
-  drawimage(hiddenStates, ncolors, data.frame{seqNDX}(xtick), yTickLabel);
+  drawimage(hiddenStates, labels, data.frame{seqNDX}(xtick), yTickLabel);
 end
 end
 
-function drawimage(data, ncolors, xTickLabel, yTickLabel)
+function label = hiddenstatelabel(nS, gestureLabel)
+totalNStates = sum(nS);
+cumSum = cumsum(nS);
+label = cell(totalNStates, 1);
+j = 1;
+for i = 1 : totalNStates
+  if i > cumSum(j)
+    j = j + 1;
+  end
+  label{i} = sprintf('%d %s', i, gestureLabel{j});
+end
+end
+
+function drawimage(data, labels, xTickLabel, yTickLabel)
 figure;
-colormap(bipolar(ncolors));
+nColors = length(labels); 
+colormap(bipolar(nColors));
 image(data);
 
 set(gca, 'XTickLabel', xTickLabel);
@@ -54,6 +82,6 @@ set(gca, 'YTick', ytick);
 set(gca, 'YTickLabel', yTickLabel, 'FontSize', 14);
 yticklabel_rotate;
 h = colorbar;
-set(h, 'YTick', 1 : ncolors);
-set(h, 'YTickLabel', 1 : ncolors, 'FontSize', 12);
+set(h, 'YTick', 1 : nColors);
+set(h, 'YTickLabel', labels, 'FontSize', 12);
 end

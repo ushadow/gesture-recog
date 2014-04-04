@@ -1,5 +1,5 @@
 function combinedModel = combinetoonehmm(prior, transmat, term, mu, ...
-    Sigma, mixmat, param)
+    Sigma, mixmat, obsmat, param)
 %%
 % COMBINETOONEHMM combines all HMMs to one HMM.
 %
@@ -15,70 +15,124 @@ function combinedModel = combinetoonehmm(prior, transmat, term, mu, ...
 % The combined model in single precision.
 % combinedModel.mixmat is a m x nTotalStates matrix.
 
+if param.hasDiscrete
+  combinedModel.obsmat = cat(1, obsmat{:});
+end
+
 % Prior
 combinedModel.prior = cat(1, prior{:});
 combinedModel.prior = normalise(combinedModel.prior);
 
-nHmms = length(prior);
 nTotalStates = length(combinedModel.prior);
 
-% Termination
+% Concatenate termination probabilities.
 combinedModel.term = cat(1, term{:});
 combinedTerm = repmat(combinedModel.term, 1, nTotalStates);
+
+[combinedModel.labelMap, combinedModel.stageMap] = ...
+    maphiddenstatetolabel(nTotalStates, param.nS, param.vocabularySize, param.nHmmMixture); 
 
 % Transition
 combinedModel.transmat = zeros(nTotalStates);
 sNDX =1;
-for i = 1 : nHmms
-  nStates = length(prior{i});
-  eNDX = sNDX + nStates - 1;
-  combinedModel.transmat(sNDX : eNDX, sNDX : eNDX) = transmat{i};  
-  sNDX = eNDX + 1;
+[r, c] = size(transmat);
+% Concatenate transition matrices.
+for i = 1 : c
+  for j = 1 : r
+    if ~isempty(transmat{j, i})
+      nStates = size(transmat{j, i}, 1);
+      eNDX = sNDX + nStates - 1;
+      combinedModel.transmat(sNDX : eNDX, sNDX : eNDX) = transmat{j, i};  
+      sNDX = eNDX + 1;
+    end
+  end
 end
 
+% Add additional transition probabilities.
 combinedModel.transmat = combinedModel.transmat .* (1 - combinedTerm) + ... 
     repmat(combinedModel.prior', nTotalStates, 1) .* combinedTerm;
-combinedModel.transmat = allowpretosingle(combinedModel.transmat, ...
-    param.gestureType, param.nS);
 
-combinedModel.map = maphiddenstatetolabel(nTotalStates, param.nS, ...
-    param.gestureType);  
+combinedModel.transmat = addprepost(combinedModel.transmat, ...
+    param.gestureType, combinedModel.stageMap, combinedModel.labelMap);
+
+combinedModel.nM = cellfun(@(x) size(x, 3), mu);
+maxM = max(combinedModel.nM(:));
+d = size(mu{1}, 1);
+mu = adddefaultmat(mu, zeros(d, 1), 3, maxM);
+Sigma = adddefaultmat(Sigma, eye(d), 4, maxM);
+mixmat = adddefaultmat(mixmat, 0, 2, maxM);
+
 combinedModel.mu = single(cat(2, mu{:}));
 combinedModel.Sigma = single(cat(3, Sigma{:}));
 combinedModel.mixmat = single(cat(1, mixmat{:}));
 end
 
-function map = maphiddenstatetolabel(totalNStates, nS, gestureType)
-map = zeros(1, totalNStates);
+function [labelMap, stageMap] = maphiddenstatetolabel(totalNStates, nS, ...
+    vocabSize, nHmmMixture)
+% ARGS
+% nS  - number of hidden states for gestures with dynamic paths.
+% gestureType   - array of gesture type for each gesture.
+%
+% RETURNS
+% labelMap  - 1-based indices of gesture labels.
+% stageMap  - maps hidden states to gesture stages.
+
+labelMap = zeros(1, totalNStates);
+stageMap = cell(1, totalNStates);
 startNdx = 1;
-for i = 1 : length(gestureType)
-  switch gestureType(i)
-    case 1
-      endNdx = startNdx + nS - 1;
-    case {2, 3}
-      endNdx = startNdx;
+for i = 1 : vocabSize
+  nStates = nS(i);
+  if nStates > 1
+    for j = 1 : nHmmMixture
+      endNdx = startNdx + nStates - 1;
+      stageMap{startNdx} = 'PreStroke';
+      [stageMap{endNdx}] = deal('PostStroke');
+      [stageMap{startNdx + 1 : endNdx - 1}] = deal('Gesture');
+      labelMap(startNdx : endNdx) = i;
+      startNdx = endNdx + 1;
+    end
+  else
+    endNdx = startNdx;
+    stageMap{startNdx} = 'Gesture';
+    labelMap(startNdx : endNdx) = i;
+    startNdx = endNdx + 1;
   end
-  map(startNdx : endNdx) = i;
-  startNdx = endNdx + 1;
 end
-map = int32(map);
+stageMap{end} = 'Rest';
+labelMap = int32(labelMap);
 end
 
-function transmat = allowpretosingle(transmat, gestureType, nS)
-preStates = [];
-singleStates = [];
-startNdx = 1;
-for g = gestureType
-  nStates = 1;
-  switch g
-    case 1
-      preStates = [preStates startNdx];  %#ok<AGROW>
-      nStates = nS;
-    case {2, 3}
-      singleStates = [singleStates startNdx]; %#ok<AGROW>
+function transmat = addprepost(transmat, gestureType, stageMap, labelMap)
+%% ADDPREPOST add pre- and post-stage transitions
+
+nStates = length(stageMap);
+for i = 1 : nStates
+  switch stageMap{i}
+    case 'PreStroke'
+      % PreStroke can go to a single state gesture or another PreStroke
+      % state.
+      for j = 1 : nStates
+        if j ~= i && (strcmp(stageMap{j}, 'PreStroke') || ~strcmp(gestureType(labelMap(j)), 'D'))
+          transmat(i, j) = 0.01;
+        end
+      end
+    case 'PostStroke'
+      % A single state gesture or another PostStroke state can got to a
+      % PostStroke state.
+      for j = 1 : nStates
+        if j ~= i && (strcmp(stageMap{j}, 'PostStroke') || ~strcmp(gestureType(labelMap(j)), 'D'))
+          transmat(j, i) = 0.01;
+        end
+      end
+%     case 'Gesture'
+%       if strcmp(stageMap{i + 1}, 'PostStroke') || strcmp(gestureType(labelMap(i)), 'S')
+%         for j = 1 : nStates
+%           if j ~= i && (strcmp(stageMap{j}, 'Gesture') && strcmp(stageMap{j - 1}, 'PreStroke'))
+%             transmat(i, j) = 0.00000001;
+%           end
+%         end
+%       end
   end
-  startNdx = startNdx + nStates;
 end
-transmat(preStates, singleStates) = 0.01;
 transmat = mk_stochastic(transmat); 
 end

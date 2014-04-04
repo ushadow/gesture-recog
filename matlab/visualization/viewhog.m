@@ -1,8 +1,8 @@
-function H = viewhog(hogData, startNdx, cellSize, ndx, w, reorder)
+function H = viewhog(hogData, startNdx, nCell, ndx, w, reorder)
 %%
 % ARGS
 % hogData - Matrix of hog data. Each column is an image.
-% imageWidth - image width of the hog image.
+% reorder - reorder the hog data [false].
 
 if nargin < 5
   w = 5;
@@ -14,13 +14,13 @@ end
 
 oBin = 9;
 
-hogData = hogData(startNdx : startNdx + cellSize * cellSize * oBin - 1, ndx);  
+hogData = hogData(startNdx : startNdx + nCell * nCell * oBin - 1, ndx);  
 nImages = length(ndx);
-hogAll = zeros(cellSize * w, cellSize * w, 1, nImages);
+hogAll = zeros(nCell * w, nCell * w, 1, nImages);
 
 H = figure();
 for j = 1 : nImages
-  hog = reshape(hogData(:, j), cellSize, cellSize, []);
+  hog = reshape(hogData(:, j), nCell, nCell, []);
   if reorder
     hog = permute(hog, [2 1 3]);
   end

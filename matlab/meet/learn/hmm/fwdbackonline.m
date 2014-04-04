@@ -1,4 +1,4 @@
-function path = fwdbackonline(prior, transmat, obslik, varargin)
+function [path, gamma] = fwdbackonline(prior, transmat, obslik, varargin)
 
 scaled = 1;
 
@@ -10,6 +10,7 @@ Q = length(prior);
 
 alpha = zeros(Q, T);
 beta = zeros(Q, T);
+gamma = zeros(Q, T);
 scale = ones(1, T);
 path = zeros(1, T);
 
@@ -28,15 +29,16 @@ for t = 2 : T
 end
 alpha(:, T) = alpha(:, T) .* term;
 
-for t = lag + 1 : T
+for t = 1 : T
   beta(:, t) = ones(Q, 1);
   [~, path(t)] = max(alpha(:, t));
-  for tau = t - 1 : -1 : t - lag
+  for tau = t - 1 : -1 : max(1, t - lag)
     b = beta(:, tau + 1) .* obslik(:, tau + 1);
     beta(:, tau) = transmat * b;
     if scaled
       beta(:, tau) = normalise(beta(:, tau));
     end
-    [~, path(tau)] = max(alpha(:, tau) .* beta(:, tau));
+    gamma(:, tau) = alpha(:, tau) .* beta(:, tau);
+    [~, path(tau)] = max(gamma(:, tau));
   end
 end

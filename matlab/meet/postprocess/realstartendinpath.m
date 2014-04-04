@@ -4,10 +4,12 @@ function [realStart, realEnd] = realstartendinpath(path, nSMap, ...
 
 realStart = -1;
 realEnd = -1;
-if computetransitions(path) <= 3, return; end
+% If the number of continguous segments is less than 3, that means there
+% is no nucleus stage.
+if ncontiguoussegment(path) <= 3, return; end
   
-stageNDX = gesturestagendx(nSMap);
-gestureNdx = find(path >= stageNDX(2, 1) & path <= stageNDX(2, 2));
+stageNdx = gesturestagendx(nSMap);
+gestureNdx = find(path >= stageNdx(2, 1) & path <= stageNdx(2, 2));
 if ~isempty(gestureNdx)
   runs = contiguousindex(gestureNdx);
   nruns = size(runs, 1);

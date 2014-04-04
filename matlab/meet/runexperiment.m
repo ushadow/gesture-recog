@@ -54,7 +54,8 @@ if isfield(param, 'preprocess')
   tid = tic;
   for i = 1 : npreprocesses
     fun = param.preprocess{i};
-    [X, R.preprocessModel{i}]  = fun(Y, X, frame, param);
+    % param can by modified and passed to the next function.
+    [X, R.preprocessModel{i}, param]  = fun(Y, X, frame, param);
   end
   R.preprocessTime = toc(tid);
   display 'Done preprocess.';
@@ -74,10 +75,6 @@ else
   if isempty(param.infModel) && ~isempty(param.train)
     tid = tic;
     R.infModel = param.train(Y.Tr, X.Tr, param);
-    if isfield(param, 'jobId')
-      savevariable(fullfile(param.dir, ...
-                   sprintf('model-%d-%d.mat', param.jobId, foldNdx)), 'model', R);
-    end
     R.trainingTime = toc(tid);
   else 
     model = param.infModel;
@@ -89,8 +86,8 @@ else
 
   if ~isempty(param.inference)
     tid = tic;
-    [R.prediction, R.prob, R.path, R.seg] = param.inference(Y, X, frame, ...
-                                     R.infModel, param);
+    [R.prediction, R.prob, R.path, R.seg, R.testStat] = param.inference(...
+        Y, X, frame, R.infModel, param);
     R.testingTime = toc(tid);
   end
   
@@ -100,8 +97,7 @@ else
 
   % Step 5: Evaluate performance of prediction
   if ~isempty(param.evalFun)
-    R.stat = evalclassification(Y, R.prediction, param.evalName, ...
-                                param.evalFun);
+    R.stat = evalclassification(Y, R.prediction, param);
   end
 end
 end

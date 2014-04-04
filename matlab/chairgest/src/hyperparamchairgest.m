@@ -12,9 +12,11 @@ hyperParam.dataFile = [];
 hyperParam.mce = false;
 hyperParam.imageWidth = paramFromData.imgWidth;
 
+hyperParam.gestureLabel = gesturelabelchairgest();
+
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
-hyperParam.preprocess = {@fastpca @standardizefeature};
+hyperParam.preprocess = {@standardizefeature};
 hyperParam.channels = 1;
 hyperParam.filterWinSize = 5;
 hyperParam.returnFeature = false;
@@ -30,16 +32,16 @@ hyperParam.K = 300; % number of dictinoary terms
 hyperParam.nFolds = 4;
 
 % Training parameters
-hyperParam.train = @trainhmmprepost;
+hyperParam.train = @trainldcrfwrap;
 hyperParam.trainSegment = true;
-hyperParam.maxIter = 30; %ldcrf: 1000; hmm: 30
+hyperParam.maxIter = 1000; %hmm: 30
 hyperParam.thresh = 0.001;
 hyperParam.regFactorL2 = 100;
 hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
 
-% HMM parameters
+% HMM or CRF parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
-hyperParam.nS = 6; % number of hidden states S.
+hyperParam.nS = 3; % number of hidden states S.
 hyperParam.nM = 6;
 hyperParam.combineprepost = false;
 hyperParam.nRest = 1; % number of mixtures for rest position
@@ -57,7 +59,7 @@ hyperParam.Fobserved = 1;
 hyperParam.initMeanFilePrefix = {'gesture', 44, 'rest', 1};
 
 % Inference, test parameters
-hyperParam.inference = @testhmmprepost;
+hyperParam.inference = @testldcrfwrap;
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
 hyperParam.inferMethod = 'viterbi';
@@ -65,10 +67,10 @@ hyperParam.testsegment = @segmentbymodel;
 hyperParam.combinehmmparam = @combinehmmparamwithrest;
 
 % Post process
-hyperParam.postprocess = @findnucleusfiltershort;
+hyperParam.postprocess = {};
 
-hyperParam.evalName = {'Error', 'Leven'};
-hyperParam.evalFun = {@errorperframe, @levenscore};
+hyperParam.evalName = {};
+hyperParam.evalFun = {};
 
 hyperParam.useGpu = false;
 hyperParam.gSampleFactor = 1;

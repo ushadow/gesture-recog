@@ -6,26 +6,24 @@ for i = 1 : numel(fn)
   hyperParam.(fn{i}) = paramFromData.(fn{i});
 end
 
-[hyperParam.gestureLabel, hyperParam.gestureDict, ...
-    hyperParam.gestureType, hyperParam.typeNames] = gesturelabel();
-
 % Default values.
 hyperParam.trainIter = 1; % Training iterations
 hyperParam.infModel = []; % cell array, one model for each fold.
 hyperParam.dataFile = [];
-validateParams = {'nprincomp'};
+validateParams = {};
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
-hyperParam.preprocess = {@fastpca @svmhandpose @standardizefeature};
+hyperParam.preprocess = {@fastpca @standardizefeature};
+hyperParam.hasDiscrete = false;
 hyperParam.channels = [1 2];
 hyperParam.filterWinSize = 5;
 hyperParam.returnFeature = false;
-hyperParam.nprincomp = 26; % number of principal components from image.
+hyperParam.nprincomp = 15; % number of principal components from image.
 hyperParam.pcaRange = 10 : 450;
 hyperParam.sBin = 4;
 hyperParam.oBin = 9;
-hyperParam.resizeWidth = 16;
+hyperParam.resizeWidth = 15;
 % For kinect and xsens data, 1 : 3 is relative position, 4 : 12 is xsens
 % data
 %[2 : 7, 11 : 13] + 18 * 3; %Xsens
@@ -40,11 +38,12 @@ hyperParam.maxIter = 30; %ldcrf: 1000; hmm: 30
 hyperParam.thresh = 0.001;
 hyperParam.regFactorL2 = 100;
 hyperParam.segmentFeatureNdx = 1 : hyperParam.startDescriptorNdx - 1;
+hyperParam.prePostMargin = 15; % frames
+hyperParam.nHmmMixture = 1;
 
 % HMM parameters
 hyperParam.nSMap = containers.Map(1 : 3, [3 6 3]);
-hyperParam.nS = 4; % number of hidden states S.
-hyperParam.nM = 2;
+hyperParam.nM = [3 6];
 hyperParam.combineprepost = false;
 hyperParam.nRest = 1; % number of mixtures for rest position
 % Gaussian model parameters
@@ -63,31 +62,42 @@ hyperParam.inference = @testhmm;
 % inferMethod: 'fixed-interval-smoothing', 'fixed-lag-smoothing',
 %              'viterbi', 'filtering'             
 hyperParam.inferMethod = 'fixed-lag-smoothing';
-hyperParam.L = 0;
+hyperParam.L = 8;
 hyperParam.testsegment = @segmentbymodel;
 hyperParam.combinehmmparam = @combinehmmparamwithrest;
 
 % Post process
 hyperParam.postprocess = {};
 
-hyperParam.evalName = {'Error', 'Leven'};
-hyperParam.evalFun = {@errorperframe, @levenscore};
+hyperParam.evalName = {'F1'};
+hyperParam.evalFun = {@f1};
 
 hyperParam.useGpu = false;
 hyperParam.gSampleFactor = 1;
 hyperParam.rSampleFactor = 30;
 
+hyperParam.gestureDefDir = 'G:';
+
 for i = 1 : 2 : length(varargin)
   hyperParam.(varargin{i}) = varargin{i + 1};
 end
 
+[hyperParam.gestureLabel, hyperParam.gestureDict, ...
+    hyperParam.gestureType, hyperParam.repeat, hyperParam.nS, hyperParam.nHandPoseType] = ...
+    gesturelabel(hyperParam.gestureDefDir);
+
+
 allParams = fieldnames(hyperParam);
 diff = setdiff(allParams, validateParams);
 
-v = cellfun(@(x) hyperParam.(x), validateParams, 'UniformOutput', false);
-g = cell(1, length(v));
-[g{:}] = ndgrid(v{:});
-nModels = numel(g{1});
+if ~isempty(validateParams)
+  v = cellfun(@(x) hyperParam.(x), validateParams, 'UniformOutput', false);
+  g = cell(1, length(v));
+  [g{:}] = ndgrid(v{:});
+  nModels = numel(g{1});
+else
+  nModels = 1;
+end
 hyperParam.model = cell(1, nModels);
 for i = 1 : nModels
   for k = 1 : length(validateParams)

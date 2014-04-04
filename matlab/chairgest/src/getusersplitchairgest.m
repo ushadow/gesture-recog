@@ -1,4 +1,4 @@
-function split = getusersplit(data, nFolds)
+function split = getusersplitchairgest(data, nFolds)
 %
 % ARGS
 % data  - cell array, each cell is a user data.

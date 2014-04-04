@@ -1,4 +1,4 @@
-function [X, model] = svmhandpose(Y, X, ~, param)
+function [X, model, param] = svmhandpose(Y, X, ~, param)
 % ARGS
 % Y, X  - structure
 
@@ -6,6 +6,7 @@ function [X, model] = svmhandpose(Y, X, ~, param)
 stdX = standardizefeature([], X, [], []);
 
 dirname = param.dir;
+gestureType = param.gestureType;
 file.Tr = fullfile(dirname, 'svm_train_hand.txt');
 file.Va = fullfile(dirname, 'svm_test_hand.txt');
 modelFile = [file.Tr '.model'];
@@ -15,37 +16,56 @@ model.file = modelFile;
 dataTypes = fieldnames(Y);
 for i = 1 : length(dataTypes)
   dt = dataTypes{i};
-  count = outputsvmhandposedata(file.(dt), Y.(dt), stdX.(dt));
+  [count, label] = outputsvmhandposedata(file.(dt), Y.(dt), stdX.(dt), gestureType);
   display(count);
   if strcmp(dt, 'Tr')
-    [count, I] = sort(count);
-    I = length(count) - I + 1;
-    weight = count(I);
-    display(weight);
-    exesvmtrain(0.03, 0.007, weight, file.(dt));
+    [sorted, I] = sort(count);
+    count(I) = sorted(end : -1 : 1);
+    display(count);
+    display(label);
+    exesvmtrain(8, 0.03, count, label, file.(dt));
   end
   predictFile = [file.(dt) '.predict'];
   result = exesvmpredict(file.(dt), modelFile, predictFile);
   fprintf('%s result: %s', dt, result);
-  [X.(dt), labels] = readprediction(predictFile, X.(dt));
+  [X.(dt), labels] = readprediction(predictFile, Y.(dt), X.(dt), param.hasDiscrete, ...
+      gestureType);
 end
 
-model.labels = param.typeNames(labels);
+model.labels = labels;
+featureLength = size(X.Tr{1}, 1);
+param.pcaRange = 1 : featureLength;
+param.nprincomp = featureLength - 3;
 end
 
-function [X, labels] = readprediction(filename, X)
+function [X, labels] = readprediction(filename, Y, X, hasDiscreate, gestureType)
 %% READPREDICTION add the prediction probabilities to the feature vectors.
+%
+% ARGS
+% X   - cell array.
 
 prediction = importdata(filename, ' ', 1);
 labels = cellfun(@(x) str2double(x), prediction.colheaders(2 : end));
-prediction = prediction.data(:, 2 : end - 1)';
 
+nLabel = size(prediction.data, 2);
+if hasDiscreate
+  ndx = 1;
+else
+  ndx = 2 : nLabel - 1;
+end
+
+prediction = prediction.data(:, ndx)'; % transposed
+ 
 startNdx = 1;
 for i = 1 : numel(X)
   seq = X{i};
-  endNdx = startNdx + size(seq, 2) - 1;
-  seq = [seq; prediction(:, startNdx : endNdx)]; %#ok<AGROW>
+  [d, n] = size(seq);
+  I = find(strcmp(gestureType(Y{i}(1, :)), 'S'));
+  endNdx = startNdx + length(I) - 1;
+  newSeq = ones(d + 1, n) * length(gestureType);
+  newSeq(1 : d, :) = seq;
+  newSeq(end, I) = prediction(:, startNdx : endNdx); 
   startNdx = endNdx + 1;
-  X{i} = seq;
+  X{i} = newSeq;
 end
 end
