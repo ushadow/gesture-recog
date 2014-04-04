@@ -18,3 +18,4 @@ matlab/chairgest/lib/preprocess
 !readme.txt
 !matlab/test/*.txt
 runscript.m
+!LICENSE.txt
