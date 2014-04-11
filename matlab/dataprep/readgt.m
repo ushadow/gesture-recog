@@ -5,10 +5,12 @@ function [gt, vocabSize] = readgt(filename, endNDX, gestureDefDir)
 % startNDX  - feature start index
 % endNDX  - feature end index
 %
-% Return
-% - gt: n x 3 matrix. The first column is the stroke id. The second
-%     column is the start frame id of the stroke and the third column is
-%     end frame id of the stroke.
+% RETURN
+% gt  - n x 3 matrix. The first column is the stroke id. The second
+%   column is the start frame id of the stroke and the third column is
+%   end frame id of the stroke.
+% vocabSize   - vocabulary size including rest, but does not include other
+%   and other pose.
 
 [allLabel, gestureDict] = gesturelabel(gestureDefDir);
 vocabSize = length(allLabel) - 2;
