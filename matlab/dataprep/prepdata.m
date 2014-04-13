@@ -60,6 +60,7 @@ for p = 1 : npids
   data{p}.X = {};
   data{p}.frame = {};
   data{p}.file = {};
+  data{p}.nEvent = {};
   
   paramInitialized = false;
   
@@ -68,6 +69,7 @@ for p = 1 : npids
     data{p}.X = prevData{p}.X;
     data{p}.frame = prevData{p}.frame;
     data{p}.file = prevData{p}.file;
+    data{p}.nEvent = prevData{p}.nEvent;
     dataParam = prevData{p}.param;
     paramInitialized = true;
   end
@@ -112,6 +114,7 @@ for p = 1 : npids
         data{p}.X{end + 1} = X;
         data{p}.frame{end + 1} = frame;
         data{p}.file{end + 1} = {pid, sessionName, batchNDXstr};
+        data{p}.nEvent{end + 1} = size(gt, 1);
       end
     end
   end

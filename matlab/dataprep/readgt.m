@@ -18,15 +18,15 @@ vocabSize = length(allLabel) - 2;
 data = importdata(filename);
 frameIndices = data.data;
 label = data.textdata;
-nevent = size(frameIndices, 1);
+nEvent = size(frameIndices, 1);
 
-gt = ones(nevent, 3);
+gt = ones(nEvent, 3);
 
-for i = 1 : nevent
+for i = 1 : nEvent
   strokeLabel = label{i, 1};
   frameNDX = frameIndices(i, 1);
   
-  if i < nevent
+  if i < nEvent
     nextEventFrameNDX = frameIndices(i + 1, 1);
   else
     nextEventFrameNDX = endNDX + 1;
