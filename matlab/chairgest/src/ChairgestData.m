@@ -45,7 +45,7 @@ end
 
 methods (Static)
   function ret = isSessionName(filename)
-    ret = length(filename) > 2;
+    ret = length(filename) > 2 && filename(1) ~= 'i';
   end
 end
 end
