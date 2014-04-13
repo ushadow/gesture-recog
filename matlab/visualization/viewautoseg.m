@@ -2,7 +2,7 @@ function viewautoseg(data, index)
 %% VIEWAUTOSEG view automatic segmentation of training data.
 % 
 % ARGS
-% X - a sequence
+% data - dataset structure
 
 figure;
 
@@ -18,7 +18,7 @@ speed = computespeed(pos, frame);
 plot(1 : nFrames, speed, 1 : nFrames, X(2, :), 'r');
 
 ngestures = param.vocabularySize;
-gestureLabel = gesturelabel();
+gestureLabel = gesturelabel(data.param.dir);
 colormap(bipolar(ngestures));
 image('XData', [1, nFrames], 'YData', [0.1, 0.08], 'CData', Y);
 h = colorbar;

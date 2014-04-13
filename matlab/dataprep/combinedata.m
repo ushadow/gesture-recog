@@ -3,6 +3,9 @@ function combined = combinedata(data)
 %
 % ARGS
 % data - cell array of user data.
+%
+% RETURNS
+% combined  - cell array of 1 cell of the combined data.
 
 [Y, X, frame, file] = cellfun(@getfields, data, 'UniformOutput', false);
 combined.Y = [Y{:}];

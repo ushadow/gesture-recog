@@ -76,7 +76,7 @@ hyperParam.useGpu = false;
 hyperParam.gSampleFactor = 1;
 hyperParam.rSampleFactor = 30;
 
-hyperParam.gestureDefDir = 'G:';
+hyperParam.gestureDefDir = hyperParam.dir;
 
 for i = 1 : 2 : length(varargin)
   hyperParam.(varargin{i}) = varargin{i + 1};

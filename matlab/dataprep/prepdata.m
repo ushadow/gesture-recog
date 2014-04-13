@@ -20,7 +20,7 @@ function data = prepdata(dirname, varargin)
 sensorType = 'Kinect';
 gtSensorType = 'Kinect';
 dataType = 'Converted';
-gestureDefDir = 'G:';
+gestureDefDir = dirname;
 prevData = [];
 
 pidToProcess = [];
@@ -116,7 +116,6 @@ for p = 1 : npids
     end
   end
   data{p}.param = dataParam;
-%   [data{p}.Y, data{p}.X, data{p}.frame] = addrestlabel(data{p}.Y, ...
-%       data{p}.X, data{p}.frame, dataParam);
+  data{p} = checkautoseg(data{p}, true);
 end
 end

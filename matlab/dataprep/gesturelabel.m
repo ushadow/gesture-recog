@@ -8,7 +8,7 @@ function [label, dict, type, repeat, nS, nHandPoseType] = gesturelabel(gestureDe
 % nS - a vector of number of hidden states for each gesture excluding 'Other'
 %   and 'OtherPose'.
 
-data = importdata(fullfile(gestureDefDir, 'workspace\handinput\GesturesViewer\Data\Gestures.txt'), ...
+data = importdata(fullfile(gestureDefDir, 'gesture_def.txt'), ...
                   ',', 1);
 label = data.textdata(2 : end, 1);
 label{end + 1} = 'Other'; % small movement without nucleus

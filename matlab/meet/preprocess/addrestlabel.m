@@ -13,17 +13,16 @@ if isstruct(X)
     X1 = X.(fn{i});
     Y1 = Y.(fn{i});
     frame1 = frame.(fn{i});
-    [Y.(fn{i}), X.(fn{i}), frame.(fn{i})] = addrestlabel1(Y1, X1, frame1,...
-          restLabel);
+    Y.(fn{i}) = addrestlabel1(Y1, X1, frame1, restLabel);
   end
 else
-  [Y, X, frame] = addrestlabel1(Y, X, frame, restLabel);
+  Y = addrestlabel1(Y, X, frame, restLabel);
 end
 end
 
-function [Y, X, frame] = addrestlabel1(Y, X, frame, restLabel)
+function Y = addrestlabel1(Y, X, frame, restLabel)
 % ARGS
-% Y   - 2 x n array.
+% Y   - cell array of 2 x n matrices.
 
 minLen = [46, 35];
 

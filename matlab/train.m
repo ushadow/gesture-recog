@@ -1,4 +1,7 @@
-function train(dirname, outputPath)
+function train(dirname, outputFile)
+% ARGS
+% outputFile  - output file name with full path. Must have .mat extension.
+
 combinedDataName = 'combinedData';
 
 dataFile = fullfile(dirname, 'data.mat');
@@ -11,13 +14,12 @@ else
   data = [];
 end
 data = prepdata(dirname, 'prevData', data);
-combinedData = {combinedata(data)};
+combinedData = combinedata(data);
 savevariable(dataFile, 'data', data);
 savevariable(combinedDataFile, 'combinedData', combinedData);
 
 testSplit = {1 : length(combinedData{1}.Y); []; []};
 
-jobParam = jobparam;
 hyperParam = hyperparam(combinedData{1}.param, 'dataFile', combinedDataName);
 
 % fold = 1, batch = 1, seed = 1
@@ -27,7 +29,8 @@ for i = 1 : nModels
   R{i} = runexperiment(hyperParam.model{i}, testSplit, 1, 1, 1, combinedData);
 end
 
-fprintf('Training FrameError = %f\n', R{1}.stat('TrFrameError'));
-fprintf('Training F1 = %f\n', R{1}.stat('TrF1').f1);
-savevariable(outputPath, 'model', R{1})
+f1 = R{1}.stat('TrF1');
+fprintf('Training F1 path mean = %f\n', f1.f1D);
+fprintf('Training F1 pose mean = %f\n', f1.f1S);
+savevariable(outputFile, 'model', R{1})
 end
