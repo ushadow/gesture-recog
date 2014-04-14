@@ -24,7 +24,7 @@ function Y = addrestlabel1(Y, X, frame, restLabel)
 % ARGS
 % Y   - cell array of 2 x n matrices.
 
-minLen = [46, 35];
+minLen = 46;
 
 for n = 1 : numel(X)
   X1 = X{n};
@@ -49,7 +49,7 @@ for n = 1 : numel(X)
     end   
   end
   
-  Y1 = removeshort(Y1, restLabel, minLen(floor((n - 1) / 2) + 1)); 
+  Y1 = removeshort(Y1, restLabel, minLen); 
   Y1 = addflabel(Y1);
   Y{n} = addbacktermlabel(Y1, restLabel, termLabel);
 end
