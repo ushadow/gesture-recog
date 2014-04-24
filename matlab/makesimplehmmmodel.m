@@ -75,7 +75,7 @@ end
 mixmat = reshape(bestModel.priors, [1 nM]);
 end
 
-function [mu, Sigma, mixmat] = gmmfitbic2(X, minM, maxM, covType)
+function [mu, Sigma, mixmat] = gmmfitbic2(X, minM, maxM, covType) %#ok<DEFNU>
 %
 % ARGS
 % X   - a n-by-d matrix where n is number of data points.
