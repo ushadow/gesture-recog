@@ -60,7 +60,7 @@ for m = 1 : nmodel
       batchMean = batchRes(k{d});
       ave = mean(batchMean);
       resStd = std(batchMean);
-      fprintf('%.2f(%.2f)\t', ave, resStd);
+      fprintf('%.3f(%.2f)\t', ave, resStd);
     
   end
   fprintf('\n');

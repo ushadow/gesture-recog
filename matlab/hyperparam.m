@@ -10,7 +10,7 @@ end
 hyperParam.trainIter = 1; % Training iterations
 hyperParam.infModel = []; % cell array, one model for each fold.
 hyperParam.dataFile = [];
-validateParams = {};
+hyperParam.validateParams = {};
 
 % Preprocess parameters.
 % @denoise @remapdepth @resize @kmeanscluster @learndict @standardizefeature
@@ -88,11 +88,13 @@ end
 
 
 allParams = fieldnames(hyperParam);
-diff = setdiff(allParams, validateParams);
+diff = setdiff(allParams, hyperParam.validateParams);
 
-if ~isempty(validateParams)
-  v = cellfun(@(x) hyperParam.(x), validateParams, 'UniformOutput', false);
+if ~isempty(hyperParam.validateParams)
+  v = cellfun(@(x) hyperParam.(x), hyperParam.validateParams, 'UniformOutput', false);
   g = cell(1, length(v));
+  % Creates a regtangular grid by replicating the grid vectors, i.e., the 
+  % parameters to be validated.
   [g{:}] = ndgrid(v{:});
   nModels = numel(g{1});
 else
@@ -100,8 +102,8 @@ else
 end
 hyperParam.model = cell(1, nModels);
 for i = 1 : nModels
-  for k = 1 : length(validateParams)
-    param.(validateParams{k}) = g{k}(i);
+  for k = 1 : length(hyperParam.validateParams)
+    param.(hyperParam.validateParams{k}) = g{k}(i);
   end
   for k = 1 : length(diff)
     param.(diff{k}) = hyperParam.(diff{k});

@@ -20,7 +20,8 @@ savevariable(combinedDataFile, 'combinedData', combinedData);
 
 testSplit = {1 : length(combinedData{1}.Y); []; []};
 
-hyperParam = hyperparam(combinedData{1}.param, 'dataFile', combinedDataName);
+hyperParam = hyperparam(combinedData{1}.param, 'dataFile', combinedDataName, ...
+    'L', 6);
 
 % fold = 1, batch = 1, seed = 1
 nModels = length(hyperParam.model);
