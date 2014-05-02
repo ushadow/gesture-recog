@@ -124,14 +124,6 @@ for i = 1 : nStates
           transmat(j, i) = 0.01;
         end
       end
-%     case 'Gesture'
-%       if strcmp(stageMap{i + 1}, 'PostStroke') || strcmp(gestureType(labelMap(i)), 'S')
-%         for j = 1 : nStates
-%           if j ~= i && (strcmp(stageMap{j}, 'Gesture') && strcmp(stageMap{j - 1}, 'PreStroke'))
-%             transmat(i, j) = 0.00000001;
-%           end
-%         end
-%       end
   end
 end
 transmat = mk_stochastic(transmat); 

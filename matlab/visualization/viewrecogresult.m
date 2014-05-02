@@ -1,4 +1,4 @@
-function viewrecogresult(data, result, dataType, ndx, param)
+function viewrecogresult(data, result, dataType, ndx, param, range)
 %% VIEWRECOGNITIONRESULT Visualize gesture recognition validation result.
 %
 % ARGS
@@ -20,6 +20,14 @@ seqNDX = result.split{splitNdx}(ndx);
 
 gt = data.Y{seqNDX}(1, :);
 pred = result.prediction.(dataType){ndx}(1, :);
+
+if nargin > 5
+  gt = gt(range);
+  pred = pred(range);
+else
+  range = 1 : length(gt);
+end
+
 % Ignore the OtherPose in both ground truth and prediction.
 pred(gt == nGesture + 2) = nGesture + 2;
 im = [gt; pred];
@@ -46,11 +54,13 @@ set(h, 'XTickLabel', gestureLabel, 'FontSize', 13);
 
 title(strjoin(data.file{seqNDX}), 'Interpreter', 'none');
 
+%% Display hidden states.
 if ~isempty(result.path)
-  hiddenStates = result.path.(dataType){ndx};
+  hiddenStates = result.path.(dataType){ndx}(range);
   labels = hiddenstatelabel(param.nS, gestureLabel);
   yTickLabel = {'Hidden states'};
-  drawimage(hiddenStates, labels, data.frame{seqNDX}(xtick), yTickLabel);
+  frames = data.frame{seqNDX}(range);
+  drawimage(hiddenStates, labels, frames(xtick), yTickLabel);
 end
 end
 
