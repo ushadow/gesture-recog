@@ -71,7 +71,7 @@ for p = 1 : npids
     data{p}.file = prevData{p}.file;
     data{p}.nEvent = prevData{p}.nEvent;
     dataParam = prevData{p}.param;
-    paramInitialized = true;
+    paramInitialized = true; % Use previous param.
   end
 
   prevFiles = data{p}.file;

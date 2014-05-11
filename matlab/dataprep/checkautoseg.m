@@ -30,7 +30,8 @@ for j = 1 : numel(data.Y)
   nEvents = checknumevents(data.Y{j}, data.param.vocabularySize);
   expectedNEvent = data.nEvent{j};
   if nEvents ~= expectedNEvent
-    fprintf('session = %d, number of events = %d', j, nEvents);
+    fprintf('session = %d, number of events = %d, expected = %d', j, ...
+        nEvents, expectedNEvent);
     display(data.file{j});
     nInvalid = nInvalid + 1;
   end

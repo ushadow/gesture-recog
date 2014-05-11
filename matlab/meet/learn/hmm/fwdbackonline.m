@@ -1,4 +1,20 @@
 function [path, gamma] = fwdbackonline(prior, transmat, obslik, varargin)
+%% FWDBACKONLINE fix-lag smoothing.
+%
+% ARGS
+% prior     - The initial state probability.
+% transmat  - The transition matrix.
+% obslik    - The likelihood of the observation.
+% varargin  -
+%   term    - The termination probability. [ones(Q, 1)]
+%   lag     - lag time. [0]
+%
+% RETURNS
+% path    - Most likely path using fixed-lag smoothing. The result does not
+%   have delay. The actual result in real-time will be shifted by the lag
+%   time.
+% gamma   - Although gamma is computed using fix-lag smoothing, the result
+%   does not have delay.
 
 scaled = 1;
 
