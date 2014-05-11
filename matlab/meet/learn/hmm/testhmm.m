@@ -56,22 +56,22 @@ for i = 1 : n
   if ~strcmp(prevStage, currentStage) 
     switch currentStage
       case 'PreStroke'
-        if strcmp(prevEvent, 'StartGesture') && i - startGestureTime > 5
+        if strcmp(prevEvent, 'StartNucleus') && i - startGestureTime > 5
           startNdx = max(1, i - segLen);
           pred(startNdx : i) = prevGesture;
         end
         gestureEvent = 'StartPreStroke';
         startGestureTime = i;
-      case 'Gesture'
-        gestureEvent = 'StartGesture';
+      case 'Nucleus'
+        gestureEvent = 'StartNucleus';
         startGestureTime = i;
       case 'Rest'
-        if strcmp(prevEvent, 'StartGesture') && i - startGestureTime > 5
+        if strcmp(prevEvent, 'StartNucleus') && i - startGestureTime > 5
           startNdx = max(1, i - segLen);
           pred(startNdx : i) = prevGesture;
         end
       case 'PostStroke'
-        if strcmp(prevEvent, 'StartGesture')
+        if strcmp(prevEvent, 'StartNucleus')
           gestureEvent = 'StartPostStroke';
           nucleus = prevGesture;
           if i - startGestureTime > 5
@@ -81,7 +81,7 @@ for i = 1 : n
         end
     end
   end
-  if strcmp(currentStage, 'Gesture') && strcmp(gestureType(nucleus), 'S') 
+  if strcmp(currentStage, 'Nucleus') && strcmp(gestureType(nucleus), 'S') 
     pred(i) = nucleus;
   end
   prevStage = currentStage;

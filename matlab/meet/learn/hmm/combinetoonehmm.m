@@ -87,13 +87,13 @@ for i = 1 : vocabSize
       endNdx = startNdx + nStates - 1;
       stageMap{startNdx} = 'PreStroke';
       [stageMap{endNdx}] = deal('PostStroke');
-      [stageMap{startNdx + 1 : endNdx - 1}] = deal('Gesture');
+      [stageMap{startNdx + 1 : endNdx - 1}] = deal('Nucleus');
       labelMap(startNdx : endNdx) = i;
       startNdx = endNdx + 1;
     end
   else
     endNdx = startNdx;
-    stageMap{startNdx} = 'Gesture';
+    stageMap{startNdx} = 'Nucleus';
     labelMap(startNdx : endNdx) = i;
     startNdx = endNdx + 1;
   end
