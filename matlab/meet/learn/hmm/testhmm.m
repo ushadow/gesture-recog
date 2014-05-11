@@ -76,6 +76,13 @@ for i = 1 : n
           end
         end
     end
+  elseif strcmp(currentStage, 'Gesture') && prevGesture ~= nucleus
+    if strcmp(prevEvent, 'StartGesture') && i - startGestureTime > 5
+      startNdx = max(1, i - segLen);
+      pred(startNdx : i) = prevGesture;
+    end
+    gestureEvent = 'StartGesture';
+    startGestureTime = i;
   end
   if strcmp(currentStage, 'Gesture') && strcmp(gestureType(nucleus), 'S') 
     pred(i) = nucleus;
