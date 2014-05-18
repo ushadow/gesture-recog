@@ -77,6 +77,14 @@ end
 
 function [hit, nGtEvents, nDetectedEvents, timeScore] = ...
     computeeventstats(Ytrue, Ystar, restLabel)
+%%
+% ARGS
+% restLabel   - label for the rest position which should always be the last
+%     last label.
+%
+% RETURNS
+% hit   - number of true positives
+
 gtEvents = computegtsegments(Ytrue, restLabel);
 nGtEvents = computenevents(gtEvents, restLabel);
 events = contiguous(Ystar(1, :));
@@ -90,7 +98,7 @@ for i = 1 : size(events, 1)
     gtRuns = gtEvents{label};
     nEvents = size(runs, 1);
     nDetectedEvents = nDetectedEvents + nEvents;
-    for j = 1 : nEvents
+    for j = 1 : nEvents % The events for each gesture is ordered in time.
       for k = 1 : size(gtRuns, 1)
         if timeissimilar(gtRuns(k, :), runs(j, :))
           timeScore = timeScore + gtRuns(k, 2) - runs(j, 2);

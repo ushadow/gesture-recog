@@ -1,4 +1,4 @@
-function cm = evalconfusion(batchData, batchRes, nModels, nFolds)
+function cm = evalconfusion(batchData, batchRes, nModels, nFolds, param)
 %
 % ARGS
 % batchData - cell array of all data in batches.
@@ -8,8 +8,10 @@ function cm = evalconfusion(batchData, batchRes, nModels, nFolds)
 
 nbatch = numel(batchData);
 batchRes = groupres(batchRes, nbatch, nModels, nFolds); 
+vocabSize = param.vocabularySize;
+prePostMargin = param.prePostMargin;
 
-cm = zeros(13, 13);
+cm = zeros(vocabSize, vocabSize);
 for i = 1 : nbatch
   Y = batchData{i}.Y;
   R = batchRes{i};
@@ -17,19 +19,44 @@ for i = 1 : nbatch
   for j = 1 : nFolds
     split = R{j}.split;
     Ytrue = Y(split{2});
-    cm = evalOneFold(Ytrue, R{j}.prediction.Va, cm);
+    cm = evalOneFold(Ytrue, R{j}.prediction.Va, cm, vocabSize, param.prePostMargin);
   end
 end
 total = sum(cm, 2);
 total = repmat(total(:), 1, size(cm, 2));
-cm = round(cm * 100 ./ total);
+cm = cm * 100 ./ total;
 end
 
-function cm = evalOneFold(Ytrue, Ystar, cm)
+function cm = evalOneFold(YtrueAll, YstarAll, cm, vocabSize, prePostMargin)
 % - Ytrue: cell arrary of sequences.
-for i = 1 : length(Ytrue)
-  for j = 1 : size(Ytrue{i}, 2)
-    cm(Ytrue{i}(1, j), Ystar{i}(1, j)) = cm(Ytrue{i}(1, j), Ystar{i}(1, j)) + 1; 
+
+restLabel = vocabSize;
+
+for n = 1 : length(YtrueAll)
+  Ytrue = YtrueAll{n};
+  Ystar = YstarAll{n};
+  events = computegtsegments(Ytrue, vocabSize);
+  
+  for i = 1 : length(events)
+    if i < restLabel
+      runs = events{i};
+      for j = 1 : size(runs, 1)
+        startNdx = runs(j, 1);
+        endNdx = runs(j, 2);
+        % Remove the first 15 frames and last 15 frames because they may be
+        % pre and post strokes
+        Ytrue(1, startNdx : min(endNdx, startNdx + prePostMargin)) = restLabel;
+        Ystar(1, startNdx : min(endNdx, startNdx + prePostMargin)) = restLabel;
+        Ytrue(1, max(startNdx, endNdx - prePostMargin : endNdx)) = restLabel;
+        Ystar(1, max(startNdx, endNdx - prePostMargin : endNdx)) = restLabel;
+      end
+    end
+  end
+
+  for j = 1 : size(Ytrue, 2)
+    if (Ytrue(1, j) <= vocabSize)
+     cm(Ytrue(1, j), Ystar(1, j)) = cm(Ytrue(1, j), Ystar(1, j)) + 1; 
+    end
   end
 end
 end
