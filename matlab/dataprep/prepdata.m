@@ -21,7 +21,7 @@ sensorType = 'Kinect';
 gtSensorType = 'Kinect';
 dataType = 'Converted';
 gestureDefDir = dirname;
-prevData = [];
+prevData = []; % Previous processed and saved data.
 
 pidToProcess = [];
 
@@ -63,21 +63,27 @@ for p = 1 : npids
   data{p}.nEvent = {};
   
   paramInitialized = false;
+  prevFileSet = java.util.HashSet;
   
   if ~isempty(prevData) && p <= length(prevData)
-    data{p}.Y = prevData{p}.Y;
-    data{p}.X = prevData{p}.X;
-    data{p}.frame = prevData{p}.frame;
-    data{p}.file = prevData{p}.file;
-    data{p}.nEvent = prevData{p}.nEvent;
-    dataParam = prevData{p}.param;
-    paramInitialized = true; % Use previous param.
-  end
-
-  prevFiles = data{p}.file;
-  prevFileSet = java.util.HashSet;
-  for i = 1 : length(prevFiles)
-    prevFileSet.add(prevFiles{i}{2});
+    sessionNameSet = java.util.HashSet;
+    for i = 1 : length(sessionNames)
+      sessionNameSet.add(sessionNames{i});
+    end
+    
+    prevFiles = prevData{p}.file;
+    for i = 1 : length(prevFiles)
+      if sessionNameSet.contains(prevFiles{i}{2})
+        data{p}.Y{end + 1} = prevData{p}.Y{i};
+        data{p}.X{end + 1} = prevData{p}.X{i};
+        data{p}.frame{end + 1} = prevData{p}.frame{i};
+        data{p}.file{end + 1} = prevData{p}.file{i};
+        data{p}.nEvent{end + 1} = prevData{p}.nEvent{i};
+        dataParam = prevData{p}.param;
+        paramInitialized = true; % Use previous param.
+        prevFileSet.add(prevFiles{i}{2});
+      end
+    end
   end
   
   for i = 1 : length(sessionNames)
